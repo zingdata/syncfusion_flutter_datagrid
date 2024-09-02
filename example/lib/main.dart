@@ -46,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SfDataGrid(
         source: employeeDataSource,
         columnWidthMode: ColumnWidthMode.fill,
+        allowFiltering: true,
         columns: <GridColumn>[
           GridColumn(
               columnName: 'id',

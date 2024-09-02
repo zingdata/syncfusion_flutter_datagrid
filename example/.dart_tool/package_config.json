@@ -159,7 +159,7 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.2.4",
+      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.2.5",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -170,10 +170,10 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2024-08-08T07:36:41.565060Z",
+  "generated": "2024-09-02T06:42:09.218506Z",
   "generator": "pub",
-  "generatorVersion": "3.5.0",
+  "generatorVersion": "3.5.1",
   "flutterRoot": "file:///R:/Development/fvm/versions/stable",
-  "flutterVersion": "3.24.0",
+  "flutterVersion": "3.24.1",
   "pubCache": "file:///C:/Users/Raza/AppData/Local/Pub/Cache"
 }
