@@ -25,7 +25,10 @@ import 'rendering_widget.dart';
 class ScrollViewWidget extends StatefulWidget {
   /// Creates a [ScrollViewWidget] for the [SfDataGrid].
   const ScrollViewWidget(
-      {super.key, required this.width, required this.height, required this.dataGridStateDetails});
+      {super.key,
+      required this.width,
+      required this.height,
+      required this.dataGridStateDetails});
 
   /// The parent width of the datagrid.
   final double width;
@@ -62,7 +65,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     _height = widget.height;
     _width = widget.width;
 
-    dataGridConfiguration.rowSelectionManager.addListener(_handleSelectionController);
+    dataGridConfiguration.rowSelectionManager
+        .addListener(_handleSelectionController);
 
     if (_dataGridFocusNode == null) {
       // [FocusNode.onKey] callback is not firing on key navigation after flutter
@@ -83,13 +87,15 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     super.initState();
   }
 
-  DataGridConfiguration get _dataGridConfiguration => widget.dataGridStateDetails();
+  DataGridConfiguration get _dataGridConfiguration =>
+      widget.dataGridStateDetails();
 
   VisualContainerHelper get _container => _dataGridConfiguration.container;
 
   RowGenerator get rowGenerator => _dataGridConfiguration.rowGenerator;
 
-  SelectionManagerBase get _rowSelectionManager => _dataGridConfiguration.rowSelectionManager;
+  SelectionManagerBase get _rowSelectionManager =>
+      _dataGridConfiguration.rowSelectionManager;
 
   void _verticalListener() {
     if (mounted) {
@@ -118,7 +124,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         // DataGridSettings.columnSizer._refresh(widget.width);
         _container.resetSwipeOffset();
         _dataGridConfiguration.scrollingState = ScrollDirection.forward;
-        if (!_dataGridConfiguration.columnResizeController.isResizeIndicatorVisible) {
+        if (!_dataGridConfiguration
+            .columnResizeController.isResizeIndicatorVisible) {
           _isScrolling = true;
         }
         _container.isDirty = true;
@@ -168,7 +175,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
   }
 
   void _ensureItems(bool needToRefresh) {
-    final VisibleLinesCollection visibleRows = _container.scrollRows.getVisibleLines();
+    final VisibleLinesCollection visibleRows =
+        _container.scrollRows.getVisibleLines();
     final VisibleLinesCollection visibleColumns =
         grid_helper.getVisibleLines(widget.dataGridStateDetails());
 
@@ -183,8 +191,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     }
   }
 
-  Widget _buildScrollView(
-      double extentWidth, double scrollViewHeight, double extentHeight, Size containerSize) {
+  Widget _buildScrollView(double extentWidth, double scrollViewHeight,
+      double extentHeight, Size containerSize) {
     final DataGridConfiguration dataGridConfiguration = _dataGridConfiguration;
 
     // Issue:
@@ -196,7 +204,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     // notifications. So, both scrollbars reacted to both scroll notifications.
     // We have fixed it by handling only to the respective scroll direction
     // based on the scrollbar.
-    bool handleNotificationPredicate(ScrollNotification notification, Axis direction) {
+    bool handleNotificationPredicate(
+        ScrollNotification notification, Axis direction) {
       // Issue:
       // FLUT-6320 - Horizontal scrollbar is showing when typing the text in
       // TextField widget more than cell width in editing.
@@ -206,7 +215,9 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       // on the scroll direction. As the `notificationPredicate` callback will be
       // called for all the scrollable views, can't process with the scroll direction
       // alone. Hence, we have fixed the issue by considering the scroll view depth.
-      return direction == Axis.vertical ? notification.depth == 0 : notification.depth == 1;
+      return direction == Axis.vertical
+          ? notification.depth == 0
+          : notification.depth == 1;
     }
 
     // Issue:
@@ -241,7 +252,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           child: ConstrainedBox(
             // FLUT-6553-BoxConstraints has a negative minimum height exception has been thrown.
             // we need to set height as 0 if it's negative value
-            constraints: BoxConstraints(minHeight: max(0, min(scrollViewHeight, extentHeight))),
+            constraints: BoxConstraints(
+                minHeight: max(0, min(scrollViewHeight, extentHeight))),
             child: SingleChildScrollView(
               controller: _horizontalController,
               scrollDirection: Axis.horizontal,
@@ -251,7 +263,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
               child: ConstrainedBox(
                 // FLUT-6553-BoxConstraints has a negative minimum width exception has been thrown.
                 // we need to set width as 0 if it's negative value
-                constraints: BoxConstraints(minWidth: max(0, min(_width, extentWidth))),
+                constraints:
+                    BoxConstraints(minWidth: max(0, min(_width, extentWidth))),
                 child: _VisualContainer(
                   key: const ValueKey<String>('SfDataGrid-VisualContainer'),
                   isDirty: _container.isDirty,
@@ -283,19 +296,24 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     final DataGridConfiguration dataGridConfiguration = _dataGridConfiguration;
     final double extentWidth = _container.extentWidth;
     final double headerRowsHeight = _container.scrollRows
-        .rangeToRegionPoints(0, grid_helper.getHeaderIndex(dataGridConfiguration), true)[1]
+        .rangeToRegionPoints(
+            0, grid_helper.getHeaderIndex(dataGridConfiguration), true)[1]
         .length;
     final double extentHeight = _container.extentHeight - headerRowsHeight;
     final double scrollViewHeight = _height - headerRowsHeight;
 
     final Size containerSize = Size(
-        _canDisableHorizontalScrolling(dataGridConfiguration) ? _width : max(_width, extentWidth),
+        _canDisableHorizontalScrolling(dataGridConfiguration)
+            ? _width
+            : max(_width, extentWidth),
         _canDisableVerticalScrolling(dataGridConfiguration)
             ? scrollViewHeight
-            : (extentHeight > scrollViewHeight ? extentHeight : scrollViewHeight));
+            : (extentHeight > scrollViewHeight
+                ? extentHeight
+                : scrollViewHeight));
 
-    final Widget scrollView =
-        _buildScrollView(extentWidth, scrollViewHeight, extentHeight, containerSize);
+    final Widget scrollView = _buildScrollView(
+        extentWidth, scrollViewHeight, extentHeight, containerSize);
 
     final Positioned wrapScrollView = Positioned.fill(
       top: headerRowsHeight,
@@ -308,9 +326,10 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
   void _addHeaderRows(List<Widget> children) {
     final DataGridConfiguration dataGridConfiguration = _dataGridConfiguration;
 
-    final double containerWidth = _canDisableHorizontalScrolling(dataGridConfiguration)
-        ? _width
-        : max(_width, _container.extentWidth);
+    final double containerWidth =
+        _canDisableHorizontalScrolling(dataGridConfiguration)
+            ? _width
+            : max(_width, _container.extentWidth);
 
     List<Widget> buildHeaderRows() {
       final List<Widget> headerRows = <Widget>[];
@@ -384,7 +403,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     if (rowGenerator.items.isNotEmpty) {
       final List<Widget> headerRows = buildHeaderRows();
       for (int i = 0; i < headerRows.length; i++) {
-        final VisibleLineInfo? lineInfo = _container.scrollRows.getVisibleLineAtLineIndex(i);
+        final VisibleLineInfo? lineInfo =
+            _container.scrollRows.getVisibleLineAtLineIndex(i);
         final Positioned header = Positioned.directional(
             textDirection: dataGridConfiguration.textDirection,
             start: getStartX(),
@@ -407,7 +427,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         columnResizeController.resizingDataCell != null) {
       double top = 0;
 
-      final DataGridThemeHelper? dataGridThemeHelper = _dataGridConfiguration.dataGridThemeHelper;
+      final DataGridThemeHelper? dataGridThemeHelper =
+          _dataGridConfiguration.dataGridThemeHelper;
       int rowIndex = columnResizeController.rowIndex;
 
       if (columnResizeController.rowSpan > 0) {
@@ -415,7 +436,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       }
 
       if (rowIndex > 0) {
-        top = columnResizeController.resizingDataCell!.dataRow!.getRowHeight(0, rowIndex - 1);
+        top = columnResizeController.resizingDataCell!.dataRow!
+            .getRowHeight(0, rowIndex - 1);
       }
 
       final Widget indicator = Positioned(
@@ -426,10 +448,12 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         child: IgnorePointer(
             child: _dataGridConfiguration.isDesktop
                 ? Container(
-                    width: dataGridThemeHelper!.columnResizeIndicatorStrokeWidth,
+                    width:
+                        dataGridThemeHelper!.columnResizeIndicatorStrokeWidth,
                     height: _container.extentHeight - top,
                     color: dataGridThemeHelper.columnResizeIndicatorColor)
-                : _getResizingCursor(_dataGridConfiguration, dataGridThemeHelper!, top)),
+                : _getResizingCursor(
+                    _dataGridConfiguration, dataGridThemeHelper!, top)),
       );
       children.add(indicator);
     }
@@ -442,11 +466,13 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       await handleLoadMoreRows(dataGridConfiguration.source);
     }
 
-    if (_verticalController!.hasClients && dataGridConfiguration.loadMoreViewBuilder != null) {
+    if (_verticalController!.hasClients &&
+        dataGridConfiguration.loadMoreViewBuilder != null) {
       // FLUT-3038 Need to restrict load more view when rows exist within the
       // view height.
       if ((_verticalController!.position.maxScrollExtent > 0.0) &&
-          (_verticalController!.offset >= _verticalController!.position.maxScrollExtent) &&
+          (_verticalController!.offset >=
+              _verticalController!.position.maxScrollExtent) &&
           !_isLoadMoreViewLoaded) {
         final Widget? loadMoreView =
             dataGridConfiguration.loadMoreViewBuilder!(context, loadMoreRows);
@@ -472,14 +498,16 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
 
   void _addFreezePaneLinesElevation(List<Widget> children) {
     final DataGridConfiguration dataGridConfiguration = _dataGridConfiguration;
-    final DataGridThemeHelper? dataGridThemeHelper = dataGridConfiguration.dataGridThemeHelper;
+    final DataGridThemeHelper? dataGridThemeHelper =
+        dataGridConfiguration.dataGridThemeHelper;
     if (dataGridThemeHelper!.frozenPaneElevation! <= 0.0 ||
         dataGridConfiguration.columns.isEmpty ||
         effectiveRows(dataGridConfiguration.source).isEmpty) {
       return;
     }
 
-    final Color frozenLineColorWithoutOpacity = dataGridThemeHelper.frozenPaneLineColor!;
+    final Color frozenLineColorWithoutOpacity =
+        dataGridThemeHelper.frozenPaneLineColor!;
 
     final Color frozenLineColorWithOpacity =
         dataGridThemeHelper.frozenPaneLineColor!.withOpacity(0.14);
@@ -500,13 +528,15 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
               width: axis == Axis.vertical ? 1 : 0,
               height: axis == Axis.horizontal ? 1 : 0,
               margin: margin,
-              decoration: BoxDecoration(color: const Color(0xFF000000), boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: frozenLineColor,
-                  spreadRadius: spreadRadiusValue,
-                  blurRadius: blurRadiusValue,
-                )
-              ])));
+              decoration: BoxDecoration(
+                  color: const Color(0xFF000000),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: frozenLineColor,
+                      spreadRadius: spreadRadiusValue,
+                      blurRadius: blurRadiusValue,
+                    )
+                  ])));
 
       children.add(Positioned.directional(
         top: top,
@@ -521,9 +551,11 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     double getTopPosition(DataRowBase columnHeaderRow, int columnIndex) {
       double top = 0.0;
       if (dataGridConfiguration.stackedHeaderRows.isNotEmpty) {
-        top = columnHeaderRow.getRowHeight(0, dataGridConfiguration.stackedHeaderRows.length - 1);
+        top = columnHeaderRow.getRowHeight(
+            0, dataGridConfiguration.stackedHeaderRows.length - 1);
         final DataCellBase? dataCell = columnHeaderRow.visibleColumns
-            .firstWhereOrNull((DataCellBase cell) => cell.columnIndex == columnIndex);
+            .firstWhereOrNull(
+                (DataCellBase cell) => cell.columnIndex == columnIndex);
         // Need to ignore header cell spanned height from the total stacked
         // header rows height if it is spanned.
         if (dataCell != null && dataCell.rowSpan > 0) {
@@ -537,27 +569,34 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     // The field remainingViewPortHeight and remainingViewPortWidth are used to
     // restrict the elevation height and width fill in the entire screen when
     // extent width and height is smaller than the view size.
-    final double remainingViewPortHeight = (dataGridConfiguration.container.extentHeight < _height)
-        ? _height - dataGridConfiguration.container.extentHeight
-        : 0.0;
-    final double remainingViewPortWidth = (dataGridConfiguration.container.extentWidth < _width)
-        ? _width - dataGridConfiguration.container.extentWidth
-        : 0.0;
+    final double remainingViewPortHeight =
+        (dataGridConfiguration.container.extentHeight < _height)
+            ? _height - dataGridConfiguration.container.extentHeight
+            : 0.0;
+    final double remainingViewPortWidth =
+        (dataGridConfiguration.container.extentWidth < _width)
+            ? _width - dataGridConfiguration.container.extentWidth
+            : 0.0;
 
-    final DataRowBase? columnHeaderRow = dataGridConfiguration.container.rowGenerator.items
-        .firstWhereOrNull((DataRowBase row) => row.rowType == RowType.headerRow);
+    final DataRowBase? columnHeaderRow =
+        dataGridConfiguration.container.rowGenerator.items.firstWhereOrNull(
+            (DataRowBase row) => row.rowType == RowType.headerRow);
 
     // Provided the margin to allow shadow only to the corresponding side.
     // In 4.0 pixels, 1.0 pixel defines the size of the container and
     // 3.0 pixels defines the amount of spreadRadius.
-    final double margin = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation! + 4.0;
-    final int frozenColumnIndex = grid_helper.getLastFrozenColumnIndex(dataGridConfiguration);
+    final double margin =
+        dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation! + 4.0;
+    final int frozenColumnIndex =
+        grid_helper.getLastFrozenColumnIndex(dataGridConfiguration);
     final int footerFrozenColumnIndex =
         grid_helper.getStartFooterFrozenColumnIndex(dataGridConfiguration);
-    final int frozenRowIndex = grid_helper.getLastFrozenRowIndex(dataGridConfiguration);
+    final int frozenRowIndex =
+        grid_helper.getLastFrozenRowIndex(dataGridConfiguration);
     final int footerFrozenRowIndex =
         grid_helper.getStartFooterFrozenRowIndex(dataGridConfiguration);
-    final int indentColumnCount = dataGridConfiguration.source.groupedColumns.length;
+    final int indentColumnCount =
+        dataGridConfiguration.source.groupedColumns.length;
     if (columnHeaderRow != null &&
         frozenColumnIndex >= 0 &&
         !_canDisableHorizontalScrolling(dataGridConfiguration)) {
@@ -565,21 +604,27 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       double blurRadiusValue = 0.0;
       Color frozenLineColor = frozenLineColorWithoutOpacity;
       final double top = getTopPosition(columnHeaderRow, frozenColumnIndex);
-      final double left = (columnHeaderRow.getColumnWidth(indentColumnCount,
-              dataGridConfiguration.frozenColumnsCount + indentColumnCount - 1)) +
+      final double left = (columnHeaderRow.getColumnWidth(
+              indentColumnCount,
+              dataGridConfiguration.frozenColumnsCount +
+                  indentColumnCount -
+                  1)) +
           (dataGridThemeHelper.indentColumnWidth * indentColumnCount);
       if (dataGridConfiguration.textDirection == TextDirection.ltr &&
           dataGridConfiguration.container.horizontalOffset > 0) {
         spreadRadiusValue = 3.0;
-        blurRadiusValue = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
+        blurRadiusValue =
+            dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
         frozenLineColor = frozenLineColorWithOpacity;
       }
       if (dataGridConfiguration.textDirection == TextDirection.rtl &&
           dataGridConfiguration.horizontalScrollController!.hasClients &&
-          dataGridConfiguration.horizontalScrollController!.position.maxScrollExtent >
+          dataGridConfiguration
+                  .horizontalScrollController!.position.maxScrollExtent >
               dataGridConfiguration.container.horizontalOffset) {
         spreadRadiusValue = 3.0;
-        blurRadiusValue = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
+        blurRadiusValue =
+            dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
         frozenLineColor = frozenLineColorWithOpacity;
       }
 
@@ -600,14 +645,17 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         footerFrozenColumnIndex >= 0 &&
         !_canDisableHorizontalScrolling(dataGridConfiguration)) {
       double spreadRadiusValue = 3.0;
-      double blurRadiusValue = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
+      double blurRadiusValue =
+          dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
       Color frozenLineColor = frozenLineColorWithOpacity;
-      final double top = getTopPosition(columnHeaderRow, footerFrozenColumnIndex);
+      final double top =
+          getTopPosition(columnHeaderRow, footerFrozenColumnIndex);
       final double right = columnHeaderRow.getColumnWidth(
           footerFrozenColumnIndex, dataGridConfiguration.container.columnCount);
       if (dataGridConfiguration.textDirection == TextDirection.ltr &&
           dataGridConfiguration.horizontalScrollController!.hasClients &&
-          dataGridConfiguration.horizontalScrollController!.position.maxScrollExtent ==
+          dataGridConfiguration
+                  .horizontalScrollController!.position.maxScrollExtent ==
               dataGridConfiguration.container.horizontalOffset) {
         spreadRadiusValue = 1.5;
         blurRadiusValue = 0.0;
@@ -643,7 +691,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
 
       if (dataGridConfiguration.container.verticalOffset > 0) {
         spreadRadiusValue = 3.0;
-        blurRadiusValue = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
+        blurRadiusValue =
+            dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
         frozenLineColor = frozenLineColorWithOpacity;
       }
 
@@ -662,13 +711,16 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         footerFrozenRowIndex >= 0 &&
         !_canDisableVerticalScrolling(dataGridConfiguration)) {
       double spreadRadiusValue = 3.0;
-      double blurRadiusValue = dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
+      double blurRadiusValue =
+          dataGridConfiguration.dataGridThemeHelper!.frozenPaneElevation!;
       Color frozenLineColor = frozenLineColorWithOpacity;
       final double bottom = columnHeaderRow.getRowHeight(
           footerFrozenRowIndex, dataGridConfiguration.container.rowCount);
 
       if (dataGridConfiguration.verticalScrollController!.hasClients &&
-          dataGridConfiguration.verticalScrollController!.position.maxScrollExtent.ceilToDouble() ==
+          dataGridConfiguration
+                  .verticalScrollController!.position.maxScrollExtent
+                  .ceilToDouble() ==
               dataGridConfiguration.container.verticalOffset.ceilToDouble()) {
         spreadRadiusValue = 1.5;
         blurRadiusValue = 0.0;
@@ -823,17 +875,22 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     final CurrentCellManager currentCell = dataGridConfiguration.currentCell;
     // To handle group expansion and collapse the group.
     void expandCollapseGroup() {
-      final DataRowBase? row = dataGridConfiguration.container.rowGenerator.items
-          .firstWhereOrNull((DataRowBase element) => element.rowIndex == currentCell.rowIndex);
+      final DataRowBase? row = dataGridConfiguration
+          .container.rowGenerator.items
+          .firstWhereOrNull((DataRowBase element) =>
+              element.rowIndex == currentCell.rowIndex);
       if (row != null &&
           row.rowType == RowType.captionSummaryCoveredRow &&
           dataGridConfiguration.allowExpandCollapseGroup) {
-        final int rowIndex = resolveStartRecordIndex(dataGridConfiguration, currentCell.rowIndex);
+        final int rowIndex = resolveStartRecordIndex(
+            dataGridConfiguration, currentCell.rowIndex);
         final dynamic group = getGroupElement(dataGridConfiguration, rowIndex);
         if (keyEvent.logicalKey == LogicalKeyboardKey.arrowRight) {
           if (group is Group && !group.isExpanded) {
-            dataGridConfiguration.group!.expandGroups(group, dataGridConfiguration.group, rowIndex);
-            dataGridConfiguration.groupExpandCollapseRowIndex = currentCell.rowIndex;
+            dataGridConfiguration.group!
+                .expandGroups(group, dataGridConfiguration.group, rowIndex);
+            dataGridConfiguration.groupExpandCollapseRowIndex =
+                currentCell.rowIndex;
             notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
                 propertyName: 'grouping');
           }
@@ -841,7 +898,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           if (group is Group && group.isExpanded) {
             dataGridConfiguration.group!
                 .collapseGroups(group, dataGridConfiguration.group, rowIndex);
-            dataGridConfiguration.groupExpandCollapseRowIndex = currentCell.rowIndex;
+            dataGridConfiguration.groupExpandCollapseRowIndex =
+                currentCell.rowIndex;
             notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
                 propertyName: 'grouping');
           }
@@ -850,7 +908,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     }
 
     void processKeys() {
-      if (keyEvent.runtimeType == KeyDownEvent || keyEvent.runtimeType == KeyRepeatEvent) {
+      if (keyEvent.runtimeType == KeyDownEvent ||
+          keyEvent.runtimeType == KeyRepeatEvent) {
         _rowSelectionManager.handleKeyEvent(keyEvent);
         if (HardwareKeyboard.instance.isControlPressed) {
           dataGridConfiguration.isControlKeyPressed = true;
@@ -890,8 +949,10 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           (!_dataGridFocusNode!.hasPrimaryFocus && currentCell.isEditing);
 
       if (HardwareKeyboard.instance.isShiftPressed) {
-        final int firstRowIndex = selection_helper.getFirstRowIndex(dataGridConfiguration);
-        final int firstCellIndex = selection_helper.getFirstCellIndex(dataGridConfiguration);
+        final int firstRowIndex =
+            selection_helper.getFirstRowIndex(dataGridConfiguration);
+        final int firstCellIndex =
+            selection_helper.getFirstCellIndex(dataGridConfiguration);
 
         if (canAllowToRemoveFocus(firstRowIndex, firstCellIndex)) {
           return KeyEventResult.ignored;
@@ -899,8 +960,10 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           return KeyEventResult.handled;
         }
       } else {
-        final int lastRowIndex = selection_helper.getLastNavigatingRowIndex(dataGridConfiguration);
-        final int lastCellIndex = selection_helper.getLastCellIndex(dataGridConfiguration);
+        final int lastRowIndex =
+            selection_helper.getLastNavigatingRowIndex(dataGridConfiguration);
+        final int lastCellIndex =
+            selection_helper.getLastCellIndex(dataGridConfiguration);
 
         if (canAllowToRemoveFocus(lastRowIndex, lastCellIndex)) {
           return KeyEventResult.ignored;
@@ -962,8 +1025,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       /// Need not to change the height when onScreenKeyboard appears.
       /// Cause: If we change the height on editing, editable widget will not move
       /// above the onScreenKeyboard on mobile platforms.
-      final bool needToAvoidResizeHeight =
-          !dataGridConfiguration.isDesktop && dataGridConfiguration.currentCell.isEditing;
+      final bool needToAvoidResizeHeight = !dataGridConfiguration.isDesktop &&
+          dataGridConfiguration.currentCell.isEditing;
 
       if (!needToAvoidResizeHeight) {
         _width = widget.width;
@@ -973,26 +1036,31 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           ..needToSetHorizontalOffset = true
           ..isDirty = true;
       }
-      if (oldWidget.width != widget.width || oldWidget.height != widget.height) {
+      if (oldWidget.width != widget.width ||
+          oldWidget.height != widget.height) {
         _container.resetSwipeOffset();
       }
       // FLUT-2047 Need to mark all visible rows height as dirty when DataGrid
       // size is changed if onQueryRowHeight is not null.
-      if (oldWidget.width != widget.width && dataGridConfiguration.onQueryRowHeight != null) {
+      if (oldWidget.width != widget.width &&
+          dataGridConfiguration.onQueryRowHeight != null) {
         _container.rowHeightManager.reset();
       }
     }
 
     if (_verticalController != dataGridConfiguration.verticalScrollController) {
       _verticalController!.removeListener(_verticalListener);
-      _verticalController = dataGridConfiguration.verticalScrollController ?? ScrollController();
+      _verticalController =
+          dataGridConfiguration.verticalScrollController ?? ScrollController();
       _verticalController!.addListener(_verticalListener);
     }
 
-    if (_horizontalController != dataGridConfiguration.horizontalScrollController) {
+    if (_horizontalController !=
+        dataGridConfiguration.horizontalScrollController) {
       _horizontalController!.removeListener(_horizontalListener);
       _horizontalController =
-          dataGridConfiguration.horizontalScrollController ?? ScrollController();
+          dataGridConfiguration.horizontalScrollController ??
+              ScrollController();
       _horizontalController!.addListener(_horizontalListener);
     }
   }
@@ -1006,16 +1074,19 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         _updateColumnSizer();
       }
 
-      _height = _dataGridConfiguration.viewHeight = _dataGridConfiguration.shrinkWrapRows
-          ? (_container.scrollRows as PixelScrollAxis).totalExtent
-          : widget.height;
-      _width = _dataGridConfiguration.viewWidth = _dataGridConfiguration.shrinkWrapColumns
-          ? (_container.scrollColumns as PixelScrollAxis).totalExtent
-          : widget.width;
+      _height = _dataGridConfiguration.viewHeight =
+          _dataGridConfiguration.shrinkWrapRows
+              ? (_container.scrollRows as PixelScrollAxis).totalExtent
+              : widget.height;
+      _width = _dataGridConfiguration.viewWidth =
+          _dataGridConfiguration.shrinkWrapColumns
+              ? (_container.scrollColumns as PixelScrollAxis).totalExtent
+              : widget.width;
 
       _updateAxis();
 
-      if (_verticalController!.initialScrollOffset > 0 && !_container.isPreGenerator) {
+      if (_verticalController!.initialScrollOffset > 0 &&
+          !_container.isPreGenerator) {
         _container.verticalOffset = _verticalController!.initialScrollOffset;
       }
 
@@ -1024,8 +1095,10 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         _updateColumnSizer();
       }
 
-      if (_horizontalController!.initialScrollOffset > 0 && !_container.isPreGenerator) {
-        _container.horizontalOffset = _horizontalController!.initialScrollOffset;
+      if (_horizontalController!.initialScrollOffset > 0 &&
+          !_container.isPreGenerator) {
+        _container.horizontalOffset =
+            _horizontalController!.initialScrollOffset;
       }
       _container
         ..setRowHeights(initialLoading: true)
@@ -1071,7 +1144,9 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
           color: Colors.transparent,
         ),
         clipBehavior: Clip.antiAlias,
-        child: Stack(fit: StackFit.passthrough, children: List<Positioned>.from(children)),
+        child: Stack(
+            fit: StackFit.passthrough,
+            children: List<Positioned>.from(children)),
       );
     }
 
@@ -1106,7 +1181,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
     // Need to dispose the vertical and horizontal scroll listeners when the widget disposed.
     _verticalController?.removeListener(_verticalListener);
     _horizontalController?.removeListener(_horizontalListener);
-    _dataGridConfiguration.rowSelectionManager.removeListener(_handleSelectionController);
+    _dataGridConfiguration.rowSelectionManager
+        .removeListener(_handleSelectionController);
 
     // Need to dispose the horizontal scroll controller when it's not set from the sample level.
     if (_dataGridConfiguration.disposeVerticalScrollController) {
@@ -1122,8 +1198,8 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
 }
 
 /// Return the resizing indicator for mobile platform
-Widget _getResizingCursor(
-    DataGridConfiguration dataGridConfiguration, DataGridThemeHelper themeData, double y) {
+Widget _getResizingCursor(DataGridConfiguration dataGridConfiguration,
+    DataGridThemeHelper themeData, double y) {
   const double cursorContainerHeight = 16.0;
   const double cursorContainerWidth = 16.0;
 
@@ -1159,9 +1235,11 @@ Widget _getResizingCursor(
           height: cursorContainerHeight,
           width: cursorContainerWidth,
           padding: const EdgeInsets.all(.2),
-          decoration: BoxDecoration(color: indicatorColor, shape: BoxShape.circle),
+          decoration:
+              BoxDecoration(color: indicatorColor, shape: BoxShape.circle),
           child: CustomPaint(
-            painter: _CustomResizingCursorPainter(Colors.white, dataGridConfiguration.gridPaint!),
+            painter: _CustomResizingCursorPainter(
+                Colors.white, dataGridConfiguration.gridPaint!),
           ),
         ),
       ),
@@ -1196,18 +1274,23 @@ class _CustomResizingCursorPainter extends CustomPainter {
 
     /// Drawing left arrow
     path.moveTo(leftAndRightPadding, verticalCenterPoint);
-    path.lineTo(horizontalCenterPoint - leftAndRightPadding, leftAndRightPadding);
-    path.moveTo(horizontalCenterPoint - leftAndRightPadding, topAndBottomPadding);
-    path.lineTo(horizontalCenterPoint - leftAndRightPadding, size.height - topAndBottomPadding);
+    path.lineTo(
+        horizontalCenterPoint - leftAndRightPadding, leftAndRightPadding);
+    path.moveTo(
+        horizontalCenterPoint - leftAndRightPadding, topAndBottomPadding);
+    path.lineTo(horizontalCenterPoint - leftAndRightPadding,
+        size.height - topAndBottomPadding);
     path.lineTo(leftAndRightPadding, verticalCenterPoint);
     path.close();
     canvas.drawPath(path, _arrowPaint);
 
     /// Drawing right arrow
-    path.moveTo(horizontalCenterPoint + topAndBottomPadding, leftAndRightPadding);
+    path.moveTo(
+        horizontalCenterPoint + topAndBottomPadding, leftAndRightPadding);
     path.lineTo(size.width - leftAndRightPadding, verticalCenterPoint);
     path.moveTo(size.width - leftAndRightPadding, verticalCenterPoint);
-    path.lineTo(horizontalCenterPoint + leftAndRightPadding, size.height - topAndBottomPadding);
+    path.lineTo(horizontalCenterPoint + leftAndRightPadding,
+        size.height - topAndBottomPadding);
     path.lineTo(verticalCenterPoint + leftAndRightPadding, topAndBottomPadding);
     path.close();
     canvas.drawPath(path, _arrowPaint);
@@ -1222,13 +1305,16 @@ class _CustomResizingCursorPainter extends CustomPainter {
 
 bool _canDisableVerticalScrolling(DataGridConfiguration dataGridConfiguration) {
   final VisualContainerHelper container = dataGridConfiguration.container;
-  return (container.scrollRows.headerExtent + container.scrollRows.footerExtent) >
+  return (container.scrollRows.headerExtent +
+          container.scrollRows.footerExtent) >
       dataGridConfiguration.viewHeight;
 }
 
-bool _canDisableHorizontalScrolling(DataGridConfiguration dataGridConfiguration) {
+bool _canDisableHorizontalScrolling(
+    DataGridConfiguration dataGridConfiguration) {
   final VisualContainerHelper container = dataGridConfiguration.container;
-  return (container.scrollColumns.headerExtent + container.scrollColumns.footerExtent) >
+  return (container.scrollColumns.headerExtent +
+          container.scrollColumns.footerExtent) >
       dataGridConfiguration.viewWidth;
 }
 
@@ -1252,35 +1338,43 @@ class _VisualContainer extends StatefulWidget {
 
 class _VisualContainerState extends State<_VisualContainer> {
   void _addSwipeBackgroundWidget(List<Widget> children) {
-    final DataGridConfiguration dataGridConfiguration = widget.dataGridStateDetails();
-    if (dataGridConfiguration.allowSwiping && dataGridConfiguration.swipingOffset.abs() > 0.0) {
+    final DataGridConfiguration dataGridConfiguration =
+        widget.dataGridStateDetails();
+    if (dataGridConfiguration.allowSwiping &&
+        dataGridConfiguration.swipingOffset.abs() > 0.0) {
       final DataRowBase? swipeRow = widget.rowGenerator.items
           .where((DataRowBase row) =>
-              (row.rowRegion == RowRegion.body || row.rowType == RowType.dataRow) &&
+              (row.rowRegion == RowRegion.body ||
+                  row.rowType == RowType.dataRow) &&
               row.rowIndex >= 0)
           .firstWhereOrNull((DataRowBase row) => row.isSwipingRow);
       if (swipeRow != null) {
-        final DataGridRowSwipeDirection swipeDirection = grid_helper.getSwipeDirection(
-            dataGridConfiguration, dataGridConfiguration.swipingOffset);
+        final DataGridRowSwipeDirection swipeDirection =
+            grid_helper.getSwipeDirection(
+                dataGridConfiguration, dataGridConfiguration.swipingOffset);
         int rowIndex = 0;
         if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-          rowIndex = dataGridConfiguration.source.effectiveRows.indexOf(swipeRow.dataGridRow!);
+          rowIndex = dataGridConfiguration.source.effectiveRows
+              .indexOf(swipeRow.dataGridRow!);
         } else {
-          rowIndex = grid_helper.resolveToRecordIndex(dataGridConfiguration, swipeRow.rowIndex);
+          rowIndex = grid_helper.resolveToRecordIndex(
+              dataGridConfiguration, swipeRow.rowIndex);
         }
 
         switch (swipeDirection) {
           case DataGridRowSwipeDirection.startToEnd:
             if (dataGridConfiguration.startSwipeActionsBuilder != null) {
-              final Widget? startSwipeWidget = dataGridConfiguration.startSwipeActionsBuilder!(
-                  context, swipeRow.dataGridRow!, rowIndex);
+              final Widget? startSwipeWidget =
+                  dataGridConfiguration.startSwipeActionsBuilder!(
+                      context, swipeRow.dataGridRow!, rowIndex);
               children.add(startSwipeWidget ?? Container());
             }
             break;
           case DataGridRowSwipeDirection.endToStart:
             if (dataGridConfiguration.endSwipeActionsBuilder != null) {
-              final Widget? endSwipeWidget = dataGridConfiguration.endSwipeActionsBuilder!(
-                  context, swipeRow.dataGridRow!, rowIndex);
+              final Widget? endSwipeWidget =
+                  dataGridConfiguration.endSwipeActionsBuilder!(
+                      context, swipeRow.dataGridRow!, rowIndex);
               children.add(endSwipeWidget ?? Container());
             }
             break;
@@ -1419,7 +1513,8 @@ class _HeaderCellsWidget extends _VirtualizingCellsWidget {
 /// grid common to build a [SfDataGrid].
 class VisualContainerHelper {
   /// Creates a [VisualContainerHelper] for the [SfDataGrid].
-  VisualContainerHelper({required this.rowGenerator, required this.dataGridStateDetails}) {
+  VisualContainerHelper(
+      {required this.rowGenerator, required this.dataGridStateDetails}) {
     isDirty = false;
     isGridLoaded = false;
     needToSetHorizontalOffset = false;
@@ -1472,7 +1567,8 @@ class VisualContainerHelper {
   /// A class [ScrollAxisBase] that can be used to control the scrolling of rows
   /// in the [SfDataGrid].
   ScrollAxisBase get scrollRows {
-    _scrollRows ??= _createScrollAxis(true, verticalScrollBar, rowHeightsProvider);
+    _scrollRows ??=
+        _createScrollAxis(true, verticalScrollBar, rowHeightsProvider);
     _scrollRows!.name = 'ScrollRows';
 
     return _scrollRows!;
@@ -1485,7 +1581,8 @@ class VisualContainerHelper {
   /// A class [ScrollAxisBase] that can be used to control the scrolling of columns
   /// in the [SfDataGrid].
   ScrollAxisBase get scrollColumns {
-    _scrollColumns ??= _createScrollAxis(true, horizontalScrollBar, columnWidthsProvider);
+    _scrollColumns ??=
+        _createScrollAxis(true, horizontalScrollBar, columnWidthsProvider);
     _scrollColumns!.name = 'ScrollColumns';
     return _scrollColumns!;
   }
@@ -1500,7 +1597,8 @@ class VisualContainerHelper {
   ScrollBarBase? _horizontalScrollBar;
 
   /// The vertical scrollbar of the data grid.
-  ScrollBarBase get verticalScrollBar => _verticalScrollBar ?? (_verticalScrollBar = ScrollInfo());
+  ScrollBarBase get verticalScrollBar =>
+      _verticalScrollBar ?? (_verticalScrollBar = ScrollInfo());
   ScrollBarBase? _verticalScrollBar;
 
   /// Returns the number of rows is currently available in the data grid.
@@ -1574,7 +1672,8 @@ class VisualContainerHelper {
   }
 
   /// Returns the current horizontal scrolling offset.
-  double get horizontalOffset => horizontalScrollBar.value - horizontalScrollBar.minimum;
+  double get horizontalOffset =>
+      horizontalScrollBar.value - horizontalScrollBar.minimum;
 
   set horizontalOffset(double newValue) {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
@@ -1585,19 +1684,23 @@ class VisualContainerHelper {
               horizontalScrollBar.maximum - horizontalScrollBar.largeChange) -
           newValue;
     }
-    updateHorizontalOffset(dataGridConfiguration.controller, horizontalScrollBar.value);
+    updateHorizontalOffset(
+        dataGridConfiguration.controller, horizontalScrollBar.value);
 
     needToRefreshColumn = true;
   }
 
   /// Returns the current vertical scrolling offset.
-  double get verticalOffset => verticalScrollBar.value - verticalScrollBar.minimum;
+  double get verticalOffset =>
+      verticalScrollBar.value - verticalScrollBar.minimum;
 
   set verticalOffset(double newValue) {
     if (verticalScrollBar.value != (newValue + verticalScrollBar.minimum)) {
-      final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
+      final DataGridConfiguration dataGridConfiguration =
+          dataGridStateDetails();
       verticalScrollBar.value = newValue + verticalScrollBar.minimum;
-      updateVerticalOffset(dataGridConfiguration.controller, verticalScrollBar.value);
+      updateVerticalOffset(
+          dataGridConfiguration.controller, verticalScrollBar.value);
     }
   }
 
@@ -1626,7 +1729,8 @@ class VisualContainerHelper {
       return;
     }
 
-    final int endIndex = visibleRows[visibleRows.lastBodyVisibleIndex].lineIndex;
+    final int endIndex =
+        visibleRows[visibleRows.lastBodyVisibleIndex].lineIndex;
 
     const int headerStart = 0;
 
@@ -1636,25 +1740,31 @@ class VisualContainerHelper {
     rowHeightManager.updateRegion(headerStart, headerEnd, RowRegion.header);
 
     final int footerStart =
-        visibleRows.length > visibleRows.firstFooterVisibleIndex && scrollRows.footerLineCount > 0
+        visibleRows.length > visibleRows.firstFooterVisibleIndex &&
+                scrollRows.footerLineCount > 0
             ? visibleRows[visibleRows.firstFooterVisibleIndex].lineIndex
             : -1;
-    final int footerEnd = scrollRows.footerLineCount > 0 ? scrollRows.lineCount - 1 : -1;
+    final int footerEnd =
+        scrollRows.footerLineCount > 0 ? scrollRows.lineCount - 1 : -1;
 
     rowHeightHelper(footerStart, footerEnd, RowRegion.footer);
 
     rowHeightManager.updateRegion(footerStart, footerEnd, RowRegion.footer);
 
-    final double bodyStart = visibleRows[visibleRows.firstBodyVisibleIndex].origin;
+    final double bodyStart =
+        visibleRows[visibleRows.firstBodyVisibleIndex].origin;
 
-    final double bodyEnd = visibleRows[visibleRows.firstFooterVisibleIndex - 1].corner;
+    final double bodyEnd =
+        visibleRows[visibleRows.firstFooterVisibleIndex - 1].corner;
 
-    final int bodyStartLineIndex = visibleRows[visibleRows.firstBodyVisibleIndex].lineIndex;
+    final int bodyStartLineIndex =
+        visibleRows[visibleRows.firstBodyVisibleIndex].lineIndex;
 
     double current = bodyStart;
     int currentEnd = endIndex;
 
-    final LineSizeCollection lineSizeCollection = rowHeights as LineSizeCollection;
+    final LineSizeCollection lineSizeCollection =
+        rowHeights as LineSizeCollection;
 
     // We only need to suspend updates when shrinkWrap is set to true
     // to recompute the size of all rows at initial loading,
@@ -1665,7 +1775,8 @@ class VisualContainerHelper {
       lineSizeCollection.suspendUpdates();
     }
     for (int index = bodyStartLineIndex;
-        ((current <= bodyEnd || (current <= dataGridConfiguration.viewHeight)) ||
+        ((current <= bodyEnd ||
+                    (current <= dataGridConfiguration.viewHeight)) ||
                 dataGridConfiguration.shrinkWrapRows) &&
             index < scrollRows.firstFooterLineIndex;
         index++) {
@@ -1684,7 +1795,8 @@ class VisualContainerHelper {
       currentEnd = index;
     }
 
-    rowHeightManager.updateRegion(bodyStartLineIndex, currentEnd, RowRegion.body);
+    rowHeightManager.updateRegion(
+        bodyStartLineIndex, currentEnd, RowRegion.body);
 
     if (rowHeightManager.dirtyRows.isNotEmpty) {
       for (final int index in rowHeightManager.dirtyRows) {
@@ -1771,7 +1883,8 @@ class VisualContainerHelper {
   }
 
   void _removeColumns(int removeAtColumnIndex, int count) {
-    final LineSizeCollection lineSizeCollection = columnWidths as LineSizeCollection;
+    final LineSizeCollection lineSizeCollection =
+        columnWidths as LineSizeCollection;
     lineSizeCollection.suspendUpdates();
     columnWidthsProvider.removeLines(removeAtColumnIndex, count, null);
     lineSizeCollection.resumeUpdates();
@@ -1805,7 +1918,8 @@ class VisualContainerHelper {
   }
 
   /// Returns the `VisibleLineInfo` for the given row index.
-  VisibleLineInfo? getRowVisibleLineInfo(int index) => scrollRows.getVisibleLineAtLineIndex(index);
+  VisibleLineInfo? getRowVisibleLineInfo(int index) =>
+      scrollRows.getVisibleLineAtLineIndex(index);
 
   /// Returns the start and end index of the current visible lines.
   List<int> getStartEndIndex(VisibleLinesCollection visibleLines, int region) {
@@ -1815,21 +1929,25 @@ class VisualContainerHelper {
       case 0:
         if (visibleLines.firstBodyVisibleIndex > 0) {
           startIndex = 0;
-          endIndex = visibleLines[visibleLines.firstBodyVisibleIndex - 1].lineIndex;
+          endIndex =
+              visibleLines[visibleLines.firstBodyVisibleIndex - 1].lineIndex;
         }
         break;
       case 1:
-        if ((visibleLines.firstBodyVisibleIndex <= 0 && visibleLines.lastBodyVisibleIndex < 0) ||
+        if ((visibleLines.firstBodyVisibleIndex <= 0 &&
+                visibleLines.lastBodyVisibleIndex < 0) ||
             visibleLines.length <= visibleLines.firstBodyVisibleIndex) {
           return <int>[startIndex, endIndex];
         } else {
-          startIndex = visibleLines[visibleLines.firstBodyVisibleIndex].lineIndex;
+          startIndex =
+              visibleLines[visibleLines.firstBodyVisibleIndex].lineIndex;
           endIndex = visibleLines[visibleLines.lastBodyVisibleIndex].lineIndex;
         }
         break;
       case 2:
         if (visibleLines.firstFooterVisibleIndex < visibleLines.length) {
-          startIndex = visibleLines[visibleLines.firstFooterVisibleIndex].lineIndex;
+          startIndex =
+              visibleLines[visibleLines.firstFooterVisibleIndex].lineIndex;
           endIndex = visibleLines[visibleLines.length - 1].lineIndex;
         }
         break;
@@ -1853,8 +1971,8 @@ class VisualContainerHelper {
       headerLineCount += dataGridConfiguration.stackedHeaderRows.length;
     }
     if (dataGridConfiguration.tableSummaryRows.isNotEmpty) {
-      headerLineCount +=
-          grid_helper.getTableSummaryCount(dataGridConfiguration, GridTableSummaryRowPosition.top);
+      headerLineCount += grid_helper.getTableSummaryCount(
+          dataGridConfiguration, GridTableSummaryRowPosition.top);
     }
     dataGridConfiguration.headerLineCount = headerLineCount;
   }
@@ -1875,13 +1993,16 @@ class VisualContainerHelper {
 
   /// Updates the rows and columns count.
   void updateRowAndColumnCount() {
-    final LineSizeCollection lineSizeCollection = columnWidths as LineSizeCollection;
+    final LineSizeCollection lineSizeCollection =
+        columnWidths as LineSizeCollection;
     lineSizeCollection.suspendUpdates();
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     _updateColumnCount(dataGridConfiguration);
     _updateRowCount(dataGridConfiguration);
     if (rowCount > 0) {
-      for (int i = 0; i <= grid_helper.getHeaderIndex(dataGridConfiguration); i++) {
+      for (int i = 0;
+          i <= grid_helper.getHeaderIndex(dataGridConfiguration);
+          i++) {
         rowHeights[i] = dataGridConfiguration.headerRowHeight;
       }
     }
@@ -1906,7 +2027,8 @@ class VisualContainerHelper {
       final double verticalContainerOffset =
           dataGridConfiguration.container.verticalScrollBar.value;
       if (verticalControllerOffset != verticalContainerOffset) {
-        dataGridConfiguration.container.verticalScrollBar.value = verticalControllerOffset;
+        dataGridConfiguration.container.verticalScrollBar.value =
+            verticalControllerOffset;
       }
     }
   }
@@ -1922,11 +2044,13 @@ class VisualContainerHelper {
   }
 
   void _updateRowCount(DataGridConfiguration dataGridConfiguration) {
-    final LineSizeCollection lineSizeCollection = rowHeights as LineSizeCollection;
+    final LineSizeCollection lineSizeCollection =
+        rowHeights as LineSizeCollection;
     lineSizeCollection.suspendUpdates();
     int rowsCount = 0;
     if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-      rowsCount = dataGridConfiguration.group?.displayElements?.grouped.length ?? 0;
+      rowsCount =
+          dataGridConfiguration.group?.displayElements?.grouped.length ?? 0;
     } else {
       rowsCount = effectiveRows(dataGridConfiguration.source).isNotEmpty
           ? effectiveRows(dataGridConfiguration.source).length
@@ -1970,7 +2094,8 @@ class VisualContainerHelper {
       frozenColumns = 0;
     }
 
-    final int footerFrozenColumnsCount = dataGridConfiguration.footerFrozenColumnsCount;
+    final int footerFrozenColumnsCount =
+        dataGridConfiguration.footerFrozenColumnsCount;
     if (footerFrozenColumnsCount > 0 &&
         columnCount > frozenColumnCount + footerFrozenColumnsCount) {
       footerFrozenColumns = footerFrozenColumnsCount;
@@ -1980,17 +2105,18 @@ class VisualContainerHelper {
   }
 
   void _updateFreezePaneRows(DataGridConfiguration dataGridConfiguration) {
-    final int frozenRowCount =
-        grid_helper.resolveToRowIndex(dataGridConfiguration, dataGridConfiguration.frozenRowsCount);
+    final int frozenRowCount = grid_helper.resolveToRowIndex(
+        dataGridConfiguration, dataGridConfiguration.frozenRowsCount);
     if (frozenRowCount > 0 && rowCount >= frozenRowCount) {
       frozenRows = headerLineCount + dataGridConfiguration.frozenRowsCount;
     } else {
       frozenRows = headerLineCount;
     }
 
-    final int footerFrozenRowsCount = dataGridConfiguration.footerFrozenRowsCount;
-    final int bottomTableSummariesCount =
-        grid_helper.getTableSummaryCount(dataGridConfiguration, GridTableSummaryRowPosition.bottom);
+    final int footerFrozenRowsCount =
+        dataGridConfiguration.footerFrozenRowsCount;
+    final int bottomTableSummariesCount = grid_helper.getTableSummaryCount(
+        dataGridConfiguration, GridTableSummaryRowPosition.bottom);
     footerFrozenRows = 0;
     if (footerFrozenRowsCount > 0 &&
         rowCount > frozenRows + footerFrozenRowsCount &&
@@ -2011,15 +2137,16 @@ class VisualContainerHelper {
   void updateDataGridRows(DataGridConfiguration dataGridConfiguration) {
     void resetRowIndex(DataRowBase dataRow) {
       if (dataRow.rowType == RowType.dataRow) {
-        final int resolvedRowIndex =
-            grid_helper.resolveToRecordIndex(dataGridConfiguration, dataRow.rowIndex);
+        final int resolvedRowIndex = grid_helper.resolveToRecordIndex(
+            dataGridConfiguration, dataRow.rowIndex);
         if (resolvedRowIndex.isNegative) {
           return;
         }
 
-        dataRow.dataGridRow = effectiveRows(dataGridConfiguration.source)[resolvedRowIndex];
-        dataRow.dataGridRowAdapter =
-            grid_helper.getDataGridRowAdapter(dataGridConfiguration, dataRow.dataGridRow!);
+        dataRow.dataGridRow =
+            effectiveRows(dataGridConfiguration.source)[resolvedRowIndex];
+        dataRow.dataGridRowAdapter = grid_helper.getDataGridRowAdapter(
+            dataGridConfiguration, dataRow.dataGridRow!);
         dataRow.rowIndexChanged();
       }
     }
@@ -2047,7 +2174,8 @@ class VisualContainerHelper {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     if (dataGridConfiguration.rowsCacheExtent != null &&
         dataGridConfiguration.rowsCacheExtent! > 0) {
-      rowGenerator.items.removeWhere((DataRowBase dataRow) => dataRow.rowRegion == RowRegion.body);
+      rowGenerator.items.removeWhere(
+          (DataRowBase dataRow) => dataRow.rowRegion == RowRegion.body);
       rowGenerator.items.forEach(resetRowIndex);
     } else {
       rowGenerator.items.forEach(resetRowIndex);
@@ -2088,7 +2216,8 @@ class VisualContainerHelper {
     dataGridConfiguration.isSwipingApplied = false;
 
     if (canUpdate) {
-      notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'Swiping');
+      notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
+          propertyName: 'Swiping');
     }
   }
 
@@ -2169,7 +2298,8 @@ class RowHeightManager {
 
   /// Resets the ranges of rows in the `SfDataGrid`.
   void reset() {
-    header.start = header.end = body.start = body.end = footer.start = footer.end = -1;
+    header.start =
+        header.end = body.start = body.end = footer.start = footer.end = -1;
   }
 
   /// Resets the body range in the `SfDataGrid`.

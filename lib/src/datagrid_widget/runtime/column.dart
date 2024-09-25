@@ -15,6 +15,7 @@ import '../helper/datagrid_configuration.dart';
 import '../helper/datagrid_helper.dart' as grid_helper;
 import '../helper/datagrid_helper.dart';
 import '../helper/enums.dart';
+import '../helper/selection_helper.dart';
 import '../sfdatagrid.dart';
 import 'generator.dart';
 
@@ -653,7 +654,7 @@ class ColumnSizer {
             dataGridConfiguration, visibleLines.lastBodyVisibleIndex);
         break;
     }
-    if (startRowIndex <= 0 && endRowIndex <= 0) {
+    if (getFirstRowIndex(dataGridConfiguration) < 0) {
       return column._actualWidth;
     }
 

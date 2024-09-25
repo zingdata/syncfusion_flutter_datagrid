@@ -1,9 +1,26 @@
-﻿## [26.2.8] - 08/06/2024
+## [27.0.0] - 09/09/2024
+
+**General**
+
+* The compatible version of our Flutter DataGrid widget has been updated to Flutter SDK 3.24.0.
+
+## [26.2.10] - 08/20/2024
+
+**Bugs**
+
+* The `SfDataGrid` now calculates cell width according to the `columnWidthMode` when there is only a single row.
+
+## [26.2.9] - 08/13/2024
+
+**Bugs**
+
+* The selection is now disabled on secondary mouse tap when the `onCellDoubleTap` callback is enabled.
+
+## [26.1.40] - 07/02/2024
 
 **Bugs**
 
 * The `ScrollController not attached to any scroll views exception` will not be thrown when navigating to the new page from datagrid.
- 
 ## [26.1.39] - 06/25/2024
 
 **Bugs**
