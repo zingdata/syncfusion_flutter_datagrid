@@ -1,3 +1,21 @@
+﻿## [28.1.33] - 12/12/2024
+
+**Bugs**
+
+* The datagrid now properly selects rows with checkboxes when using shift selection.
+
+## [27.1.55] - 10/22/2024
+
+**Bugs**
+
+* The rows are now visible when performing pagination with grouped rows.
+
+## [27.1.53] - 10/15/2024
+
+**Bugs**
+
+* The RangeError exception will no longer occur when collapsing a group with the column width mode set to fill the last column for all rows.
+
 ## [27.0.0] - 09/09/2024
 
 **General**
@@ -21,6 +39,7 @@
 **Bugs**
 
 * The `ScrollController not attached to any scroll views exception` will not be thrown when navigating to the new page from datagrid.
+
 ## [26.1.39] - 06/25/2024
 
 **Bugs**

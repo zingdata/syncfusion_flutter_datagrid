@@ -76,12 +76,9 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       //_dataGridFocusNode = FocusNode(onKey: _handleFocusKeyOperation);
       _dataGridFocusNode = FocusNode();
       dataGridConfiguration.dataGridFocusNode = _dataGridFocusNode;
-
-      // commenting it as it shifts the focus to datatable, which is not intended
-
-      //   if (dataGridConfiguration.source.sortedColumns.isNotEmpty) {
-      //     _dataGridFocusNode!.requestFocus();
-      //   }
+      if (dataGridConfiguration.source.sortedColumns.isNotEmpty) {
+        _dataGridFocusNode!.requestFocus();
+      }
     }
 
     super.initState();

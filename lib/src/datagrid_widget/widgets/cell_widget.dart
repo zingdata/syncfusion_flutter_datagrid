@@ -820,6 +820,7 @@ class _SortIconState extends State<_SortIcon>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
+
     if (widget.sortDirection == DataGridSortDirection.descending) {
       _animationController.value = 1.0;
     }
@@ -2888,7 +2889,10 @@ Future<void> _handleOnTapUp(
     final int rowIndex = resolveStartRecordIndex(
         dataGridConfiguration, dataCell.dataRow!.rowIndex);
     if (rowIndex >= 0) {
-      final Group group = getGroupElement(dataGridConfiguration, rowIndex);
+      final dynamic group = getGroupElement(dataGridConfiguration, rowIndex);
+      if (group is! Group) {
+        return;
+      }
       if (group.isExpanded) {
         if (_invokeGroupChangingCallback(dataGridConfiguration, group)) {
           dataGridConfiguration.group!

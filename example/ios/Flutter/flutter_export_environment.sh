@@ -1,9 +1,9 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=R:\Development\fvm\versions\stable"
-export "FLUTTER_APPLICATION_PATH=R:\Development\zing\syncfusion_flutter_datagrid-26.2.8\example"
+export "FLUTTER_ROOT=/Users/razaabbas/Desktop/Development/Flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/razaabbas/Desktop/Development/projects/zingData/syncfusion_flutter_datagrid/example"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
-export "FLUTTER_TARGET=lib\main.dart"
+export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
 export "FLUTTER_BUILD_NUMBER=1"
