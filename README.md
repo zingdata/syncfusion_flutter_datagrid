@@ -4,7 +4,7 @@
 
 The Flutter DataTable or DataGrid is used to display and manipulate data in a tabular view. It is built from the ground up to achieve the best possible performance, even when loading large amounts data.
 
-**Disclaimer:** This is a commercial package. To use this package, you need to have either a Syncfusion commercial license or [Free Syncfusion Community license](https://www.syncfusion.com/products/communitylicense). For more details, please check the [LICENSE](https://github.com/syncfusion/flutter-examples/blob/master/LICENSE) file.
+**Disclaimer:** This is a commercial package. To use this package, you need to have either a Syncfusion<sup>&reg;</sup> commercial license or [Free Syncfusion<sup>&reg;</sup> Community license](https://www.syncfusion.com/products/communitylicense). For more details, please check the [LICENSE](https://github.com/syncfusion/flutter-examples/blob/master/LICENSE) file.
 
 ## Table of contents
 - [DataGrid features](#datagrid-features)
@@ -16,7 +16,7 @@ The Flutter DataTable or DataGrid is used to display and manipulate data in a ta
     - [Creating data source for DataGrid](#creating-datasource-for-datagrid)
     - [Defining columns](#defining-columns)
 - [Support and feedback](#support-and-feedback)
-- [About Syncfusion](#about-syncfusion)
+- [About Syncfusion<sup>&reg;</sup>](#about-syncfusion)
 
 ## DataGrid features
 
@@ -107,9 +107,9 @@ Explore the full capabilities of our Flutter widgets on your device by installin
 </p>
 
 ## Other useful links
-Check out the following resource to learn more about the Syncfusion Flutter DataGrid:
+Check out the following resource to learn more about the Syncfusion<sup>&reg;</sup> Flutter DataGrid:
 
-* [Syncfusion Flutter DataGrid product page](https://www.syncfusion.com/flutter-widgets/flutter-datagrid)
+* [Syncfusion<sup>&reg;</sup> Flutter DataGrid product page](https://www.syncfusion.com/flutter-widgets/flutter-datagrid)
 * [User guide documentation](https://help.syncfusion.com/flutter/datagrid/overview)
 
 ## Installation
@@ -280,15 +280,15 @@ Widget build(BuildContext context) {
 
 The following screenshot illustrates the result of the above code sample.
 
-![syncfusion flutter datagrid](https://cdn.syncfusion.com/content/images/Flutter/pub_images/getting-started-flutter-datagrid.png)
+![syncfusion<sup>&reg;</sup> flutter datagrid](https://cdn.syncfusion.com/content/images/Flutter/pub_images/getting-started-flutter-datagrid.png)
 
 ## Support and Feedback
 
-* If you have any questions, you can reach the [Syncfusion support team](https://support.syncfusion.com/support/tickets/create) or post queries to the [community forums](https://www.syncfusion.com/forums). You can also submit a feature request or a bug report through our [feedback portal](https://www.syncfusion.com/feedback/flutter).
+* If you have any questions, you can reach the [Syncfusion<sup>&reg;</sup> support team](https://support.syncfusion.com/support/tickets/create) or post queries to the [community forums](https://www.syncfusion.com/forums). You can also submit a feature request or a bug report through our [feedback portal](https://www.syncfusion.com/feedback/flutter).
 * To renew your subscription, click [renew](https://www.syncfusion.com/sales/products) or contact our sales team at sales@syncfusion.com  | Toll Free: 1-888-9 DOTNET.
 
-## About Syncfusion
+## About Syncfusion<sup>&reg;</sup>
 
-Founded in 2001 and headquartered in Research Triangle Park, N.C., Syncfusion has more than 20,000 customers and more than 1 million users, including large financial institutions, Fortune 500 companies, and global IT consultancies.
+Founded in 2001 and headquartered in Research Triangle Park, N.C., Syncfusion<sup>&reg;</sup> has more than 20,000 customers and more than 1 million users, including large financial institutions, Fortune 500 companies, and global IT consultancies.
 
 Today we provide 1,600+ controls and frameworks for web ([ASP.NET Core](https://www.syncfusion.com/aspnet-core-ui-controls), [ASP.NET MVC](https://www.syncfusion.com/aspnet-mvc-ui-controls), [ASP.NET WebForms](https://www.syncfusion.com/jquery/aspnet-web-forms-ui-controls), [JavaScript](https://www.syncfusion.com/javascript-ui-controls), [Angular](https://www.syncfusion.com/angular-ui-components), [React](https://www.syncfusion.com/react-ui-components), [Vue](https://www.syncfusion.com/vue-ui-components), [Flutter](https://www.syncfusion.com/flutter-widgets), and [Blazor](https://www.syncfusion.com/blazor-components)), mobile ([.NET MAUI](https://www.syncfusion.com/maui-controls?utm_source=pubdev&utm_medium=listing&utm_campaign=flutter-charts-pubdev), [Xamarin](https://www.syncfusion.com/xamarin-ui-controls), [Flutter](https://www.syncfusion.com/flutter-widgets), [UWP](https://www.syncfusion.com/uwp-ui-controls), and [JavaScript](https://www.syncfusion.com/javascript-ui-controls)), and desktop development ([Flutter](https://www.syncfusion.com/flutter-widgets), [.NET MAUI](https://www.syncfusion.com/maui-controls?utm_source=pubdev&utm_medium=listing&utm_campaign=flutter-charts-pubdev), [WinForms](https://www.syncfusion.com/winforms-ui-controls), [WPF](https://www.syncfusion.com/wpf-ui-controls), [UWP](https://www.syncfusion.com/uwp-ui-controls), and [WinUI](https://www.syncfusion.com/winui-controls)). We provide ready-to- deploy enterprise software for dashboards, reports, data integration, and big data processing. Many customers have saved millions in licensing fees by deploying our software.  

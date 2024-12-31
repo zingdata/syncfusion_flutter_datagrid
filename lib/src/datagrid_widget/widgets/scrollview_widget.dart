@@ -507,7 +507,7 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
         dataGridThemeHelper.frozenPaneLineColor!;
 
     final Color frozenLineColorWithOpacity =
-        dataGridThemeHelper.frozenPaneLineColor!.withOpacity(0.14);
+        dataGridThemeHelper.frozenPaneLineColor!.withValues(alpha: 0.14);
 
     void drawElevation({
       EdgeInsets? margin,

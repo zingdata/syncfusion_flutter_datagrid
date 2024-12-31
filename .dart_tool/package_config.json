@@ -15,9 +15,9 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/packages/flutter",
+      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.3"
     },
     {
       "name": "material_color_utilities",
@@ -33,13 +33,13 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.2"
     },
     {
       "name": "syncfusion_flutter_core",
-      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-28.1.33",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-28.1.37",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -56,10 +56,10 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-12-12T15:05:25.609683Z",
+  "generated": "2024-12-31T07:33:07.088745Z",
   "generator": "pub",
-  "generatorVersion": "3.7.0-237.0.dev",
-  "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter",
-  "flutterVersion": "3.28.0-1.0.pre.87",
+  "generatorVersion": "3.6.0",
+  "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable",
+  "flutterVersion": "3.27.1",
   "pubCache": "file:///Users/razaabbas/.pub-cache"
 }
