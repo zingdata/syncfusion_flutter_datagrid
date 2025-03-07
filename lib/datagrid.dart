@@ -23,7 +23,6 @@ export './src/datagrid_widget/sfdatagrid.dart'
         handleLoadMoreRows,
         handleRefresh,
         updateDataSource,
-        effectiveRows,
         setPageCount,
         setChildColumnIndexes,
         getChildColumnIndexes,
