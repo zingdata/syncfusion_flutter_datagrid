@@ -5408,7 +5408,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color get tableSummaryRowColor => colorScheme.transparent;
 
   /// Provides the filter popup outer widgetcolor.
-  Color get filterPopupOuterColor => colorScheme.surface[251]!;
+  Color get filterPopupOuterColor => colorScheme.surface;
 
   /// Provides the feedBack widgetcolor.
   Color get feedBackWidgetColor => colorScheme.surface[250]!;
