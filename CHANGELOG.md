@@ -1,4 +1,18 @@
-﻿## [28.1.37] - 12/31/2024
+﻿## [28.2.9] - 03/04/2025
+
+## [28.1.38] - 01/07/2025
+
+**Bugs**
+
+* The `SfDataGrid` now refreshes the grouping when filtering is removed using the 'Select All' option.
+
+## [28.1.38] - 01/07/2025
+
+**Bugs**
+
+* The `SfDataGrid` now creates new rows instead of reusing them when the `rowCacheExtent` is set.
+
+## [27.1.58] - 11/05/2024
 
 **Bugs**
 

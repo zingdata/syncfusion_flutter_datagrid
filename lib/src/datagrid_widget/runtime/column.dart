@@ -2302,14 +2302,12 @@ class DataGridFilterHelper {
       refreshEffectiveRows(source, filteredRows);
       updateDataPager(source);
       if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-        dataGridConfiguration.group!
-            .clearDisplayElements(dataGridConfiguration);
-        updateDataSource(source);
+        updateDataSource(source, true);
       }
       notifyDataGridPropertyChangeListeners(source, propertyName: 'Filtering');
       _invokeFilterChangedCallback(column, filterConditions);
     } else {
-      updateDataSource(source);
+      updateDataSource(source, true);
       notifyDataGridPropertyChangeListeners(source, propertyName: 'Filtering');
       _invokeFilterChangedCallback(column, <FilterCondition>[]);
     }
@@ -2476,10 +2474,7 @@ class DataGridFilterHelper {
     endEdit();
     setFilterFrom(column, FilteredFrom.none);
     removeFilterConditions(dataGridConfiguration.source, column.columnName);
-    if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-      dataGridConfiguration.group!.clearDisplayElements(dataGridConfiguration);
-    }
-    updateDataSource(dataGridConfiguration.source);
+    updateDataSource(dataGridConfiguration.source, true);
     notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
         propertyName: 'Filtering');
     _invokeFilterChangedCallback(column, <FilterCondition>[]);

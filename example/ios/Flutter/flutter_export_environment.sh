@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/razaabbas/Desktop/Development/Flutter"
+export "FLUTTER_ROOT=/Users/razaabbas/Desktop/Development/Flutter/versions/stable"
 export "FLUTTER_APPLICATION_PATH=/Users/razaabbas/Desktop/Development/projects/zingData/syncfusion_flutter_datagrid/example"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"

@@ -1996,10 +1996,10 @@ class SfDataGridState extends State<SfDataGrid>
     /// To achieve grouping for each page
     if (_dataGridConfiguration.source.groupedColumns.isNotEmpty &&
         _dataGridConfiguration.source._pageCount > 0.0) {
-      _dataGridConfiguration.group!
-          .clearDisplayElements(_dataGridConfiguration);
+      _source?._updateDataSource(true);
+    } else {
+      _source?._updateDataSource();
     }
-    _source?._updateDataSource();
   }
 
   void _initializeProperties() {
@@ -2129,9 +2129,7 @@ class SfDataGridState extends State<SfDataGrid>
 
       if (canRefreshGrouping &&
           _dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-        _dataGridConfiguration.group!
-            .clearDisplayElements(_dataGridConfiguration);
-        updateDataSource(_dataGridConfiguration.source);
+        updateDataSource(_dataGridConfiguration.source, true);
         notifyDataGridPropertyChangeListeners(_dataGridStateDetails!().source,
             propertyName: 'grouping');
       }
@@ -3051,9 +3049,7 @@ class SfDataGridState extends State<SfDataGrid>
                 .any((GridColumn dataGridColumn) =>
                     dataGridColumn.columnName == sortColumn.name));
       }
-      _dataGridConfiguration.group!
-          .clearDisplayElements(_dataGridConfiguration);
-      updateDataSource(_dataGridConfiguration.source);
+      updateDataSource(_dataGridConfiguration.source, true);
       _dataGridConfiguration.container
         ..updateRowAndColumnCount()
         ..refreshView()
@@ -3760,7 +3756,15 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     }
   }
 
-  Future<void> _updateDataSource() async {
+  Future<void> _updateDataSource([bool isClearGrouping = false]) async {
+    // Clear grouped display elements during CRUD operations.
+    if (isClearGrouping && _dataGridStateDetails != null) {
+      final DataGridConfiguration dataGridStateDetails =
+          _dataGridStateDetails!();
+      if (dataGridStateDetails.source.groupedColumns.isNotEmpty) {
+        dataGridStateDetails.group?.clearDisplayElements(dataGridStateDetails);
+      }
+    }
     if (sortedColumns.isNotEmpty) {
       _unSortedRows = rows.toList();
       _effectiveRows = _unSortedRows;
@@ -3830,15 +3834,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// }
   /// ```
   Future<void> sort() async {
-    if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
-      if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-        dataGridConfiguration.group!
-            .clearDisplayElements(dataGridConfiguration);
-      }
-    }
-    await _updateDataSource();
+    await _updateDataSource(true);
     _notifyDataGridPropertyChangeListeners(propertyName: 'Sorting');
   }
 
@@ -4307,8 +4303,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   }
 
   void _refreshGrouping(DataGridConfiguration dataGridConfiguration) {
-    dataGridConfiguration.group!.clearDisplayElements(dataGridConfiguration);
-    _updateDataSource();
+    _updateDataSource(true);
     notifyDataGridPropertyChangeListeners(_dataGridStateDetails!().source,
         propertyName: 'grouping');
   }
@@ -4907,8 +4902,8 @@ Future<void> handleRefresh(DataGridSource source) async {
 }
 
 /// Refreshes the current [DataGridSource].
-void updateDataSource(DataGridSource source) {
-  source._updateDataSource();
+void updateDataSource(DataGridSource source, [bool isClearGrouping = false]) {
+  source._updateDataSource(isClearGrouping);
 }
 
 /// Gets the `effectiveRows` from the [DataGridSource].

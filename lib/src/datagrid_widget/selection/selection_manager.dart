@@ -586,16 +586,23 @@ class RowSelectionManager extends SelectionManagerBase {
         ._handlePointerOperation(dataGridConfiguration, rowColumnIndex)) {
       return;
     }
-    if (!dataGridConfiguration.isShiftKeyPressed) {
+    final bool isShiftPressed = dataGridConfiguration.isShiftKeyPressed;
+    // Issue:
+    // Header checkbox selection causes shift selection to fail.
+    //
+    // Fix:
+    // After header checkbox selection, the pressed rowIndex is set to -1.
+    // To fix this, when performing shift or normal selection, if rowIndex is -1,
+    // set it to the currently tapped rowIndex.
+    if (_pressedRowIndex < 0 || !isShiftPressed) {
       _pressedRowIndex = recordIndex;
+    }
+
+    if (!isShiftPressed) {
       _shiftSelectedRows.clear();
       _processSelection(
           dataGridConfiguration, rowColumnIndex, previousRowColumnIndex);
-    }
-
-    if (dataGridConfiguration.isShiftKeyPressed &&
-        dataGridConfiguration.selectionMode == SelectionMode.multiple &&
-        _pressedRowIndex >= 0) {
+    } else if (dataGridConfiguration.selectionMode == SelectionMode.multiple) {
       _processShiftKeySelection(rowColumnIndex, recordIndex);
     }
   }
@@ -1550,16 +1557,21 @@ class CurrentCellManager {
       return;
     }
 
-    final DataRowBase? dataRowBase =
-        _getDataRow(dataGridConfiguration, rowIndex);
-    if (dataRowBase != null && needToUpdateColumn) {
-      final DataCellBase? dataCellBase = _getDataCell(dataRowBase, columnIndex);
-      if (dataCellBase != null) {
-        setCurrentCellDirty(dataRowBase, dataCellBase, false);
-        dataCellBase.updateColumn();
+    // Remove the current cell from rows where the `isCurrentRow` property is true.
+    if (needToUpdateColumn &&
+        dataGridConfiguration.rowGenerator.items.isNotEmpty) {
+      for (final DataRowBase dataRowBase
+          in dataGridConfiguration.rowGenerator.items) {
+        if (dataRowBase.isCurrentRow || dataRowBase.rowIndex == rowIndex) {
+          final DataCellBase? dataCellBase =
+              _getDataCell(dataRowBase, columnIndex);
+          if (dataCellBase != null) {
+            setCurrentCellDirty(dataRowBase, dataCellBase, false);
+            dataCellBase.updateColumn();
+          }
+        }
       }
     }
-
     _updateCurrentRowColumnIndex(-1, -1);
   }
 
@@ -2005,9 +2017,7 @@ class CurrentCellManager {
           notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
               rowColumnIndex: rowColumnIndex, propertyName: 'editing');
           if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-            dataGridConfiguration.group!
-                .clearDisplayElements(dataGridConfiguration);
-            updateDataSource(dataGridConfiguration.source);
+            updateDataSource(dataGridConfiguration.source, true);
             notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
                 propertyName: 'grouping');
           }
