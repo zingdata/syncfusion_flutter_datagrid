@@ -5393,7 +5393,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color? get filterPopupBorderColor => colorScheme.onSurface[31];
 
   /// Provides the background color.
-  Color? get filterPopupBackgroundColor => colorScheme.onSurface[0];
+  Color? get filterPopupBackgroundColor => colorScheme.surface;
 
   /// Provides the text color.
   Color? get filterPopupTextColor => colorScheme.onSurface[228];
