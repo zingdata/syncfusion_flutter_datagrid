@@ -16,6 +16,7 @@ import '../helper/datagrid_helper.dart' as grid_helper;
 import '../helper/datagrid_helper.dart';
 import '../helper/enums.dart';
 import '../helper/selection_helper.dart';
+import '../selection/selection_manager.dart' as selection_manager;
 import '../sfdatagrid.dart';
 import 'generator.dart';
 
@@ -2304,10 +2305,12 @@ class DataGridFilterHelper {
       if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
         updateDataSource(source, true);
       }
+      selection_manager.refreshSelectedRows(dataGridConfiguration);
       notifyDataGridPropertyChangeListeners(source, propertyName: 'Filtering');
       _invokeFilterChangedCallback(column, filterConditions);
     } else {
       updateDataSource(source, true);
+      selection_manager.refreshSelectedRows(dataGridConfiguration);
       notifyDataGridPropertyChangeListeners(source, propertyName: 'Filtering');
       _invokeFilterChangedCallback(column, <FilterCondition>[]);
     }
@@ -2474,7 +2477,11 @@ class DataGridFilterHelper {
     endEdit();
     setFilterFrom(column, FilteredFrom.none);
     removeFilterConditions(dataGridConfiguration.source, column.columnName);
-    updateDataSource(dataGridConfiguration.source, true);
+    if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
+      dataGridConfiguration.group!.clearDisplayElements(dataGridConfiguration);
+    }
+    updateDataSource(dataGridConfiguration.source);
+    selection_manager.refreshSelectedRows(dataGridConfiguration);
     notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
         propertyName: 'Filtering');
     _invokeFilterChangedCallback(column, <FilterCondition>[]);

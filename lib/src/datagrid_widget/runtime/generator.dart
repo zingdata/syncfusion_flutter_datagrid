@@ -742,6 +742,7 @@ class RowGenerator {
               dataGridConfiguration.rowsCacheExtent! > 0) {
             final int cacheLength =
                 visibleRows.length + dataGridConfiguration.rowsCacheExtent!;
+
             if (items.length <= cacheLength) {
               dr = _createDataRow(index, visibleColumns);
               dr.isEnsured = true;

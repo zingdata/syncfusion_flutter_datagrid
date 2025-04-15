@@ -605,7 +605,8 @@ class SfDataPagerState extends State<SfDataPager> {
         final int index = _resolveToItemIndex(widget.initialPageIndex);
         _handlePageItemTapped(index, _isInitialLoading);
         WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
-          final double distance = _getCumulativeSize(index);
+          final double distance = min(_getCumulativeSize(index),
+              _scrollController!.position.maxScrollExtent);
           _scrollTo(distance, canUpdate: true);
           _setCurrentPageIndex(index);
         });

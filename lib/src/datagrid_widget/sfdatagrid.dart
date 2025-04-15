@@ -29,6 +29,18 @@ typedef SelectionChangingCallback = bool Function(
 typedef SelectionChangedCallback = void Function(
     List<DataGridRow> addedRows, List<DataGridRow> removedRows);
 
+/// Signature for [SfDataGrid.onCheckboxValueChanged] callback.
+typedef DataGridCheckboxValueChangedCallback = void Function(
+    DataGridCheckboxValueChangedDetails details);
+
+/// Signature for [SfDataGrid.onColumnSortChanging] callback.
+typedef DataGridColumnSortChangingCallback = bool Function(
+    SortColumnDetails? newSortedColumn, SortColumnDetails? oldSortedColumn);
+
+/// Signature for [SfDataGrid.onColumnSortChanged] callback.
+typedef DataGridColumnSortChangedCallback = void Function(
+    SortColumnDetails? newSortedColumn, SortColumnDetails? oldSortedColumn);
+
 /// Signature for [SfDataGrid.onCurrentCellActivating] callback.
 typedef CurrentCellActivatingCallback = bool Function(
     RowColumnIndex newRowColumnIndex, RowColumnIndex oldRowColumnIndex);
@@ -435,6 +447,9 @@ class SfDataGrid extends StatefulWidget {
     this.onQueryRowHeight,
     this.onSelectionChanged,
     this.onSelectionChanging,
+    this.onCheckboxValueChanged,
+    this.onColumnSortChanging,
+    this.onColumnSortChanged,
     this.onCurrentCellActivating,
     this.onCurrentCellActivated,
     this.onCellTap,
@@ -465,6 +480,7 @@ class SfDataGrid extends StatefulWidget {
     this.onColumnResizeEnd,
     this.allowEditing = false,
     this.editingGestureType = EditingGestureType.doubleTap,
+    this.placeholder,
     this.footer,
     this.footerHeight = 49.0,
     this.showCheckboxColumn = false,
@@ -603,6 +619,24 @@ class SfDataGrid extends StatefulWidget {
   /// selection on a row based on the condition, return false.
   /// Otherwise, return true.
   final SelectionChangingCallback? onSelectionChanging;
+
+  /// Signature for a callback that is called when value of a checkbox in the checkbox column is changed.
+  final DataGridCheckboxValueChangedCallback? onCheckboxValueChanged;
+
+  /// Signature for a callback that is called after sorting has been completed.
+  ///
+  /// This callback is triggered after the [SfDataGrid] has performed the sort
+  /// operation.
+  final DataGridColumnSortChangedCallback? onColumnSortChanged;
+
+  /// Signature for a callback that is called when sorting is about to occur.
+  ///
+  /// This callback is triggered before the sort operation is performed on
+  /// the [SfDataGrid].
+  ///
+  /// If the callback returns `true`, the [SfDataGrid] will proceed with
+  /// sorting. Returning `false` will cancel the sort operation.
+  final DataGridColumnSortChangingCallback? onColumnSortChanging;
 
   /// The [SelectionManagerBase] used to control the selection operations
   /// in [SfDataGrid].
@@ -1412,6 +1446,28 @@ class SfDataGrid extends StatefulWidget {
   /// See also,
   /// * [allowEditing] – This will enable the editing option for cells.
   final EditingGestureType editingGestureType;
+
+  /// The widget to display when the data source of the [SfDataGrid] is empty.
+  ///
+  /// This widget is displayed only when the data source does not contain
+  /// any items. If this property is null, the [SfDataGrid] will remain
+  /// empty with no widget to indicate the absence of data.
+  ///
+  /// ```dart
+  /// SfDataGrid(
+  ///   source: dataSource,
+  ///   columns: columns,
+  ///   placeholder: Center(
+  ///     child: Text('No data available'),
+  ///   ),
+  /// )
+  /// ```
+  ///
+  /// In the example above, a [Center] widget with a [Text] message is
+  /// displayed when the data source is empty.
+  ///
+  /// Defaults to null.
+  final Widget? placeholder;
 
   /// The widget to show over the bottom of the [SfDataGrid].
   ///
@@ -2571,6 +2627,9 @@ class SfDataGridState extends State<SfDataGrid>
       ..selectionMode = widget.selectionMode
       ..onSelectionChanged = widget.onSelectionChanged
       ..onSelectionChanging = widget.onSelectionChanging
+      ..onCheckboxValueChanged = widget.onCheckboxValueChanged
+      ..onColumnSortChanging = widget.onColumnSortChanging
+      ..onColumnSortChanged = widget.onColumnSortChanged
       ..navigationMode = widget.navigationMode
       ..onCurrentCellActivated = widget.onCurrentCellActivated
       ..onCurrentCellActivating = widget.onCurrentCellActivating
@@ -2629,6 +2688,7 @@ class SfDataGridState extends State<SfDataGrid>
           : widget.defaultColumnWidth)
       ..footer = widget.footer
       ..footerHeight = widget.footerHeight
+      ..placeholder = widget.placeholder
       ..showCheckboxColumn = widget.showCheckboxColumn
       ..checkboxColumnSettings = widget.checkboxColumnSettings
       ..tableSummaryRows = widget.tableSummaryRows
@@ -4006,7 +4066,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     }
 
     _updateDataSource();
-
+    selection_manager.refreshSelectedRows(dataGridConfiguration);
     notifyDataGridPropertyChangeListeners(dataGridConfiguration.source,
         propertyName: 'Filtering');
   }
@@ -5393,7 +5453,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color? get filterPopupBorderColor => colorScheme.onSurface[31];
 
   /// Provides the background color.
-  Color? get filterPopupBackgroundColor => colorScheme.surface;
+  Color? get filterPopupBackgroundColor => colorScheme.onSurface[0];
 
   /// Provides the text color.
   Color? get filterPopupTextColor => colorScheme.onSurface[228];
@@ -5408,7 +5468,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color get tableSummaryRowColor => colorScheme.transparent;
 
   /// Provides the filter popup outer widgetcolor.
-  Color get filterPopupOuterColor => colorScheme.surface;
+  Color get filterPopupOuterColor => colorScheme.surface[251]!;
 
   /// Provides the feedBack widgetcolor.
   Color get feedBackWidgetColor => colorScheme.surface[250]!;
