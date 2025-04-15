@@ -5453,7 +5453,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color? get filterPopupBorderColor => colorScheme.onSurface[31];
 
   /// Provides the background color.
-  Color? get filterPopupBackgroundColor => colorScheme.onSurface[0];
+  Color? get filterPopupBackgroundColor => colorScheme.surface;
 
   /// Provides the text color.
   Color? get filterPopupTextColor => colorScheme.onSurface[228];
@@ -5468,7 +5468,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color get tableSummaryRowColor => colorScheme.transparent;
 
   /// Provides the filter popup outer widgetcolor.
-  Color get filterPopupOuterColor => colorScheme.surface[251]!;
+  Color get filterPopupOuterColor => colorScheme.surface;
 
   /// Provides the feedBack widgetcolor.
   Color get feedBackWidgetColor => colorScheme.surface[250]!;
