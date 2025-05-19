@@ -39,9 +39,9 @@
     },
     {
       "name": "syncfusion_flutter_core",
-      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-28.2.9",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-29.2.4",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "3.7"
     },
     {
       "name": "vector_math",
@@ -56,10 +56,10 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2025-03-07T12:37:37.940654Z",
+  "generated": "2025-05-19T06:04:30.491534Z",
   "generator": "pub",
-  "generatorVersion": "3.7.0",
+  "generatorVersion": "3.7.2",
   "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable",
-  "flutterVersion": "3.29.0",
+  "flutterVersion": "3.29.3",
   "pubCache": "file:///Users/razaabbas/.pub-cache"
 }
