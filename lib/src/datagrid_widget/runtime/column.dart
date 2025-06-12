@@ -2199,14 +2199,20 @@ class DataGridFilterHelper {
           .firstWhereOrNull((DataGridCell element) => element.columnName == column.columnName);
       if (cell != null) {
         if (cell.value != null) {
-        /// added by raza to make sure unique values are passed    
-          if (cell.value is Map &&
-              cellValues.firstWhereOrNull(
-                      (e) => e is Map && e['displayValue'] == cell.value['displayValue']) ==
-                  null) {
-            cellValues.add(cell.value);
+          /// added by raza to make sure unique values are passed    
+          if (cell.value is Map) {
+            // For Map values, check uniqueness based on displayValue
+            final bool alreadyExists = cellValues.any((existing) => 
+                existing is Map && 
+                existing['displayValue'] == cell.value!['displayValue']);
+            if (!alreadyExists) {
+              cellValues.add(cell.value!);
+            }
           } else {
-            cellValues.add(cell.value);
+            // For non-Map values, check if the value already exists
+            if (!cellValues.contains(cell.value)) {
+              cellValues.add(cell.value!);
+            }
           }
         } else if (!hasBlankValues) {
           hasBlankValues = true;
