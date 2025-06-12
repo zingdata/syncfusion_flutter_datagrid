@@ -2199,7 +2199,15 @@ class DataGridFilterHelper {
           .firstWhereOrNull((DataGridCell element) => element.columnName == column.columnName);
       if (cell != null) {
         if (cell.value != null) {
-          cellValues.add(cell.value);
+        /// added by raza to make sure unique values are passed    
+          if (cell.value is Map &&
+              cellValues.firstWhereOrNull(
+                      (e) => e is Map && e['displayValue'] == cell.value['displayValue']) ==
+                  null) {
+            cellValues.add(cell.value);
+          } else {
+            cellValues.add(cell.value);
+          }
         } else if (!hasBlankValues) {
           hasBlankValues = true;
         }
