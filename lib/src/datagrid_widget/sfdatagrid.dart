@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +164,7 @@ class DataGridRow {
 @optionalTypeArgs
 class DataGridCell<T> {
   /// Creates [DataGridCell] for the [SfDataGrid].
-  const DataGridCell({required this.columnName, required this.value});
+  const DataGridCell({required this.columnName, required this.value, this.metaData});
 
   /// The name of a column
   final String columnName;
@@ -172,6 +174,8 @@ class DataGridCell<T> {
   /// Provide value of a cell to perform the sorting for whole data available
   /// in datagrid.
   final T? value;
+
+  final Map<String, dynamic>? metaData;
 }
 
 /// Row configuration and widget of cell for a [SfDataGrid].
@@ -3665,15 +3669,25 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// Called when grouping is applied to the [SfDataGrid.groupedColumns].
   ///
   /// Overriding this method provides complete control over grouping. It is invoked when each row is being grouped based on a key. Custom grouping can be achieved by returning a key for the rows.
+  
+  // encoding the value to json string by raza
   @protected
   String performGrouping(String columnName, DataGridRow row) {
-    return row
-            .getCells()
-            .firstWhereOrNull(
-                (DataGridCell cell) => cell.columnName == columnName)
-            ?.value
-            ?.toString() ??
-        '';
+    final dynamic value = row
+        .getCells()
+        .firstWhereOrNull(
+            (DataGridCell cell) => cell.columnName == columnName)
+        ?.value;
+    
+    if (value == null) {
+      return '';
+    }
+    
+    if (value is Map) {
+      return jsonEncode(value);
+    }
+    
+    return value.toString();
   }
 
   /// To update the sorted or filtered collection in _paginatedRows, notifyListener should be
