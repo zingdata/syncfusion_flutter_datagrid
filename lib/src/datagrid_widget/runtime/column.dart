@@ -38,7 +38,8 @@ class GridColumn {
       this.allowEditing = true,
       this.allowFiltering = true,
       this.filterPopupMenuOptions,
-      this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0)}) {
+      this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
+      this.usePaginatedFiltering = false}) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
   }
@@ -141,7 +142,7 @@ class GridColumn {
   ///
   /// * [DataGridSource.onCellBeginEdit]- This will be triggered when a cell is
   /// moved to edit mode.
-  /// * [DataGridSource.onCellSubmit] – This will be triggered when the cell’s
+  /// * [DataGridSource.onCellSubmit] – This will be triggered when the cell's
   /// editing is completed.
   final bool allowEditing;
 
@@ -177,6 +178,19 @@ class GridColumn {
   /// The position of the filter icon in the column headers.
   /// Typically, filter icon is placed next to sort icon.
   final ColumnHeaderIconPosition filterIconPosition;
+
+  /// Determines whether to use paginated filtering for this column.
+  ///
+  /// When set to [true], the filter values will be fetched using pagination
+  /// instead of loading all values from the local data source.
+  /// This is useful for large datasets where loading all unique values
+  /// at once would be inefficient.
+  ///
+  /// Defaults to [false].
+  ///
+  /// Note: This feature requires implementing the appropriate callback
+  /// to handle paginated data fetching.
+  final bool usePaginatedFiltering;
 }
 
 /// A column which displays the checkbox column in its cells.
@@ -2256,6 +2270,13 @@ class DataGridFilterHelper {
 
   /// Sets all the cell values to the check box filter.
   void setDataGridSource(GridColumn column) {
+    // Check if the column uses paginated filtering
+    if (column.usePaginatedFiltering) {
+      _setupPaginatedFiltering(column);
+      return;
+    }
+
+    // Original logic for non-paginated filtering
     final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
     final List<FilterElement> distinctCollection = _getCellValues(column, items);
 
@@ -2281,6 +2302,67 @@ class DataGridFilterHelper {
     }
 
     checkboxFilterHelper.ensureSelectAllCheckboxState();
+  }
+
+  /// Sets up paginated filtering for a column.
+  void _setupPaginatedFiltering(GridColumn column) {
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
+    
+    // Get the paginated filter callback from the configuration
+    final PaginatedFilterCallback? callback = dataGridConfiguration.paginatedFilterCallback;
+    
+    if (callback == null) {
+      // Fallback to regular filtering if no callback is provided
+      print('Warning: usePaginatedFiltering is true but no callback provided. Falling back to regular filtering.');
+      _setupRegularFiltering(column);
+      return;
+    }
+
+    // Initialize paginated filtering
+    checkboxFilterHelper.initializePaginatedFiltering(column.columnName, callback);
+    
+    // Load initial data
+    _loadInitialPaginatedData(column);
+  }
+
+  /// Sets up regular filtering (fallback method).
+  void _setupRegularFiltering(GridColumn column) {
+    final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
+    final List<FilterElement> distinctCollection = _getCellValues(column, items);
+
+    checkboxFilterHelper._previousDataGridSource = <FilterElement>[];
+
+    if (distinctCollection.isNotEmpty) {
+      checkboxFilterHelper.filterCheckboxItems = distinctCollection;
+    }
+
+    if (filterFrom == FilteredFrom.checkboxFilter) {
+      _setPreviousDataGridSource();
+    }
+
+    checkboxFilterHelper.items = distinctCollection.toList();
+    advancedFilterHelper.items = distinctCollection.toList();
+
+    if (advancedFilterHelper.items.isNotEmpty) {
+      bool isNullOrEmpty(String value) => value == '(Blanks)' || value == '';
+      // Remove null and empty values from the items collection since it's not
+      // applicable for the AdvancedFilter.
+      advancedFilterHelper.items
+          .removeWhere((FilterElement element) => isNullOrEmpty(element.value.toString()));
+    }
+
+    checkboxFilterHelper.ensureSelectAllCheckboxState();
+  }
+
+  /// Loads initial paginated data for a column.
+  Future<void> _loadInitialPaginatedData(GridColumn column) async {
+    try {
+      await checkboxFilterHelper.loadInitialPaginatedData();
+    } catch (e) {
+      print('Error loading initial paginated data for column ${column.columnName}: $e');
+      // Fallback to regular filtering
+      _setupRegularFiltering(column);
+    }
   }
 
   List<DataGridRow> _getFilterRows(
@@ -2583,6 +2665,12 @@ class DataGridCheckboxFilterHelper {
   /// Checks whether the selectAll checkbox is in tri-state or not.
   late bool isSelectAllInTriState;
 
+  /// Helper for managing paginated filter data.
+  PaginatedFilterHelper? _paginatedFilterHelper;
+
+  /// Whether the column is using paginated filtering.
+  bool _usePaginatedFiltering = false;
+
   /// Ensures the `selectAll` checkbox state.
   void ensureSelectAllCheckboxState() {
     final List<FilterElement> unCheckedItems =
@@ -2598,8 +2686,15 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Handles the search box's text changed callback.
-  void onSearchTextFieldTextChanged(String searchText) {
+  void onSearchTextFieldTextChanged(String searchText, {VoidCallback? onCompleted}) {
+    if (_usePaginatedFiltering && _paginatedFilterHelper != null) {
+      // For paginated filtering, we need to handle search differently
+      _handlePaginatedSearch(searchText, onCompleted: onCompleted);
+      return;
+    }
+
     if (filterCheckboxItems.isEmpty) {
+      onCompleted?.call();
       return;
     }
 
@@ -2617,6 +2712,7 @@ class DataGridCheckboxFilterHelper {
       }
       items = filterCheckboxItems;
       ensureSelectAllCheckboxState();
+      onCompleted?.call();
       return;
     }
 
@@ -2631,6 +2727,83 @@ class DataGridCheckboxFilterHelper {
 
     items = _searchedItems;
     ensureSelectAllCheckboxState();
+    onCompleted?.call();
+  }
+
+  /// Initializes paginated filtering for a column.
+  void initializePaginatedFiltering(String columnName, PaginatedFilterCallback callback) {
+    _usePaginatedFiltering = true;
+    _paginatedFilterHelper = PaginatedFilterHelper(
+      columnName: columnName,
+      callback: callback,
+    );
+  }
+
+  /// Handles search text changes for paginated filtering.
+  Future<void> _handlePaginatedSearch(String searchText, {VoidCallback? onCompleted}) async {
+    if (_paginatedFilterHelper == null) return;
+
+    try {
+      await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
+      items = _paginatedFilterHelper!.items;
+      filterCheckboxItems = items;
+      ensureSelectAllCheckboxState();
+      onCompleted?.call();
+    } catch (e) {
+      // Handle error - could notify parent widget
+      print('Error loading paginated filter data: $e');
+      onCompleted?.call();
+    }
+  }
+
+  /// Loads initial paginated data.
+  Future<void> loadInitialPaginatedData() async {
+    if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
+      return;
+    }
+
+    try {
+      await _paginatedFilterHelper!.loadInitialData();
+      items = _paginatedFilterHelper!.items;
+      filterCheckboxItems = items;
+      ensureSelectAllCheckboxState();
+    } catch (e) {
+      // Handle error - could notify parent widget
+      print('Error loading initial paginated filter data: $e');
+    }
+  }
+
+  /// Loads next page of paginated data.
+  Future<void> loadNextPage() async {
+    if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
+      return;
+    }
+
+    try {
+      await _paginatedFilterHelper!.loadNextPage();
+      items = _paginatedFilterHelper!.items;
+      filterCheckboxItems = items;
+      ensureSelectAllCheckboxState();
+    } catch (e) {
+      // Handle error - could notify parent widget
+      print('Error loading next page of filter data: $e');
+    }
+  }
+
+  /// Gets whether there are more pages to load.
+  bool get hasMoreData => _paginatedFilterHelper?.hasMoreData ?? false;
+
+  /// Gets whether data is currently being loaded.
+  bool get isLoading => _paginatedFilterHelper?.isLoading ?? false;
+
+  /// Gets whether the column is using paginated filtering.
+  bool get usePaginatedFiltering => _usePaginatedFiltering;
+
+  /// Disposes paginated filtering resources.
+  void disposePaginatedFiltering() {
+    _usePaginatedFiltering = false;
+    _paginatedFilterHelper?.clear();
+    _paginatedFilterHelper = null;
   }
 }
 
@@ -3287,5 +3460,154 @@ class ColumnDragAndDropController {
     }
     return DataGridColumnDragDetails(
         from: dragColumnStartIndex!, to: to, offset: offset!, action: action);
+  }
+}
+
+/// Details about the paginated filter request.
+class PaginatedFilterRequest {
+  /// Creates the [PaginatedFilterRequest].
+  const PaginatedFilterRequest({
+    required this.columnName,
+    this.searchText = '',
+    this.pageSize = 100,
+    this.pageIndex = 0,
+  });
+
+  /// The name of the column for which filter values are requested.
+  final String columnName;
+
+  /// The search text to filter the values (if any).
+  final String searchText;
+
+  /// The number of items to fetch per page.
+  final int pageSize;
+
+  /// The current page index (0-based).
+  final int pageIndex;
+}
+
+/// Response containing paginated filter values.
+class PaginatedFilterResponse {
+  /// Creates the [PaginatedFilterResponse].
+  const PaginatedFilterResponse({
+    required this.values,
+    required this.hasMoreData,
+    this.totalCount = 0,
+  });
+
+  /// The list of filter values for the current page.
+  final List<Object?> values;
+
+  /// Whether there are more values available to load.
+  final bool hasMoreData;
+
+  /// The total count of available filter values (optional).
+  final int totalCount;
+}
+
+/// Callback signature for fetching paginated filter values.
+typedef PaginatedFilterCallback = Future<PaginatedFilterResponse> Function(
+    PaginatedFilterRequest request);
+
+/// Helper class to manage paginated filter data.
+class PaginatedFilterHelper {
+  /// Creates the [PaginatedFilterHelper].
+  PaginatedFilterHelper({
+    required this.columnName,
+    required this.callback,
+  });
+
+  /// The column name for which this helper manages data.
+  final String columnName;
+
+  /// The callback to fetch paginated data.
+  final PaginatedFilterCallback callback;
+
+  /// The current list of loaded filter elements.
+  final List<FilterElement> _items = <FilterElement>[];
+
+  /// The current search text.
+  String _currentSearchText = '';
+
+  /// The current page index.
+  int _currentPageIndex = 0;
+
+  /// Whether there are more pages to load.
+  bool _hasMoreData = true;
+
+  /// Whether data is currently being loaded.
+  bool _isLoading = false;
+
+  /// The page size for each request.
+  static const int _pageSize = 100;
+
+  /// Gets the current items.
+  List<FilterElement> get items => _items;
+
+  /// Gets whether there are more pages to load.
+  bool get hasMoreData => _hasMoreData;
+
+  /// Gets whether data is currently being loaded.
+  bool get isLoading => _isLoading;
+
+  /// Loads the first page of data or refreshes with new search text.
+  Future<void> loadInitialData({String searchText = ''}) async {
+    _currentSearchText = searchText;
+    _currentPageIndex = 0;
+    _hasMoreData = true;
+    _items.clear();
+    
+    await _loadPage();
+  }
+
+  /// Loads the next page of data.
+  Future<void> loadNextPage() async {
+    if (!_hasMoreData || _isLoading) {
+      return;
+    }
+    
+    _currentPageIndex++;
+    await _loadPage();
+  }
+
+  /// Internal method to load a page of data.
+  Future<void> _loadPage() async {
+    _isLoading = true;
+    
+    try {
+      final PaginatedFilterRequest request = PaginatedFilterRequest(
+        columnName: columnName,
+        searchText: _currentSearchText,
+        pageSize: _pageSize,
+        pageIndex: _currentPageIndex,
+      );
+      
+      final PaginatedFilterResponse response = await callback(request);
+      
+      // Convert response values to FilterElements
+      final List<FilterElement> newItems = response.values
+          .map((Object? value) => FilterElement(value: value ?? '(Blanks)', isSelected: true))
+          .toList();
+      
+      _items.addAll(newItems);
+      _hasMoreData = response.hasMoreData;
+    } catch (e) {
+      // Handle error by resetting to previous page
+      if (_currentPageIndex > 0) {
+        _currentPageIndex--;
+      }
+      rethrow;
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  /// Clears all loaded data.
+  void clear() {
+    _items.clear();
+    _currentPageIndex = 0;
+    _hasMoreData = true;
+    _isLoading = false;
+    _currentSearchText = '';
   }
 }

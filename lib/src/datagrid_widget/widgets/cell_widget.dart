@@ -1797,14 +1797,16 @@ class _CheckboxFilterMenu extends StatelessWidget {
             ),
             SizedBox(
               height: checkboxHeight,
-              child: ListView.builder(
-                  key: const ValueKey<String>(
-                      'datagrid_filtering_checkbox_listView'),
-                  prototypeItem: buildCheckboxTile(
-                      filterHelper.items.length - 1, helper.textStyle),
-                  itemCount: filterHelper.items.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                      buildCheckboxTile(index, helper.textStyle)),
+              child: filterHelper.usePaginatedFiltering
+                  ? _buildPaginatedListView(context, helper.textStyle)
+                  : ListView.builder(
+                      key: const ValueKey<String>(
+                          'datagrid_filtering_checkbox_listView'),
+                      prototypeItem: buildCheckboxTile(
+                          filterHelper.items.length - 1, helper.textStyle),
+                      itemCount: filterHelper.items.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          buildCheckboxTile(index, helper.textStyle)),
             ),
           ]),
         ),
@@ -1910,8 +1912,63 @@ class _CheckboxFilterMenu extends StatelessWidget {
   }
 
   void onHandleSearchTextFieldChanged(String value) {
-    filterHelper.onSearchTextFieldTextChanged(value);
-    setState(() {});
+    filterHelper.onSearchTextFieldTextChanged(value, onCompleted: () {
+      setState(() {});
+    });
+  }
+
+  /// Builds a paginated list view that supports loading more data.
+  Widget _buildPaginatedListView(BuildContext context, TextStyle textStyle) {
+    final ScrollController scrollController = ScrollController();
+    
+    // Add listener to load more data when scrolled to bottom
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >= 
+          scrollController.position.maxScrollExtent - 50) {
+        if (filterHelper.hasMoreData && !filterHelper.isLoading) {
+          _loadMoreData();
+        }
+      }
+    });
+
+    return ListView.builder(
+      key: const ValueKey<String>('datagrid_filtering_paginated_checkbox_listView'),
+      controller: scrollController,
+      prototypeItem: filterHelper.items.isNotEmpty 
+          ? buildCheckboxTile(0, textStyle)
+          : null,
+      itemCount: filterHelper.items.length + (filterHelper.hasMoreData ? 1 : 0),
+      itemBuilder: (BuildContext context, int index) {
+        if (index < filterHelper.items.length) {
+          return buildCheckboxTile(index, textStyle);
+        } else {
+          // Show loading indicator at the bottom
+          return _buildLoadingIndicator();
+        }
+      },
+    );
+  }
+
+  /// Builds a loading indicator widget.
+  Widget _buildLoadingIndicator() {
+    return Container(
+      height: 50,
+      alignment: Alignment.center,
+      child: filterHelper.isLoading 
+          ? const CircularProgressIndicator()
+          : const SizedBox.shrink(),
+    );
+  }
+
+  /// Loads more paginated data.
+  Future<void> _loadMoreData() async {
+    try {
+      await filterHelper.loadNextPage();
+      setState(() {});
+    } catch (e) {
+      // Handle error - could show a snackbar or other error indication
+      print('Error loading more filter data: $e');
+    }
   }
 }
 

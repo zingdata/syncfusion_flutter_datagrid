@@ -362,6 +362,14 @@ class DataGridConfiguration {
   /// Called when a column is resized successfully.
   ColumnResizeEndCallback? onColumnResizeEnd;
 
+  /// Called to fetch paginated filter values for columns that have
+  /// [GridColumn.usePaginatedFiltering] set to true.
+  ///
+  /// This callback is invoked when the filter popup is opened for such columns
+  /// to load filter values in a paginated manner instead of loading all values
+  /// at once from the local data source.
+  PaginatedFilterCallback? paginatedFilterCallback;
+
   /// The widget to show over the bottom of the [SfDataGrid].
   Widget? footer;
 
