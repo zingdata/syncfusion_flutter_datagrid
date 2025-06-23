@@ -292,3 +292,52 @@ The following screenshot illustrates the result of the above code sample.
 Founded in 2001 and headquartered in Research Triangle Park, N.C., Syncfusion<sup>&reg;</sup> has more than 20,000 customers and more than 1 million users, including large financial institutions, Fortune 500 companies, and global IT consultancies.
 
 Today we provide 1,600+ controls and frameworks for web ([ASP.NET Core](https://www.syncfusion.com/aspnet-core-ui-controls), [ASP.NET MVC](https://www.syncfusion.com/aspnet-mvc-ui-controls), [ASP.NET WebForms](https://www.syncfusion.com/jquery/aspnet-web-forms-ui-controls), [JavaScript](https://www.syncfusion.com/javascript-ui-controls), [Angular](https://www.syncfusion.com/angular-ui-components), [React](https://www.syncfusion.com/react-ui-components), [Vue](https://www.syncfusion.com/vue-ui-components), [Flutter](https://www.syncfusion.com/flutter-widgets), and [Blazor](https://www.syncfusion.com/blazor-components)), mobile ([.NET MAUI](https://www.syncfusion.com/maui-controls?utm_source=pubdev&utm_medium=listing&utm_campaign=flutter-charts-pubdev), [Xamarin](https://www.syncfusion.com/xamarin-ui-controls), [Flutter](https://www.syncfusion.com/flutter-widgets), [UWP](https://www.syncfusion.com/uwp-ui-controls), and [JavaScript](https://www.syncfusion.com/javascript-ui-controls)), and desktop development ([Flutter](https://www.syncfusion.com/flutter-widgets), [.NET MAUI](https://www.syncfusion.com/maui-controls?utm_source=pubdev&utm_medium=listing&utm_campaign=flutter-charts-pubdev), [WinForms](https://www.syncfusion.com/winforms-ui-controls), [WPF](https://www.syncfusion.com/wpf-ui-controls), [UWP](https://www.syncfusion.com/uwp-ui-controls), and [WinUI](https://www.syncfusion.com/winui-controls)). We provide ready-to- deploy enterprise software for dashboards, reports, data integration, and big data processing. Many customers have saved millions in licensing fees by deploying our software.  
+
+# Paginated Filtering Update
+
+The `PaginatedFilterRequest` now includes the column index along with the column name.
+
+## Updated Usage Example
+
+```dart
+// 1. Define your paginated filter callback - now includes columnIndex
+Future<PaginatedFilterResponse> handlePaginatedFilter(PaginatedFilterRequest request) async {
+  // Your API call or data fetching logic here
+  // You can now use both request.columnName and request.columnIndex
+  final response = await api.getFilterValues(
+    columnName: request.columnName,
+    columnIndex: request.columnIndex, // New parameter available
+    searchText: request.searchText,
+    page: request.pageIndex,
+    pageSize: request.pageSize,
+  );
+  
+  return PaginatedFilterResponse(
+    values: response.data,
+    hasMoreData: response.hasNext,
+    totalCount: response.total,
+  );
+}
+
+// 2. Configure your DataGrid (no changes needed here)
+SfDataGrid(
+  source: dataSource,
+  paginatedFilterCallback: handlePaginatedFilter,
+  columns: [
+    GridColumn(
+      columnName: 'productName',
+      label: Text('Product Name'),
+      usePaginatedFiltering: true,
+    ),
+    // ... other columns
+  ],
+)
+```
+
+## PaginatedFilterRequest Properties
+
+- `columnName` (String): The name of the column
+- `columnIndex` (int): The index of the column in the columns collection
+- `searchText` (String): The search text entered by the user
+- `pageSize` (int): Number of items to fetch per page
+- `pageIndex` (int): Current page index (0-based)  

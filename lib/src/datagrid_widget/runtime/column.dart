@@ -2318,8 +2318,11 @@ class DataGridFilterHelper {
       return;
     }
 
+    // Get the column index
+    final int columnIndex = dataGridConfiguration.columns.indexOf(column);
+
     // Initialize paginated filtering
-    checkboxFilterHelper.initializePaginatedFiltering(column.columnName, callback);
+    checkboxFilterHelper.initializePaginatedFiltering(column.columnName, columnIndex, callback);
     
     // Load initial data
     _loadInitialPaginatedData(column);
@@ -2731,10 +2734,11 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Initializes paginated filtering for a column.
-  void initializePaginatedFiltering(String columnName, PaginatedFilterCallback callback) {
+  void initializePaginatedFiltering(String columnName, int columnIndex, PaginatedFilterCallback callback) {
     _usePaginatedFiltering = true;
     _paginatedFilterHelper = PaginatedFilterHelper(
       columnName: columnName,
+      columnIndex: columnIndex,
       callback: callback,
     );
   }
@@ -3468,6 +3472,7 @@ class PaginatedFilterRequest {
   /// Creates the [PaginatedFilterRequest].
   const PaginatedFilterRequest({
     required this.columnName,
+    required this.columnIndex,
     this.searchText = '',
     this.pageSize = 100,
     this.pageIndex = 0,
@@ -3475,6 +3480,9 @@ class PaginatedFilterRequest {
 
   /// The name of the column for which filter values are requested.
   final String columnName;
+
+  /// The index of the column for which filter values are requested.
+  final int columnIndex;
 
   /// The search text to filter the values (if any).
   final String searchText;
@@ -3514,11 +3522,15 @@ class PaginatedFilterHelper {
   /// Creates the [PaginatedFilterHelper].
   PaginatedFilterHelper({
     required this.columnName,
+    required this.columnIndex,
     required this.callback,
   });
 
   /// The column name for which this helper manages data.
   final String columnName;
+
+  /// The column index for which this helper manages data.
+  final int columnIndex;
 
   /// The callback to fetch paginated data.
   final PaginatedFilterCallback callback;
@@ -3577,6 +3589,7 @@ class PaginatedFilterHelper {
     try {
       final PaginatedFilterRequest request = PaginatedFilterRequest(
         columnName: columnName,
+        columnIndex: columnIndex,
         searchText: _currentSearchText,
         pageSize: _pageSize,
         pageIndex: _currentPageIndex,
