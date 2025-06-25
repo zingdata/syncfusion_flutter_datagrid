@@ -1949,7 +1949,11 @@ class DataGridFilterHelper {
     if (source.filterConditions.isEmpty) {
       setFilterFrom(column, FilteredFrom.none);
     } else {
-      setFilterFrom(column, FilteredFrom.checkboxFilter);
+      // Only set to checkboxFilter if the current filterFrom is not advancedFilter
+      // This preserves the advanced filter state when conditions exist
+      if (filterFrom != FilteredFrom.advancedFilter) {
+        setFilterFrom(column, FilteredFrom.checkboxFilter);
+      }
     }
 
     if (checkboxFilterHelper._searchedItems.isNotEmpty) {

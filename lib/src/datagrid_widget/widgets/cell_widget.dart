@@ -1085,7 +1085,9 @@ class _FilterPopupState extends State<_FilterPopup> {
     final List<FilterCondition>? filterConditions =
         widget.dataGridConfiguration.source.filterConditions[widget.column.columnName];
 
-    if (filterConditions == null) {
+    // Only reset filterFrom to none if there are no filter conditions AND the current 
+    // filterFrom is not already correctly set. This prevents overriding valid advanced filter states.
+    if (filterConditions == null && filterHelper.filterFrom == FilteredFrom.none) {
       filterHelper.setFilterFrom(widget.column, FilteredFrom.none);
     }
 
