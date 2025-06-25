@@ -162,53 +162,47 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   Widget _buildListItem(FilterElement item, int index) {
     final displayText = widget.helper.getDisplayValue(item.value);
     
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        color: item.isSelected 
-            ? widget.helper.primaryColor.withOpacity(0.1) 
-            : Colors.transparent,
-        border: item.isSelected
-            ? Border.all(
-                color: widget.helper.primaryColor.withOpacity(0.3),
-                width: 1.0,
-              )
-            : null,
-      ),
-      child: ListTile(
-        dense: true,
-        minVerticalPadding: 0.0,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 0.0,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        leading: SizedBox(
-          width: 24.0,
-          height: 24.0,
-          child: Checkbox(
-            value: item.isSelected,
-            onChanged: (_) => widget.onItemTap(item),
-            activeColor: widget.helper.primaryColor,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return Column(
+      children: [
+        ListTile(
+          dense: true,
+          minVerticalPadding: 0.0,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12.0,
+            vertical: 0.0,
           ),
-        ),
-        title: Text(
-          displayText,
-          style: widget.helper.textStyle.copyWith(
-            color: item.isSelected 
-                ? widget.helper.primaryColor 
-                : widget.helper.textStyle.color,
-            fontWeight: item.isSelected ? FontWeight.w500 : FontWeight.normal,
-            fontSize: 14.0,
+          leading: SizedBox(
+            width: 24.0,
+            height: 24.0,
+            child: Checkbox(
+              value: item.isSelected,
+              onChanged: (_) => widget.onItemTap(item),
+              activeColor: widget.helper.primaryColor,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
-          overflow: TextOverflow.ellipsis,
+          title: Text(
+            displayText,
+            style: widget.helper.textStyle.copyWith(
+              color: item.isSelected 
+                  ? widget.helper.primaryColor 
+                  : widget.helper.textStyle.color,
+              fontWeight: item.isSelected ? FontWeight.w500 : FontWeight.normal,
+              fontSize: 14.0,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () => widget.onItemTap(item),
         ),
-        onTap: () => widget.onItemTap(item),
-      ),
+        if (index < widget.helper.checkboxFilterHelper.items.length - 1)
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: widget.dataGridThemeHelper.filterPopupBorderColor?.withOpacity(0.2),
+            indent: 16.0,
+            endIndent: 16.0,
+          ),
+      ],
     );
   }
 
@@ -406,58 +400,52 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     final displayText = widget.helper.getDisplayValue(item.value);
     final isSelected = widget.selectedValue == item.value;
     
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        color: isSelected 
-            ? widget.helper.primaryColor.withOpacity(0.1) 
-            : Colors.transparent,
-        border: isSelected
-            ? Border.all(
-                color: widget.helper.primaryColor.withOpacity(0.3),
-                width: 1.0,
-              )
-            : null,
-      ),
-      child: ListTile(
-        dense: true,
-        minVerticalPadding: 0.0,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12.0,
-          vertical: 0.0,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        title: Text(
-          displayText,
-          style: widget.helper.textStyle.copyWith(
-            color: isSelected 
-                ? widget.helper.primaryColor 
-                : widget.helper.textStyle.color,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            fontSize: 14.0,
+    return Column(
+      children: [
+        ListTile(
+          dense: true,
+          minVerticalPadding: 0.0,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 0.0,
           ),
-          overflow: TextOverflow.ellipsis,
+          title: Text(
+            displayText,
+            style: widget.helper.textStyle.copyWith(
+              color: isSelected 
+                  ? widget.helper.primaryColor 
+                  : widget.helper.textStyle.color,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              fontSize: 14.0,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: isSelected
+              ? Container(
+                  width: 20.0,
+                  height: 20.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.helper.primaryColor,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 14.0,
+                  ),
+                )
+              : null,
+          onTap: () => widget.onItemTap(item),
         ),
-        trailing: isSelected
-            ? Container(
-                width: 20.0,
-                height: 20.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.helper.primaryColor,
-                ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 14.0,
-                ),
-              )
-            : null,
-        onTap: () => widget.onItemTap(item),
-      ),
+        if (index < widget.helper.checkboxFilterHelper.items.length - 1)
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: widget.dataGridThemeHelper.filterPopupBorderColor?.withOpacity(0.2),
+            indent: 16.0,
+            endIndent: 16.0,
+          ),
+      ],
     );
   }
 
