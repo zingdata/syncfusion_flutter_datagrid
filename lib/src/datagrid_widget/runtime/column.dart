@@ -2274,7 +2274,6 @@ class DataGridFilterHelper {
     // Check if the column uses paginated filtering
     if (column.usePaginatedFiltering) {
       _setupPaginatedFiltering(column, onCompleted: onCompleted);
-      return;
     }
 
     // Original logic for non-paginated filtering
