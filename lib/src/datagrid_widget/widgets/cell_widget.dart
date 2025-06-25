@@ -1184,9 +1184,12 @@ class _FilterPopupState extends State<_FilterPopup> {
     }
 
     /// Initializes the data grid source for filtering.
+    print('Initializing data grid source for column: ${widget.column.columnName}');
     filterHelper.setDataGridSource(widget.column, onCompleted: () {
+      print('setDataGridSource onCompleted callback triggered');
       // Trigger UI rebuild when paginated data is loaded
       setState(() {});
+      print('setDataGridSource setState completed');
     });
 
     // Need to initialize the filter values before set the values.
@@ -1923,6 +1926,9 @@ class _CheckboxFilterMenu extends StatelessWidget {
 
   /// Builds a paginated list view that supports loading more data.
   Widget _buildPaginatedListView(BuildContext context, TextStyle textStyle) {
+    // Debug: Print current state
+    print('_buildPaginatedListView: items=${filterHelper.items.length}, isLoading=${filterHelper.isLoading}, hasMoreData=${filterHelper.hasMoreData}');
+    
     // Show initial loading indicator if no items are loaded yet and loading
     if (filterHelper.items.isEmpty && filterHelper.isLoading) {
       return Center(
@@ -1950,6 +1956,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
         if (scrollInfo is ScrollEndNotification &&
             scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
           if (filterHelper.hasMoreData && !filterHelper.isLoading) {
+            print('Triggering pagination load...');
             _loadMorePaginatedData();
           }
         }
@@ -1975,9 +1982,13 @@ class _CheckboxFilterMenu extends StatelessWidget {
 
   /// Loads more paginated data for checkbox filter.
   Future<void> _loadMorePaginatedData() async {
+    print('_loadMorePaginatedData: Starting load...');
     try {
       await filterHelper.loadNextPage();
+      print('_loadMorePaginatedData: Data loaded successfully, calling setState');
+      // Force UI update after data is loaded
       setState(() {});
+      print('_loadMorePaginatedData: setState completed');
     } catch (e) {
       // Handle error - could show a snackbar or other error indication
       print('Error loading more filter data: $e');
