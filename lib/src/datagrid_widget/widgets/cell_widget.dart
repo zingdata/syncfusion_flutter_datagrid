@@ -1919,8 +1919,11 @@ class _CheckboxFilterMenu extends StatelessWidget {
   }
 
   void onHandleSearchTextFieldChanged(String value) {
+    print('Search text changed: "$value"');
     filterHelper.onSearchTextFieldTextChanged(value, onCompleted: () {
+      print('Search onCompleted callback triggered');
       setState(() {});
+      print('Search setState completed');
     });
   }
 
@@ -1963,7 +1966,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
         return true;
       },
       child: ListView.builder(
-        key: const ValueKey<String>('datagrid_filtering_paginated_checkbox_listView'),
+        key: ValueKey<String>('datagrid_filtering_paginated_checkbox_listView_${filterHelper.items.length}'),
         prototypeItem: filterHelper.items.isNotEmpty 
             ? buildCheckboxTile(0, textStyle)
             : null,
@@ -1984,11 +1987,20 @@ class _CheckboxFilterMenu extends StatelessWidget {
   Future<void> _loadMorePaginatedData() async {
     print('_loadMorePaginatedData: Starting load...');
     try {
+      final int previousItemCount = filterHelper.items.length;
       await filterHelper.loadNextPage();
-      print('_loadMorePaginatedData: Data loaded successfully, calling setState');
+      final int newItemCount = filterHelper.items.length;
+      print('_loadMorePaginatedData: Data loaded successfully. Items: $previousItemCount -> $newItemCount');
+      
       // Force UI update after data is loaded
       setState(() {});
       print('_loadMorePaginatedData: setState completed');
+      
+      // Add a small delay to ensure the UI has updated, then trigger a rebuild
+      Future.delayed(const Duration(milliseconds: 50), () {
+        setState(() {});
+        print('_loadMorePaginatedData: Secondary setState completed');
+      });
     } catch (e) {
       // Handle error - could show a snackbar or other error indication
       print('Error loading more filter data: $e');
