@@ -2316,8 +2316,6 @@ class DataGridFilterHelper {
 
     if (callback == null) {
       // Fallback to regular filtering if no callback is provided
-      print(
-          'Warning: usePaginatedFiltering is true but no callback provided. Falling back to regular filtering.');
       _setupRegularFiltering(column);
       onCompleted?.call();
       return;
@@ -2327,7 +2325,8 @@ class DataGridFilterHelper {
     final int columnIndex = dataGridConfiguration.columns.indexOf(column);
 
     // Initialize paginated filtering
-    checkboxFilterHelper.initializePaginatedFiltering(column.columnName, columnIndex, callback, dataGridConfiguration.source);
+    checkboxFilterHelper.initializePaginatedFiltering(
+        column.columnName, columnIndex, callback, dataGridConfiguration.source);
 
     // Load initial data
     _loadInitialPaginatedData(column, onCompleted: onCompleted);
@@ -2367,7 +2366,7 @@ class DataGridFilterHelper {
     try {
       await checkboxFilterHelper.loadInitialPaginatedData(onCompleted: onCompleted);
     } catch (e) {
-      print('Error loading initial paginated data for column ${column.columnName}: $e');
+      debugPrint('Error loading initial paginated data for column ${column.columnName}: $e');
       // Fallback to regular filtering
       _setupRegularFiltering(column);
       onCompleted?.call();
@@ -2740,8 +2739,8 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Initializes paginated filtering for a column.
-  void initializePaginatedFiltering(
-      String columnName, int columnIndex, PaginatedFilterCallback callback, DataGridSource dataGridSource) {
+  void initializePaginatedFiltering(String columnName, int columnIndex,
+      PaginatedFilterCallback callback, DataGridSource dataGridSource) {
     _usePaginatedFiltering = true;
     _paginatedFilterHelper = PaginatedFilterHelper(
       columnName: columnName,
@@ -2755,9 +2754,14 @@ class DataGridCheckboxFilterHelper {
 
   /// Handles search text changes for paginated filtering.
   Future<void> _handlePaginatedSearch(String searchText, {VoidCallback? onCompleted}) async {
-    if (_paginatedFilterHelper == null) return;
+    if (_paginatedFilterHelper == null) {
+      return;
+    }
 
     try {
+      // Set loading state
+      _usePaginatedFiltering = true;
+      
       await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
@@ -2765,7 +2769,7 @@ class DataGridCheckboxFilterHelper {
       onCompleted?.call();
     } catch (e) {
       // Handle error - could notify parent widget
-      print('Error loading paginated filter data: $e');
+      debugPrint('Error loading paginated filter data: $e');
       onCompleted?.call();
     }
   }
@@ -2785,7 +2789,7 @@ class DataGridCheckboxFilterHelper {
       onCompleted?.call();
     } catch (e) {
       // Handle error - could notify parent widget
-      print('Error loading initial paginated filter data: $e');
+      debugPrint('Error loading initial paginated filter data: $e');
       onCompleted?.call();
     }
   }
@@ -2804,7 +2808,7 @@ class DataGridCheckboxFilterHelper {
       // The UI update is automatically triggered by the PaginatedFilterHelper callback
     } catch (e) {
       // Handle error - could notify parent widget
-      print('Error loading next page of filter data: $e');
+      debugPrint('Error loading next page of filter data: $e');
     }
   }
 
@@ -3531,7 +3535,7 @@ class PaginatedFilterResponse {
 typedef PaginatedFilterCallback = Future<PaginatedFilterResponse> Function(
     PaginatedFilterRequest request);
 
-  /// Helper class to manage paginated filter data.
+/// Helper class to manage paginated filter data.
 class PaginatedFilterHelper {
   /// Creates the [PaginatedFilterHelper].
   PaginatedFilterHelper({
@@ -3616,7 +3620,7 @@ class PaginatedFilterHelper {
         if (dataGridSource != null) {
           final List<FilterCondition> conditions =
               dataGridSource.filterConditions[columnName] ?? <FilterCondition>[];
-          
+
           if (conditions.isNotEmpty) {
             // Check if the value exists in current effective rows (means it's selected/applied)
             for (final DataGridRow row in dataGridSource.effectiveRows) {
