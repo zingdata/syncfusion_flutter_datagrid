@@ -2002,16 +2002,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
     }
   }
 
-  /// Builds a loading indicator widget.
-  Widget _buildLoadingIndicator() {
-    return Container(
-      height: 50,
-      alignment: Alignment.center,
-      child: filterHelper.isLoading 
-          ? const CircularProgressIndicator()
-          : const SizedBox.shrink(),
-    );
-  }
+
 
   /// Builds a pagination loading indicator widget.
   Widget _buildPaginationLoadingIndicator() {
@@ -3337,48 +3328,120 @@ class _PaginatedValuePickerDialogState extends State<_PaginatedValuePickerDialog
   }
 
   Widget _buildSearchBox() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 8.0),
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchChanged,
         style: widget.helper.textStyle,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: widget.dataGridThemeHelper.filterPopupOuterColor,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.dataGridThemeHelper.filterPopupBorderColor!),
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(
+              color: widget.dataGridThemeHelper.filterPopupBorderColor!.withOpacity(0.3),
+            ),
           ),
-          suffixIcon: _searchController.text.isEmpty
-              ? Icon(Icons.search, color: widget.dataGridThemeHelper.filterPopupIconColor)
-              : IconButton(
-                  icon: Icon(Icons.close, color: widget.dataGridThemeHelper.filterPopupIconColor),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(
+              color: widget.helper.primaryColor,
+              width: 2.0,
+            ),
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.6),
+            size: 20.0,
+          ),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.6),
+                    size: 20.0,
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     _onSearchChanged('');
                   },
-                ),
-          contentPadding: const EdgeInsets.all(16.0),
-          border: const OutlineInputBorder(),
+                  splashRadius: 16.0,
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
           hintText: 'Search values...',
-          hintStyle: widget.helper.textStyle,
+          hintStyle: widget.helper.textStyle.copyWith(
+            color: widget.helper.textStyle.color?.withOpacity(0.5),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildValuesList() {
-
     // Show initial loading indicator if no items are loaded yet and loading
     if (widget.helper.checkboxFilterHelper.items.isEmpty && 
         widget.helper.checkboxFilterHelper.isLoading) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
+      return Expanded(
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 12),
-              Text('Loading values...'),
+              SizedBox(
+                width: 32.0,
+                height: 32.0,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3.0,
+                  color: widget.helper.primaryColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Loading filter values...',
+                style: widget.helper.textStyle.copyWith(
+                  color: widget.helper.textStyle.color?.withOpacity(0.7),
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Show empty state if no items found
+    if (widget.helper.checkboxFilterHelper.items.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 48.0,
+                color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.4),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No values found',
+                style: widget.helper.textStyle.copyWith(
+                  color: widget.helper.textStyle.color?.withOpacity(0.7),
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Try adjusting your search terms',
+                style: widget.helper.textStyle.copyWith(
+                  color: widget.helper.textStyle.color?.withOpacity(0.5),
+                  fontSize: 14.0,
+                ),
+              ),
             ],
           ),
         ),
@@ -3389,79 +3452,178 @@ class _PaginatedValuePickerDialogState extends State<_PaginatedValuePickerDialog
         (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
     return Expanded(
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          if (index < widget.helper.checkboxFilterHelper.items.length) {
-            final item = widget.helper.checkboxFilterHelper.items[index];
-            final isSelected = _selectedValue == item.value;
-            
-            return ListTile(
-              title: Text(
-                widget.helper.getDisplayValue(item.value),
-                style: widget.helper.textStyle,
-              ),
-              trailing: isSelected ? Icon(
-                Icons.check,
-                color: widget.helper.primaryColor,
-              ) : null,
-              onTap: () {
-                setState(() {
-                  _selectedValue = item.value;
-                });
-              },
-            );
-          } else {
-            // Loading indicator for pagination
-            return Container(
-              height: 50,
-              alignment: Alignment.center,
-              child: widget.helper.checkboxFilterHelper.isLoading 
-                  ? const CircularProgressIndicator()
-                  : const SizedBox.shrink(),
-            );
-          }
-        },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: itemCount,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            if (index < widget.helper.checkboxFilterHelper.items.length) {
+              final item = widget.helper.checkboxFilterHelper.items[index];
+              final isSelected = _selectedValue == item.value;
+              
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: isSelected 
+                      ? widget.helper.primaryColor.withOpacity(0.1)
+                      : Colors.transparent,
+                  border: isSelected 
+                      ? Border.all(
+                          color: widget.helper.primaryColor.withOpacity(0.3),
+                        )
+                      : null,
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 4.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  title: Text(
+                    widget.helper.getDisplayValue(item.value),
+                    style: widget.helper.textStyle.copyWith(
+                      color: isSelected 
+                          ? widget.helper.primaryColor
+                          : widget.helper.textStyle.color,
+                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                    ),
+                  ),
+                  trailing: isSelected 
+                      ? Container(
+                          width: 24.0,
+                          height: 24.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: widget.helper.primaryColor,
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 16.0,
+                          ),
+                        )
+                      : null,
+                  onTap: () {
+                    setState(() {
+                      _selectedValue = item.value;
+                    });
+                  },
+                  hoverColor: widget.helper.primaryColor.withOpacity(0.05),
+                ),
+              );
+            } else {
+              // Loading indicator for pagination
+              return Container(
+                height: 60,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                child: widget.helper.checkboxFilterHelper.isLoading 
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 24.0,
+                            height: 24.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: widget.helper.primaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Loading more...',
+                            style: widget.helper.textStyle.copyWith(
+                              fontSize: 12.0,
+                              color: widget.helper.textStyle.color?.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              );
+            }
+          },
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final dialogWidth = (screenSize.width * 0.45).clamp(400.0, 600.0);
+    final dialogHeight = (screenSize.height * 0.7).clamp(500.0, 700.0);
+
     return Dialog(
-      backgroundColor: widget.dataGridThemeHelper.filterPopupBackgroundColor,
-      child: SizedBox(
-        width: 300,
-        height: 400,
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24.0),
+      child: Container(
+        width: dialogWidth,
+        height: dialogHeight,
+        decoration: BoxDecoration(
+          color: widget.dataGridThemeHelper.filterPopupBackgroundColor,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20.0,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 40.0,
+              offset: const Offset(0, 20),
+            ),
+          ],
+        ),
         child: Column(
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(24.0, 20.0, 16.0, 16.0),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: widget.dataGridThemeHelper.filterPopupBorderColor!,
+                    color: widget.dataGridThemeHelper.filterPopupBorderColor!.withOpacity(0.2),
                   ),
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
                 ),
               ),
               child: Row(
                 children: [
+                  Icon(
+                    Icons.filter_list,
+                    color: widget.helper.primaryColor,
+                    size: 24.0,
+                  ),
+                  const SizedBox(width: 12.0),
                   Expanded(
                     child: Text(
-                      'Select Value',
+                      'Select Filter Value',
                       style: widget.helper.textStyle.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18.0,
+                        color: widget.helper.textStyle.color,
                       ),
                     ),
                   ),
                   IconButton(
                     icon: Icon(
                       Icons.close,
-                      color: widget.dataGridThemeHelper.filterPopupIconColor,
+                      color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.7),
+                      size: 22.0,
                     ),
                     onPressed: () => Navigator.of(context).pop(),
+                    splashRadius: 20.0,
+                    tooltip: 'Close',
                   ),
                 ],
               ),
@@ -3475,34 +3637,72 @@ class _PaginatedValuePickerDialogState extends State<_PaginatedValuePickerDialog
             
             // Action buttons
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 20.0),
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: widget.dataGridThemeHelper.filterPopupBorderColor!,
+                    color: widget.dataGridThemeHelper.filterPopupBorderColor!.withOpacity(0.2),
                   ),
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16.0),
+                  bottomRight: Radius.circular(16.0),
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Show selected count if any value is selected
+                  if (_selectedValue != null)
+                    Expanded(
+                      child: Text(
+                        'Selected: ${widget.helper.getDisplayValue(_selectedValue)}',
+                        style: widget.helper.textStyle.copyWith(
+                          color: widget.helper.primaryColor,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  else
+                    const Spacer(),
+                  
+                  // Buttons
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
                     child: Text(
                       'Cancel',
-                      style: widget.helper.textStyle,
+                      style: widget.helper.textStyle.copyWith(
+                        color: widget.helper.textStyle.color?.withOpacity(0.7),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12.0),
                   ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(_selectedValue),
+                    onPressed: _selectedValue != null 
+                        ? () => Navigator.of(context).pop(_selectedValue)
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.helper.primaryColor,
+                      disabledBackgroundColor: widget.helper.primaryColor.withOpacity(0.3),
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      elevation: 0.0,
                     ),
                     child: Text(
-                      'OK',
+                      'Apply',
                       style: widget.helper.textStyle.copyWith(
                         color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
