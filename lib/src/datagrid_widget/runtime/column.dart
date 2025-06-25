@@ -2215,12 +2215,11 @@ class DataGridFilterHelper {
           .firstWhereOrNull((DataGridCell element) => element.columnName == column.columnName);
       if (cell != null) {
         if (cell.value != null) {
-          /// added by raza to make sure unique values are passed    
+          /// added by raza to make sure unique values are passed
           if (cell.value is Map) {
             // For Map values, check uniqueness based on displayValue
-            final bool alreadyExists = cellValues.any((existing) => 
-                existing is Map && 
-                existing['displayValue'] == cell.value!['displayValue']);
+            final bool alreadyExists = cellValues.any((existing) =>
+                existing is Map && existing['displayValue'] == cell.value!['displayValue']);
             if (!alreadyExists) {
               cellValues.add(cell.value!);
             }
@@ -2304,7 +2303,7 @@ class DataGridFilterHelper {
     }
 
     checkboxFilterHelper.ensureSelectAllCheckboxState();
-    
+
     // Call completion callback for non-paginated filtering (synchronous operation)
     onCompleted?.call();
   }
@@ -2312,13 +2311,14 @@ class DataGridFilterHelper {
   /// Sets up paginated filtering for a column.
   void _setupPaginatedFiltering(GridColumn column, {VoidCallback? onCompleted}) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
-    
+
     // Get the paginated filter callback from the configuration
     final PaginatedFilterCallback? callback = dataGridConfiguration.paginatedFilterCallback;
-    
+
     if (callback == null) {
       // Fallback to regular filtering if no callback is provided
-      print('Warning: usePaginatedFiltering is true but no callback provided. Falling back to regular filtering.');
+      print(
+          'Warning: usePaginatedFiltering is true but no callback provided. Falling back to regular filtering.');
       _setupRegularFiltering(column);
       onCompleted?.call();
       return;
@@ -2327,9 +2327,9 @@ class DataGridFilterHelper {
     // Get the column index
     final int columnIndex = dataGridConfiguration.columns.indexOf(column);
 
-    // Initialize paginated filtering 
+    // Initialize paginated filtering
     checkboxFilterHelper.initializePaginatedFiltering(column.columnName, columnIndex, callback);
-    
+
     // Load initial data
     _loadInitialPaginatedData(column, onCompleted: onCompleted);
   }
@@ -2741,7 +2741,8 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Initializes paginated filtering for a column.
-  void initializePaginatedFiltering(String columnName, int columnIndex, PaginatedFilterCallback callback) {
+  void initializePaginatedFiltering(
+      String columnName, int columnIndex, PaginatedFilterCallback callback) {
     _usePaginatedFiltering = true;
     _paginatedFilterHelper = PaginatedFilterHelper(
       columnName: columnName,
@@ -3563,7 +3564,6 @@ class PaginatedFilterHelper {
   /// Whether data is currently being loaded.
   bool _isLoading = false;
 
-
   /// Gets the current items.
   List<FilterElement> get items => _items;
 
@@ -3579,7 +3579,7 @@ class PaginatedFilterHelper {
     _currentPageIndex = 0;
     _hasMoreData = true;
     _items.clear();
-    
+
     await _loadPage();
   }
 
@@ -3588,7 +3588,7 @@ class PaginatedFilterHelper {
     if (!_hasMoreData || _isLoading) {
       return;
     }
-    
+
     _currentPageIndex++;
     await _loadPage();
   }
@@ -3596,7 +3596,7 @@ class PaginatedFilterHelper {
   /// Internal method to load a page of data.
   Future<void> _loadPage() async {
     _isLoading = true;
-    
+
     try {
       final PaginatedFilterRequest request = PaginatedFilterRequest(
         columnName: columnName,
@@ -3605,14 +3605,14 @@ class PaginatedFilterHelper {
         pageSize: 100, // Default page size
         pageIndex: _currentPageIndex,
       );
-      
+
       final PaginatedFilterResponse response = await callback(request);
-      
+
       // Convert response values to FilterElements
       final List<FilterElement> newItems = response.values
           .map((Object? value) => FilterElement(value: value ?? '(Blanks)', isSelected: true))
           .toList();
-      
+      _items.clear();
       _items.addAll(newItems);
       _hasMoreData = response.hasMoreData;
     } catch (e) {
