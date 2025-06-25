@@ -1115,6 +1115,7 @@ class _FilterPopupState extends State<_FilterPopup> {
   late DataGridFilterHelper filterHelper;
 
   late DataGridThemeHelper dataGridThemeHelper;
+  
   @override
   void initState() {
     super.initState();
@@ -1183,7 +1184,10 @@ class _FilterPopupState extends State<_FilterPopup> {
     }
 
     /// Initializes the data grid source for filtering.
-    filterHelper.setDataGridSource(widget.column);
+    filterHelper.setDataGridSource(widget.column, onCompleted: () {
+      // Trigger UI rebuild when paginated data is loaded
+      setState(() {});
+    });
 
     // Need to initialize the filter values before set the values.
     advancedFilterHelper
@@ -1919,34 +1923,65 @@ class _CheckboxFilterMenu extends StatelessWidget {
 
   /// Builds a paginated list view that supports loading more data.
   Widget _buildPaginatedListView(BuildContext context, TextStyle textStyle) {
-    final ScrollController scrollController = ScrollController();
-    
-    // Add listener to load more data when scrolled to bottom
-    scrollController.addListener(() {
-      if (scrollController.position.pixels >= 
-          scrollController.position.maxScrollExtent - 50) {
-        if (filterHelper.hasMoreData && !filterHelper.isLoading) {
-          _loadMoreData();
-        }
-      }
-    });
+    // Show initial loading indicator if no items are loaded yet and loading
+    if (filterHelper.items.isEmpty && filterHelper.isLoading) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 12),
+              Text(
+                'Loading filter values...',
+                style: textStyle.copyWith(
+                  color: textStyle.color?.withOpacity(0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
-    return ListView.builder(
-      key: const ValueKey<String>('datagrid_filtering_paginated_checkbox_listView'),
-      controller: scrollController,
-      prototypeItem: filterHelper.items.isNotEmpty 
-          ? buildCheckboxTile(0, textStyle)
-          : null,
-      itemCount: filterHelper.items.length + (filterHelper.hasMoreData ? 1 : 0),
-      itemBuilder: (BuildContext context, int index) {
-        if (index < filterHelper.items.length) {
-          return buildCheckboxTile(index, textStyle);
-        } else {
-          // Show loading indicator at the bottom
-          return _buildLoadingIndicator();
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo is ScrollEndNotification &&
+            scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+          if (filterHelper.hasMoreData && !filterHelper.isLoading) {
+            _loadMorePaginatedData();
+          }
         }
+        return true;
       },
+      child: ListView.builder(
+        key: const ValueKey<String>('datagrid_filtering_paginated_checkbox_listView'),
+        prototypeItem: filterHelper.items.isNotEmpty 
+            ? buildCheckboxTile(0, textStyle)
+            : null,
+        itemCount: filterHelper.items.length + (filterHelper.hasMoreData ? 1 : 0),
+        itemBuilder: (BuildContext context, int index) {
+          if (index < filterHelper.items.length) {
+            return buildCheckboxTile(index, textStyle);
+          } else {
+            // Show loading indicator at the bottom for pagination
+            return _buildLoadingIndicator();
+          }
+        },
+      ),
     );
+  }
+
+  /// Loads more paginated data for checkbox filter.
+  Future<void> _loadMorePaginatedData() async {
+    try {
+      await filterHelper.loadNextPage();
+      setState(() {});
+    } catch (e) {
+      // Handle error - could show a snackbar or other error indication
+      print('Error loading more filter data: $e');
+    }
   }
 
   /// Builds a loading indicator widget.
@@ -1960,16 +1995,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
     );
   }
 
-  /// Loads more paginated data.
-  Future<void> _loadMoreData() async {
-    try {
-      await filterHelper.loadNextPage();
-      setState(() {});
-    } catch (e) {
-      // Handle error - could show a snackbar or other error indication
-      print('Error loading more filter data: $e');
-    }
-  }
+
 }
 
 class _AdvancedFilterPopupMenu extends StatelessWidget {
@@ -2132,6 +2158,17 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     }
 
     Widget buildDropdownFormField() {
+      // Check if using paginated filtering - show custom dropdown
+      if (helper.checkboxFilterHelper.usePaginatedFiltering) {
+        return _buildPaginatedDropdownField(
+          isTopButton: isTopButton,
+          setValue: setValue,
+          helper: helper,
+          dataGridThemeHelper: dataGridThemeHelper,
+        );
+      }
+
+      // Original dropdown for non-paginated filtering
       return DropdownButtonHideUnderline(
         child: DropdownButtonFormField<Object>(
           dropdownColor: dataGridThemeHelper.filterPopupOuterColor,
@@ -2202,6 +2239,88 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     return canBuildTextField(isTopButton)
         ? buildTextField()
         : buildDropdownFormField();
+  }
+
+  /// Builds a paginated dropdown field that opens a modal with search and paginated list
+  Widget _buildPaginatedDropdownField({
+    required bool isTopButton,
+    required Function(Object?) setValue,
+    required DataGridFilterHelper helper,
+    required DataGridThemeHelper dataGridThemeHelper,
+  }) {
+    final Object? currentValue = isTopButton
+        ? filterHelper.filterValue1
+        : filterHelper.filterValue2;
+
+    return Builder(
+      builder: (BuildContext context) => GestureDetector(
+        onTap: enableDropdownButton(isTopButton) 
+            ? () => _showPaginatedValuePicker(
+                context: context,
+                isTopButton: isTopButton,
+                setValue: setValue,
+                helper: helper,
+                dataGridThemeHelper: dataGridThemeHelper,
+                currentValue: currentValue,
+              )
+            : null,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: dataGridThemeHelper.filterPopupBorderColor!),
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  currentValue != null 
+                      ? helper.getDisplayValue(currentValue)
+                      : 'Select value...',
+                  style: helper.textStyle.copyWith(
+                    color: currentValue != null 
+                        ? helper.textStyle.color 
+                        : helper.textStyle.color?.withOpacity(0.6),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: helper.textStyle.fontSize! + 8,
+                color: enableDropdownButton(isTopButton)
+                    ? dataGridThemeHelper.filterPopupIconColor
+                    : dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Shows a modal with search and paginated list for value selection
+  Future<void> _showPaginatedValuePicker({
+    required BuildContext context,
+    required bool isTopButton,
+    required Function(Object?) setValue,
+    required DataGridFilterHelper helper,
+    required DataGridThemeHelper dataGridThemeHelper,
+    required Object? currentValue,
+  }) async {
+    final Object? selectedValue = await showDialog<Object>(
+      context: context,
+      builder: (BuildContext context) => _PaginatedValuePickerDialog(
+        helper: helper,
+        dataGridThemeHelper: dataGridThemeHelper,
+        currentValue: currentValue,
+        dataGridConfiguration: dataGridConfiguration,
+      ),
+    );
+
+    if (selectedValue != null) {
+      setValue(selectedValue);
+    }
   }
 
   Widget _buildFilterTypeDropdown({required bool isFirstButton}) {
@@ -3104,5 +3223,249 @@ Future<void> _handleOnSecondaryTapUp(
         localPosition: tapUpDetails.localPosition,
         kind: kind);
     dataGridConfiguration.onCellSecondaryTap!(details);
+  }
+}
+
+/// Dialog for selecting values from a paginated list with search functionality
+class _PaginatedValuePickerDialog extends StatefulWidget {
+  const _PaginatedValuePickerDialog({
+    required this.helper,
+    required this.dataGridThemeHelper,
+    required this.currentValue,
+    required this.dataGridConfiguration,
+  });
+
+  final DataGridFilterHelper helper;
+  final DataGridThemeHelper dataGridThemeHelper;
+  final Object? currentValue;
+  final DataGridConfiguration dataGridConfiguration;
+
+  @override
+  _PaginatedValuePickerDialogState createState() => _PaginatedValuePickerDialogState();
+}
+
+class _PaginatedValuePickerDialogState extends State<_PaginatedValuePickerDialog> {
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  late Object? _selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.currentValue;
+    _initScrollListener();
+  }
+
+  void _initScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= 
+          _scrollController.position.maxScrollExtent - 50) {
+        if (widget.helper.checkboxFilterHelper.hasMoreData && 
+            !widget.helper.checkboxFilterHelper.isLoading) {
+          _loadMoreData();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    widget.helper.checkboxFilterHelper.onSearchTextFieldTextChanged(value, onCompleted: () {
+      setState(() {});
+    });
+  }
+
+  Future<void> _loadMoreData() async {
+    try {
+      await widget.helper.checkboxFilterHelper.loadNextPage();
+      setState(() {});
+    } catch (e) {
+      print('Error loading more filter data: $e');
+    }
+  }
+
+  Widget _buildSearchBox() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: _searchController,
+        onChanged: _onSearchChanged,
+        style: widget.helper.textStyle,
+        decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: widget.dataGridThemeHelper.filterPopupBorderColor!),
+          ),
+          suffixIcon: _searchController.text.isEmpty
+              ? Icon(Icons.search, color: widget.dataGridThemeHelper.filterPopupIconColor)
+              : IconButton(
+                  icon: Icon(Icons.close, color: widget.dataGridThemeHelper.filterPopupIconColor),
+                  onPressed: () {
+                    _searchController.clear();
+                    _onSearchChanged('');
+                  },
+                ),
+          contentPadding: const EdgeInsets.all(16.0),
+          border: const OutlineInputBorder(),
+          hintText: 'Search values...',
+          hintStyle: widget.helper.textStyle,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildValuesList() {
+
+    // Show initial loading indicator if no items are loaded yet and loading
+    if (widget.helper.checkboxFilterHelper.items.isEmpty && 
+        widget.helper.checkboxFilterHelper.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 12),
+              Text('Loading values...'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final itemCount = widget.helper.checkboxFilterHelper.items.length + 
+        (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
+
+    return Expanded(
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (index < widget.helper.checkboxFilterHelper.items.length) {
+            final item = widget.helper.checkboxFilterHelper.items[index];
+            final isSelected = _selectedValue == item.value;
+            
+            return ListTile(
+              title: Text(
+                widget.helper.getDisplayValue(item.value),
+                style: widget.helper.textStyle,
+              ),
+              trailing: isSelected ? Icon(
+                Icons.check,
+                color: widget.helper.primaryColor,
+              ) : null,
+              onTap: () {
+                setState(() {
+                  _selectedValue = item.value;
+                });
+              },
+            );
+          } else {
+            // Loading indicator for pagination
+            return Container(
+              height: 50,
+              alignment: Alignment.center,
+              child: widget.helper.checkboxFilterHelper.isLoading 
+                  ? const CircularProgressIndicator()
+                  : const SizedBox.shrink(),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: widget.dataGridThemeHelper.filterPopupBackgroundColor,
+      child: SizedBox(
+        width: 300,
+        height: 400,
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: widget.dataGridThemeHelper.filterPopupBorderColor!,
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Select Value',
+                      style: widget.helper.textStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: widget.dataGridThemeHelper.filterPopupIconColor,
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Search box
+            _buildSearchBox(),
+            
+            // Values list
+            _buildValuesList(),
+            
+            // Action buttons
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: widget.dataGridThemeHelper.filterPopupBorderColor!,
+                  ),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'Cancel',
+                      style: widget.helper.textStyle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(_selectedValue),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.helper.primaryColor,
+                    ),
+                    child: Text(
+                      'OK',
+                      style: widget.helper.textStyle.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

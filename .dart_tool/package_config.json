@@ -56,10 +56,9 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2025-05-19T06:04:30.491534Z",
   "generator": "pub",
-  "generatorVersion": "3.7.2",
+  "generatorVersion": "3.8.1",
   "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable",
-  "flutterVersion": "3.29.3",
+  "flutterVersion": "3.32.4",
   "pubCache": "file:///Users/razaabbas/.pub-cache"
 }

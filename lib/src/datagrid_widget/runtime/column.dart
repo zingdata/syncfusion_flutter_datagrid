@@ -1975,6 +1975,8 @@ class DataGridFilterHelper {
       column._filterFrom = FilteredFrom.none;
       column._actualWidth = double.nan;
     }
+    // Dispose paginated filtering resources to prevent memory leaks
+    checkboxFilterHelper.disposePaginatedFiltering();
   }
 
   /// Format the given cell value to the string data type to display.
@@ -2269,10 +2271,10 @@ class DataGridFilterHelper {
   }
 
   /// Sets all the cell values to the check box filter.
-  void setDataGridSource(GridColumn column) {
+  void setDataGridSource(GridColumn column, {VoidCallback? onCompleted}) {
     // Check if the column uses paginated filtering
     if (column.usePaginatedFiltering) {
-      _setupPaginatedFiltering(column);
+      _setupPaginatedFiltering(column, onCompleted: onCompleted);
       return;
     }
 
@@ -2302,10 +2304,13 @@ class DataGridFilterHelper {
     }
 
     checkboxFilterHelper.ensureSelectAllCheckboxState();
+    
+    // Call completion callback for non-paginated filtering (synchronous operation)
+    onCompleted?.call();
   }
 
   /// Sets up paginated filtering for a column.
-  void _setupPaginatedFiltering(GridColumn column) {
+  void _setupPaginatedFiltering(GridColumn column, {VoidCallback? onCompleted}) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
     
     // Get the paginated filter callback from the configuration
@@ -2315,17 +2320,18 @@ class DataGridFilterHelper {
       // Fallback to regular filtering if no callback is provided
       print('Warning: usePaginatedFiltering is true but no callback provided. Falling back to regular filtering.');
       _setupRegularFiltering(column);
+      onCompleted?.call();
       return;
     }
 
     // Get the column index
     final int columnIndex = dataGridConfiguration.columns.indexOf(column);
 
-    // Initialize paginated filtering
+    // Initialize paginated filtering 
     checkboxFilterHelper.initializePaginatedFiltering(column.columnName, columnIndex, callback);
     
     // Load initial data
-    _loadInitialPaginatedData(column);
+    _loadInitialPaginatedData(column, onCompleted: onCompleted);
   }
 
   /// Sets up regular filtering (fallback method).
@@ -2358,13 +2364,14 @@ class DataGridFilterHelper {
   }
 
   /// Loads initial paginated data for a column.
-  Future<void> _loadInitialPaginatedData(GridColumn column) async {
+  Future<void> _loadInitialPaginatedData(GridColumn column, {VoidCallback? onCompleted}) async {
     try {
-      await checkboxFilterHelper.loadInitialPaginatedData();
+      await checkboxFilterHelper.loadInitialPaginatedData(onCompleted: onCompleted);
     } catch (e) {
       print('Error loading initial paginated data for column ${column.columnName}: $e');
       // Fallback to regular filtering
       _setupRegularFiltering(column);
+      onCompleted?.call();
     }
   }
 
@@ -2663,10 +2670,10 @@ class DataGridCheckboxFilterHelper {
   final FocusNode searchboxFocusNode = FocusNode();
 
   /// Checks whether the selectAll checkbox is checked or not.
-  late bool? isSelectAllChecked;
+  bool? isSelectAllChecked = false;
 
   /// Checks whether the selectAll checkbox is in tri-state or not.
-  late bool isSelectAllInTriState;
+  bool isSelectAllInTriState = false;
 
   /// Helper for managing paginated filter data.
   PaginatedFilterHelper? _paginatedFilterHelper;
@@ -2741,6 +2748,8 @@ class DataGridCheckboxFilterHelper {
       columnIndex: columnIndex,
       callback: callback,
     );
+    // Initialize the select all checkbox state
+    ensureSelectAllCheckboxState();
   }
 
   /// Handles search text changes for paginated filtering.
@@ -2761,8 +2770,9 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Loads initial paginated data.
-  Future<void> loadInitialPaginatedData() async {
+  Future<void> loadInitialPaginatedData({VoidCallback? onCompleted}) async {
     if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
+      onCompleted?.call();
       return;
     }
 
@@ -2771,9 +2781,11 @@ class DataGridCheckboxFilterHelper {
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
       ensureSelectAllCheckboxState();
+      onCompleted?.call();
     } catch (e) {
       // Handle error - could notify parent widget
       print('Error loading initial paginated filter data: $e');
+      onCompleted?.call();
     }
   }
 
@@ -2788,6 +2800,7 @@ class DataGridCheckboxFilterHelper {
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
       ensureSelectAllCheckboxState();
+      // The UI update is automatically triggered by the PaginatedFilterHelper callback
     } catch (e) {
       // Handle error - could notify parent widget
       print('Error loading next page of filter data: $e');
@@ -3550,8 +3563,6 @@ class PaginatedFilterHelper {
   /// Whether data is currently being loaded.
   bool _isLoading = false;
 
-  /// The page size for each request.
-  static const int _pageSize = 100;
 
   /// Gets the current items.
   List<FilterElement> get items => _items;
@@ -3591,7 +3602,7 @@ class PaginatedFilterHelper {
         columnName: columnName,
         columnIndex: columnIndex,
         searchText: _currentSearchText,
-        pageSize: _pageSize,
+        pageSize: 100, // Default page size
         pageIndex: _currentPageIndex,
       );
       
