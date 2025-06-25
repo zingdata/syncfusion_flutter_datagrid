@@ -130,26 +130,26 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   Widget _buildPaginationLoadingIndicator() {
     return Container(
-      height: 60,
+      height: 50,
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: widget.helper.checkboxFilterHelper.isLoading
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  width: 24.0,
-                  height: 24.0,
+                  width: 20.0,
+                  height: 20.0,
                   child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
+                    strokeWidth: 2.0,
                     color: widget.helper.primaryColor,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   'Loading more...',
                   style: widget.helper.textStyle.copyWith(
-                    fontSize: 12.0,
+                    fontSize: 11.0,
                     color: widget.helper.textStyle.color?.withOpacity(0.6),
                   ),
                 ),
@@ -163,9 +163,9 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     final displayText = widget.helper.getDisplayValue(item.value);
     
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6.0),
+        borderRadius: BorderRadius.circular(4.0),
         color: item.isSelected 
             ? widget.helper.primaryColor.withOpacity(0.1) 
             : Colors.transparent,
@@ -177,17 +177,24 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             : null,
       ),
       child: ListTile(
+        dense: true,
+        minVerticalPadding: 0.0,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12.0,
-          vertical: 2.0,
+          horizontal: 8.0,
+          vertical: 0.0,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6.0),
+          borderRadius: BorderRadius.circular(4.0),
         ),
-        leading: Checkbox(
-          value: item.isSelected,
-          onChanged: (_) => widget.onItemTap(item),
-          activeColor: widget.helper.primaryColor,
+        leading: SizedBox(
+          width: 24.0,
+          height: 24.0,
+          child: Checkbox(
+            value: item.isSelected,
+            onChanged: (_) => widget.onItemTap(item),
+            activeColor: widget.helper.primaryColor,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
         title: Text(
           displayText,
@@ -196,9 +203,259 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
                 ? widget.helper.primaryColor 
                 : widget.helper.textStyle.color,
             fontWeight: item.isSelected ? FontWeight.w500 : FontWeight.normal,
+            fontSize: 14.0,
           ),
           overflow: TextOverflow.ellipsis,
         ),
+        onTap: () => widget.onItemTap(item),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Show initial loading indicator if no items are loaded yet and loading
+    if (widget.helper.checkboxFilterHelper.items.isEmpty && 
+        widget.helper.checkboxFilterHelper.isLoading) {
+      return _buildInitialLoadingIndicator();
+    }
+
+    // Show empty state if no items found
+    if (widget.helper.checkboxFilterHelper.items.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    final itemCount = widget.helper.checkboxFilterHelper.items.length +
+        (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
+
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: itemCount,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (context, index) {
+        if (index < widget.helper.checkboxFilterHelper.items.length) {
+          final item = widget.helper.checkboxFilterHelper.items[index];
+          return _buildListItem(item, index);
+        } else {
+          // Loading indicator for pagination
+          return _buildPaginationLoadingIndicator();
+        }
+      },
+    );
+  }
+}
+
+/// A specialized paginated list view for single selection in dialogs.
+class _PaginatedSingleSelectionListView extends StatefulWidget {
+  const _PaginatedSingleSelectionListView({
+    Key? key,
+    required this.helper,
+    required this.dataGridThemeHelper,
+    required this.onItemTap,
+    required this.selectedValue,
+    required this.onStateChanged,
+    this.searchText = '',
+  }) : super(key: key);
+
+  final DataGridFilterHelper helper;
+  final DataGridThemeHelper dataGridThemeHelper;
+  final Function(FilterElement) onItemTap;
+  final Object? selectedValue;
+  final VoidCallback onStateChanged;
+  final String searchText;
+
+  @override
+  State<_PaginatedSingleSelectionListView> createState() => _PaginatedSingleSelectionListViewState();
+}
+
+class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelectionListView> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _initScrollListener();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _initScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
+        if (widget.helper.checkboxFilterHelper.hasMoreData &&
+            !widget.helper.checkboxFilterHelper.isLoading) {
+          _loadMoreData();
+        }
+      }
+    });
+  }
+
+  Future<void> _loadMoreData() async {
+    try {
+      await widget.helper.checkboxFilterHelper.loadNextPage();
+      widget.onStateChanged();
+    } catch (e) {
+      debugPrint('Error loading more filter data: $e');
+    }
+  }
+
+  Widget _buildInitialLoadingIndicator() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 32.0,
+              height: 32.0,
+              child: CircularProgressIndicator(
+                strokeWidth: 3.0,
+                color: widget.helper.primaryColor,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.searchText.isEmpty 
+                  ? 'Loading filter values...'
+                  : 'Searching...',
+              style: widget.helper.textStyle.copyWith(
+                color: widget.helper.textStyle.color?.withOpacity(0.7),
+                fontSize: 14.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              widget.searchText.isEmpty ? Icons.inbox_outlined : Icons.search_off,
+              size: 48.0,
+              color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.4),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.searchText.isEmpty ? 'No values available' : 'No results found',
+              style: widget.helper.textStyle.copyWith(
+                color: widget.helper.textStyle.color?.withOpacity(0.7),
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (widget.searchText.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Try adjusting your search terms',
+                style: widget.helper.textStyle.copyWith(
+                  color: widget.helper.textStyle.color?.withOpacity(0.5),
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationLoadingIndicator() {
+    return Container(
+      height: 50,
+      alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      child: widget.helper.checkboxFilterHelper.isLoading
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 20.0,
+                  height: 20.0,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.0,
+                    color: widget.helper.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Loading more...',
+                  style: widget.helper.textStyle.copyWith(
+                    fontSize: 11.0,
+                    color: widget.helper.textStyle.color?.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            )
+          : const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildListItem(FilterElement item, int index) {
+    final displayText = widget.helper.getDisplayValue(item.value);
+    final isSelected = widget.selectedValue == item.value;
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 1.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: isSelected 
+            ? widget.helper.primaryColor.withOpacity(0.1) 
+            : Colors.transparent,
+        border: isSelected
+            ? Border.all(
+                color: widget.helper.primaryColor.withOpacity(0.3),
+                width: 1.0,
+              )
+            : null,
+      ),
+      child: ListTile(
+        dense: true,
+        minVerticalPadding: 0.0,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12.0,
+          vertical: 0.0,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+        title: Text(
+          displayText,
+          style: widget.helper.textStyle.copyWith(
+            color: isSelected 
+                ? widget.helper.primaryColor 
+                : widget.helper.textStyle.color,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 14.0,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: isSelected
+            ? Container(
+                width: 20.0,
+                height: 20.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.helper.primaryColor,
+                ),
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 14.0,
+                ),
+              )
+            : null,
         onTap: () => widget.onItemTap(item),
       ),
     );
@@ -244,10 +501,12 @@ class PaginatedValuePickerDialog extends StatefulWidget {
     Key? key,
     required this.helper,
     required this.dataGridThemeHelper,
+    this.currentValue,
   }) : super(key: key);
 
   final DataGridFilterHelper helper;
   final DataGridThemeHelper dataGridThemeHelper;
+  final Object? currentValue;
 
   @override
   State<PaginatedValuePickerDialog> createState() => _PaginatedValuePickerDialogState();
@@ -257,6 +516,12 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
   final TextEditingController _searchController = TextEditingController();
   Object? _selectedValue;
   String _currentSearchText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.currentValue;
+  }
 
   @override
   void dispose() {
@@ -344,10 +609,11 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: PaginatedFilterListView(
+        child: _PaginatedSingleSelectionListView(
           helper: widget.helper,
           dataGridThemeHelper: widget.dataGridThemeHelper,
           onItemTap: _onItemTap,
+          selectedValue: _selectedValue,
           onStateChanged: () {
             if (mounted) {
               setState(() {});

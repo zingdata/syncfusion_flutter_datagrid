@@ -2868,6 +2868,7 @@ class _PaginatedValuePickerDialog extends StatelessWidget {
     return PaginatedValuePickerDialog(
       helper: helper,
       dataGridThemeHelper: dataGridThemeHelper,
+      currentValue: currentValue,
     );
   }
 }
