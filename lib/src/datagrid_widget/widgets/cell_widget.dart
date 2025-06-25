@@ -1934,6 +1934,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
     
     // Show initial loading indicator if no items are loaded yet and loading
     if (filterHelper.items.isEmpty && filterHelper.isLoading) {
+      print('Showing initial loading indicator');
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -1966,7 +1967,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
         return true;
       },
       child: ListView.builder(
-        key: ValueKey<String>('datagrid_filtering_paginated_checkbox_listView_${filterHelper.items.length}'),
+        key: const ValueKey<String>('datagrid_filtering_paginated_checkbox_listView'),
         prototypeItem: filterHelper.items.isNotEmpty 
             ? buildCheckboxTile(0, textStyle)
             : null,
@@ -1976,7 +1977,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
             return buildCheckboxTile(index, textStyle);
           } else {
             // Show loading indicator at the bottom for pagination
-            return _buildLoadingIndicator();
+            return _buildPaginationLoadingIndicator();
           }
         },
       ),
@@ -1992,15 +1993,9 @@ class _CheckboxFilterMenu extends StatelessWidget {
       final int newItemCount = filterHelper.items.length;
       print('_loadMorePaginatedData: Data loaded successfully. Items: $previousItemCount -> $newItemCount');
       
-      // Force UI update after data is loaded
+      // Single setState to update UI after data is loaded
       setState(() {});
       print('_loadMorePaginatedData: setState completed');
-      
-      // Add a small delay to ensure the UI has updated, then trigger a rebuild
-      Future.delayed(const Duration(milliseconds: 50), () {
-        setState(() {});
-        print('_loadMorePaginatedData: Secondary setState completed');
-      });
     } catch (e) {
       // Handle error - could show a snackbar or other error indication
       print('Error loading more filter data: $e');
@@ -2014,6 +2009,34 @@ class _CheckboxFilterMenu extends StatelessWidget {
       alignment: Alignment.center,
       child: filterHelper.isLoading 
           ? const CircularProgressIndicator()
+          : const SizedBox.shrink(),
+    );
+  }
+
+  /// Builds a pagination loading indicator widget.
+  Widget _buildPaginationLoadingIndicator() {
+    return Container(
+      height: 50,
+      alignment: Alignment.center,
+      child: filterHelper.isLoading 
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Loading more...',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            )
           : const SizedBox.shrink(),
     );
   }
