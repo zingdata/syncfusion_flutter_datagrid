@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
 
-
-
 /// A filter popup menu tile widget identical to the one used in cell_widget.dart
 class _FilterPopupMenuTile extends StatelessWidget {
   const _FilterPopupMenuTile(
@@ -169,7 +167,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   Widget _buildPaginationLoadingIndicator() {
     return Container(
-      height: 50,
+      height: 40,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: widget.helper.checkboxFilterHelper.isLoading
@@ -229,7 +227,21 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     return Column(
       children: [
         // Show horizontal progress indicator when loading/searching
-        if (widget.helper.checkboxFilterHelper.isLoading)
+        if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+            widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore)
+          Container(
+            height: 4.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: CircularProgressIndicator(
+              color: widget.helper.primaryColor,
+              backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+              strokeWidth: 2.0,
+            ),
+          ),
+        if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
+            widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore)
           Container(
             height: 4.0,
             margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -238,11 +250,10 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
               backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
             ),
           ),
-
         // Show the list even when loading
         Expanded(
           child: widget.helper.checkboxFilterHelper.items.isEmpty
-              ? Container() // Empty container when no items yet
+              ? const SizedBox.shrink() // Empty container when no items yet
               : ListView.builder(
                   controller: _scrollController,
                   itemCount: itemCount,
@@ -301,9 +312,15 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     if (_isLoadingMore) {
       return; // Prevent multiple concurrent requests
     }
+    final lastPosition = _scrollController.position.pixels;
     setState(() {
       _isLoadingMore = true;
     });
+    _scrollController.animateTo(
+      lastPosition,
+      duration: const Duration(milliseconds: 50),
+      curve: Curves.easeInOut,
+    );
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
       if (mounted) {
@@ -315,11 +332,17 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
     } finally {
+      final lastPosition = _scrollController.position.pixels;
       if (mounted) {
         setState(() {
           _isLoadingMore = false;
         });
       }
+      _scrollController.animateTo(
+        lastPosition,
+        duration: const Duration(milliseconds: 50),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
