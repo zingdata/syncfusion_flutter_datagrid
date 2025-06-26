@@ -2754,7 +2754,9 @@ class DataGridCheckboxFilterHelper {
     } catch (e) {
       // Handle error - could notify parent widget
       debugPrint('Error loading paginated filter data: $e');
-      onCompleted?.call();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        onCompleted?.call();
+      });
     }
   }
 
