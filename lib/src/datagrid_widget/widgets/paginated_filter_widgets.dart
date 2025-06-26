@@ -325,6 +325,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
     } finally {
+        
       if (mounted) {
         setState(() {
           _isLoadingMore = false;
