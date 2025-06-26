@@ -312,7 +312,9 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       return; // Prevent multiple concurrent requests
     }
 
-    _isLoadingMore = true;
+    setState(() {
+      _isLoadingMore = true;
+    });
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
       if (mounted) {
@@ -324,7 +326,9 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
     } finally {
-      _isLoadingMore = false;
+      setState(() {
+        _isLoadingMore = false;
+      });
     }
   }
 
