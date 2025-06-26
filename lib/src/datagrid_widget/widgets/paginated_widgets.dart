@@ -167,7 +167,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   Widget _buildPaginationLoadingIndicator() {
     return Container(
-      height: 40,
+      height: 45,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: widget.helper.checkboxFilterHelper.isLoading
@@ -649,7 +649,8 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
       child: Column(
         children: [
           // Show horizontal progress indicator when loading/searching
-          if (widget.helper.checkboxFilterHelper.isLoading)
+          if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
+              widget.helper.checkboxFilterHelper.isLoading)
             Container(
               height: 4.0,
               margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
