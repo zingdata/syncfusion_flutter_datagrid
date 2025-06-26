@@ -475,7 +475,21 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     return Column(
       children: [
         // Show horizontal progress indicator when loading/searching
-        if (widget.helper.checkboxFilterHelper.isLoading)
+        if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+            widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore)
+          SizedBox(
+            height: 40,
+            width: 40,
+            child: CircularProgressIndicator(
+              color: widget.helper.primaryColor,
+              backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+              strokeWidth: 2.0,
+            ),
+          ),
+        if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
+            widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore)
           Container(
             height: 4.0,
             margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -484,6 +498,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
               backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
             ),
           ),
+        // Show the list even when loading
 
         // Show the list even when loading
         Expanded(
