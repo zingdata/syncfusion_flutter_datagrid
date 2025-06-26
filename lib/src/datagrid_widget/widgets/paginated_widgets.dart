@@ -231,7 +231,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             widget.helper.checkboxFilterHelper.isLoading &&
             !_isLoadingMore)
           Container(
-            height: 4.0,
+            height: 40,
+            width: 40,
             margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: CircularProgressIndicator(
               color: widget.helper.primaryColor,
