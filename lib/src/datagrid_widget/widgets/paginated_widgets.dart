@@ -231,14 +231,16 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             widget.helper.checkboxFilterHelper.isLoading &&
             !_isLoadingMore)
           Expanded(
-            child: Container(
-              height: 30,
-              width: 30,
-              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: CircularProgressIndicator(
-                color: widget.helper.primaryColor,
-                backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
-                strokeWidth: 2.0,
+            child: Center(
+              child: Container(
+                height: 30,
+                width: 30,
+                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: CircularProgressIndicator(
+                  color: widget.helper.primaryColor,
+                  backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+                  strokeWidth: 2.0,
+                ),
               ),
             ),
           ),
@@ -254,20 +256,23 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             ),
           ),
         // Show the list even when loading
-        if (widget.helper.checkboxFilterHelper.items.isEmpty) const SizedBox.shrink() else Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: itemCount,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (index < widget.helper.checkboxFilterHelper.items.length) {
-                      final item = widget.helper.checkboxFilterHelper.items[index];
-                      return _buildListItem(item, index);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
+        if (widget.helper.checkboxFilterHelper.items.isEmpty)
+          const SizedBox.shrink()
+        else
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: itemCount,
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                if (index < widget.helper.checkboxFilterHelper.items.length) {
+                  final item = widget.helper.checkboxFilterHelper.items[index];
+                  return _buildListItem(item, index);
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
         if (widget.helper.checkboxFilterHelper.hasMoreData && _isLoadingMore)
           _buildPaginationLoadingIndicator(),
       ],
@@ -480,12 +485,14 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
             widget.helper.checkboxFilterHelper.isLoading &&
             !_isLoadingMore)
           Expanded(
-            child: SizedBox(
-              height: 30,
-              width: 30,
-              child: CircularProgressIndicator(
-                color: widget.helper.primaryColor,
-                backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+            child: Center(
+              child: SizedBox(
+                height: 30,
+                width: 30,
+                child: CircularProgressIndicator(
+                  color: widget.helper.primaryColor,
+                  backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+                ),
               ),
             ),
           ),
