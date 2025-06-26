@@ -2351,7 +2351,9 @@ class DataGridFilterHelper {
       debugPrint('Error loading initial paginated data for column ${column.columnName}: $e');
       // Fallback to regular filtering
       _setupRegularFiltering(column);
-      onCompleted?.call();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        onCompleted?.call();
+      });
     }
   }
 

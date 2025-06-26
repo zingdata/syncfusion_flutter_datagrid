@@ -108,36 +108,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     }
   }
 
-  Widget _buildInitialLoadingIndicator() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 32.0,
-              height: 32.0,
-              child: CircularProgressIndicator(
-                strokeWidth: 3.0,
-                color: widget.helper.primaryColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.searchText.isEmpty 
-                  ? 'Loading filter values...'
-                  : 'Searching...',
-              style: widget.helper.textStyle.copyWith(
-                color: widget.helper.textStyle.color?.withOpacity(0.7),
-                fontSize: 14.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildEmptyState() {
     return Center(
@@ -226,33 +197,48 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   @override
   Widget build(BuildContext context) {
-    // Show initial loading indicator if no items are loaded yet and loading
+    // Show empty state if no items found and not loading
     if (widget.helper.checkboxFilterHelper.items.isEmpty && 
-        widget.helper.checkboxFilterHelper.isLoading) {
-      return _buildInitialLoadingIndicator();
-    }
-
-    // Show empty state if no items found
-    if (widget.helper.checkboxFilterHelper.items.isEmpty) {
+        !widget.helper.checkboxFilterHelper.isLoading) {
       return _buildEmptyState();
     }
 
     final itemCount = widget.helper.checkboxFilterHelper.items.length +
         (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: itemCount,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        if (index < widget.helper.checkboxFilterHelper.items.length) {
-          final item = widget.helper.checkboxFilterHelper.items[index];
-          return _buildListItem(item, index);
-        } else {
-          // Loading indicator for pagination
-          return _buildPaginationLoadingIndicator();
-        }
-      },
+    return Column(
+      children: [
+        // Show horizontal progress indicator when loading/searching
+        if (widget.helper.checkboxFilterHelper.isLoading)
+          Container(
+            height: 4.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: LinearProgressIndicator(
+              color: widget.helper.primaryColor,
+              backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+            ),
+          ),
+        
+        // Show the list even when loading
+        Expanded(
+          child: widget.helper.checkboxFilterHelper.items.isEmpty
+              ? Container() // Empty container when no items yet
+              : ListView.builder(
+                  controller: _scrollController,
+                  itemCount: itemCount,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    if (index < widget.helper.checkboxFilterHelper.items.length) {
+                      final item = widget.helper.checkboxFilterHelper.items[index];
+                      return _buildListItem(item, index);
+                    } else {
+                      // Loading indicator for pagination
+                      return _buildPaginationLoadingIndicator();
+                    }
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
@@ -445,33 +431,48 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
 
   @override
   Widget build(BuildContext context) {
-    // Show initial loading indicator if no items are loaded yet and loading
+    // Show empty state if no items found and not loading
     if (widget.helper.checkboxFilterHelper.items.isEmpty && 
-        widget.helper.checkboxFilterHelper.isLoading) {
-      return _buildInitialLoadingIndicator();
-    }
-
-    // Show empty state if no items found
-    if (widget.helper.checkboxFilterHelper.items.isEmpty) {
+        !widget.helper.checkboxFilterHelper.isLoading) {
       return _buildEmptyState();
     }
 
     final itemCount = widget.helper.checkboxFilterHelper.items.length +
         (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: itemCount,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        if (index < widget.helper.checkboxFilterHelper.items.length) {
-          final item = widget.helper.checkboxFilterHelper.items[index];
-          return _buildListItem(item, index);
-        } else {
-          // Loading indicator for pagination
-          return _buildPaginationLoadingIndicator();
-        }
-      },
+    return Column(
+      children: [
+        // Show horizontal progress indicator when loading/searching
+        if (widget.helper.checkboxFilterHelper.isLoading)
+          Container(
+            height: 4.0,
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: LinearProgressIndicator(
+              color: widget.helper.primaryColor,
+              backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+            ),
+          ),
+        
+        // Show the list even when loading
+        Expanded(
+          child: widget.helper.checkboxFilterHelper.items.isEmpty
+              ? Container() // Empty container when no items yet
+              : ListView.builder(
+                  controller: _scrollController,
+                  itemCount: itemCount,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    if (index < widget.helper.checkboxFilterHelper.items.length) {
+                      final item = widget.helper.checkboxFilterHelper.items[index];
+                      return _buildListItem(item, index);
+                    } else {
+                      // Loading indicator for pagination
+                      return _buildPaginationLoadingIndicator();
+                    }
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
@@ -589,20 +590,38 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
 
   Widget _buildValuesList() {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: _PaginatedSingleSelectionListView(
-          helper: widget.helper,
-          dataGridThemeHelper: widget.dataGridThemeHelper,
-          onItemTap: _onItemTap,
-          selectedValue: _selectedValue,
-          onStateChanged: () {
-            if (mounted) {
-              setState(() {});
-            }
-          },
-          searchText: _currentSearchText,
-        ),
+      child: Column(
+        children: [
+          // Show horizontal progress indicator when loading/searching
+          if (widget.helper.checkboxFilterHelper.isLoading)
+            Container(
+              height: 4.0,
+              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: LinearProgressIndicator(
+                color: widget.helper.primaryColor,
+                backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+              ),
+            ),
+          
+          // Values list
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _PaginatedSingleSelectionListView(
+                helper: widget.helper,
+                dataGridThemeHelper: widget.dataGridThemeHelper,
+                onItemTap: _onItemTap,
+                selectedValue: _selectedValue,
+                onStateChanged: () {
+                  if (mounted) {
+                    setState(() {});
+                  }
+                },
+                searchText: _currentSearchText,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
