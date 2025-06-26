@@ -2274,37 +2274,9 @@ class DataGridFilterHelper {
     // Check if the column uses paginated filtering
     if (column.usePaginatedFiltering) {
       _setupPaginatedFiltering(column, onCompleted: onCompleted);
+      return;
     }
-
-    // Original logic for non-paginated filtering
-    final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
-    final List<FilterElement> distinctCollection = _getCellValues(column, items);
-
-    checkboxFilterHelper._previousDataGridSource = <FilterElement>[];
-
-    if (distinctCollection.isNotEmpty) {
-      checkboxFilterHelper.filterCheckboxItems = distinctCollection;
-    }
-
-    if (filterFrom == FilteredFrom.checkboxFilter) {
-      _setPreviousDataGridSource();
-    }
-
-    checkboxFilterHelper.items = distinctCollection.toList();
-    advancedFilterHelper.items = distinctCollection.toList();
-
-    if (advancedFilterHelper.items.isNotEmpty) {
-      bool isNullOrEmpty(String value) => value == '(Blanks)' || value == '';
-      // Remove null and empty values from the items collection since it's not
-      // applicable for the AdvancedFilter.
-      advancedFilterHelper.items
-          .removeWhere((FilterElement element) => isNullOrEmpty(element.value.toString()));
-    }
-
-    checkboxFilterHelper.ensureSelectAllCheckboxState();
-
-    // Call completion callback for non-paginated filtering (synchronous operation)
-    onCompleted?.call();
+    _setupRegularFiltering(column, onCompleted: onCompleted);
   }
 
   /// Sets up paginated filtering for a column.
@@ -2326,14 +2298,18 @@ class DataGridFilterHelper {
 
     // Initialize paginated filtering
     checkboxFilterHelper.initializePaginatedFiltering(
-        column.columnName, columnIndex, callback, dataGridConfiguration.source);
+      column.columnName,
+      columnIndex,
+      callback,
+      dataGridConfiguration.source,
+    );
 
     // Load initial data
     _loadInitialPaginatedData(column, onCompleted: onCompleted);
   }
 
   /// Sets up regular filtering (fallback method).
-  void _setupRegularFiltering(GridColumn column) {
+  void _setupRegularFiltering(GridColumn column, {VoidCallback? onCompleted}) {
     final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
     final List<FilterElement> distinctCollection = _getCellValues(column, items);
 
@@ -2359,12 +2335,18 @@ class DataGridFilterHelper {
     }
 
     checkboxFilterHelper.ensureSelectAllCheckboxState();
+    onCompleted?.call();
   }
 
   /// Loads initial paginated data for a column.
   Future<void> _loadInitialPaginatedData(GridColumn column, {VoidCallback? onCompleted}) async {
     try {
-      await checkboxFilterHelper.loadInitialPaginatedData(onCompleted: onCompleted);
+      await checkboxFilterHelper.loadInitialPaginatedData(
+        onCompleted: onCompleted,
+        advancedFilterHelper: advancedFilterHelper,
+        filterFrom: filterFrom,
+        onSetPreviousDataGridSource: _setPreviousDataGridSource,
+      );
     } catch (e) {
       debugPrint('Error loading initial paginated data for column ${column.columnName}: $e');
       // Fallback to regular filtering
@@ -2761,7 +2743,7 @@ class DataGridCheckboxFilterHelper {
     try {
       // Set loading state
       _usePaginatedFiltering = true;
-      
+
       await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
@@ -2775,7 +2757,12 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Loads initial paginated data.
-  Future<void> loadInitialPaginatedData({VoidCallback? onCompleted}) async {
+  Future<void> loadInitialPaginatedData({
+    VoidCallback? onCompleted,
+    required DataGridAdvancedFilterHelper advancedFilterHelper,
+    required FilteredFrom filterFrom,
+    required VoidCallback onSetPreviousDataGridSource,
+  }) async {
     if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
       onCompleted?.call();
       return;
@@ -2785,6 +2772,19 @@ class DataGridCheckboxFilterHelper {
       await _paginatedFilterHelper!.loadInitialData();
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
+      _previousDataGridSource = <FilterElement>[];
+
+      if (filterFrom == FilteredFrom.checkboxFilter) {
+        onSetPreviousDataGridSource();
+      }
+
+      if (advancedFilterHelper.items.isNotEmpty) {
+        bool isNullOrEmpty(String value) => value == '(Blanks)' || value == '';
+        // Remove null and empty values from the items collection since it's not
+        // applicable for the AdvancedFilter.
+        advancedFilterHelper.items
+            .removeWhere((FilterElement element) => isNullOrEmpty(element.value.toString()));
+      }
       ensureSelectAllCheckboxState();
       onCompleted?.call();
     } catch (e) {
