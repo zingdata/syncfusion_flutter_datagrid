@@ -311,7 +311,6 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     if (_isLoadingMore) {
       return; // Prevent multiple concurrent requests
     }
-
     setState(() {
       _isLoadingMore = true;
     });
@@ -326,9 +325,11 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
     } finally {
-      setState(() {
-        _isLoadingMore = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 
