@@ -1103,7 +1103,11 @@ class _FilterPopupState extends State<_FilterPopup> {
     /// Initializes the advanced filter properties.
     if (filterConditions != null && isAdvancedFilter) {
       advancedFilterHelper.setAdvancedFilterValues(
-          widget.dataGridConfiguration, filterConditions, filterHelper);
+        widget.dataGridConfiguration,
+        filterConditions,
+        filterHelper,
+        usePaginatedFiltering: widget.column.usePaginatedFiltering,
+      );
     } else {
       advancedFilterHelper.resetAdvancedFilterValues(widget.dataGridConfiguration);
     }
@@ -1765,8 +1769,6 @@ class _CheckboxFilterMenu extends StatelessWidget {
       searchText: filterHelper.textController.text,
     );
   }
-
-
 }
 
 class _AdvancedFilterPopupMenu extends StatelessWidget {

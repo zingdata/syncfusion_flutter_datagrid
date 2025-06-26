@@ -2981,9 +2981,16 @@ class DataGridAdvancedFilterHelper {
   }
 
   /// Sets the advanced filter values.
-  void setAdvancedFilterValues(DataGridConfiguration dataGridConfiguration,
-      List<FilterCondition> filterConditions, DataGridFilterHelper helper) {
+  void setAdvancedFilterValues(
+    DataGridConfiguration dataGridConfiguration,
+    List<FilterCondition> filterConditions,
+    DataGridFilterHelper helper, {
+    bool usePaginatedFiltering = false,
+  }) {
     Object? getValue(Object? value, String? filterType) {
+      if (usePaginatedFiltering) {
+        return value;
+      }
       if (items.any((FilterElement element) => element.value == value) ||
           (filterType != null && textFieldFilterTypes.contains(filterType))) {
         return value;
