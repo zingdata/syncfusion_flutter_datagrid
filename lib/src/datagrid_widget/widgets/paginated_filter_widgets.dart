@@ -289,24 +289,6 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     _initScrollListener();
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _initScrollListener() {
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
-        if (widget.helper.checkboxFilterHelper.hasMoreData &&
-            !widget.helper.checkboxFilterHelper.isLoading &&
-            !_isLoadingMore) {
-          _loadMoreData();
-        }
-      }
-    });
-  }
-
   Future<void> _loadMoreData() async {
     if (_isLoadingMore) {
       return; // Prevent multiple concurrent requests
@@ -331,6 +313,24 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _initScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
+        if (widget.helper.checkboxFilterHelper.hasMoreData &&
+            !widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore) {
+          _loadMoreData();
+        }
+      }
+    });
   }
 
   Widget _buildEmptyState() {
