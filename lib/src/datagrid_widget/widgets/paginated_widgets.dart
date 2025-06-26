@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
 
+
+
 /// A filter popup menu tile widget identical to the one used in cell_widget.dart
 class _FilterPopupMenuTile extends StatelessWidget {
   const _FilterPopupMenuTile(
@@ -106,7 +108,9 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       return; // Prevent multiple concurrent requests
     }
 
-    _isLoadingMore = true;
+    setState(() {
+      _isLoadingMore = true;
+    });
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
       if (mounted) {
@@ -118,7 +122,11 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
     } finally {
-      _isLoadingMore = false;
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 

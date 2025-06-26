@@ -19,7 +19,7 @@ import '../helper/selection_helper.dart' as selection_helper;
 import '../runtime/column.dart';
 import '../runtime/generator.dart';
 import '../sfdatagrid.dart';
-import 'paginated_filter_widget.dart';
+import 'paginated_widgets.dart';
 import 'rendering_widget.dart';
 
 /// A widget which displays in the cells.
