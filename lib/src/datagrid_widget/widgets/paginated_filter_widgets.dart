@@ -105,7 +105,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     if (_isLoadingMore) {
       return; // Prevent multiple concurrent requests
     }
-    
+
     _isLoadingMore = true;
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
@@ -121,8 +121,6 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       _isLoadingMore = false;
     }
   }
-
-
 
   Widget _buildEmptyState() {
     return Center(
@@ -195,7 +193,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   Widget _buildListItem(FilterElement item, int index) {
     final displayText = widget.helper.getDisplayValue(item.value);
     final TextStyle style = widget.helper.textStyle;
-    
+
     return _FilterPopupMenuTile(
       style: style,
       height: widget.helper.tileHeight,
@@ -212,7 +210,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   @override
   Widget build(BuildContext context) {
     // Show empty state if no items found and not loading
-    if (widget.helper.checkboxFilterHelper.items.isEmpty && 
+    if (widget.helper.checkboxFilterHelper.items.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading) {
       return _buildEmptyState();
     }
@@ -232,7 +230,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
               backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
             ),
           ),
-        
+
         // Show the list even when loading
         Expanded(
           child: widget.helper.checkboxFilterHelper.items.isEmpty
@@ -245,13 +243,13 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
                     if (index < widget.helper.checkboxFilterHelper.items.length) {
                       final item = widget.helper.checkboxFilterHelper.items[index];
                       return _buildListItem(item, index);
-                    } else {
-                      // Loading indicator for pagination
-                      return _buildPaginationLoadingIndicator();
                     }
+                    return const SizedBox.shrink();
                   },
                 ),
         ),
+        if (widget.helper.checkboxFilterHelper.hasMoreData && _isLoadingMore)
+          _buildPaginationLoadingIndicator(),
       ],
     );
   }
@@ -277,7 +275,8 @@ class _PaginatedSingleSelectionListView extends StatefulWidget {
   final String searchText;
 
   @override
-  State<_PaginatedSingleSelectionListView> createState() => _PaginatedSingleSelectionListViewState();
+  State<_PaginatedSingleSelectionListView> createState() =>
+      _PaginatedSingleSelectionListViewState();
 }
 
 class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelectionListView> {
@@ -312,7 +311,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     if (_isLoadingMore) {
       return; // Prevent multiple concurrent requests
     }
-    
+
     _isLoadingMore = true;
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
@@ -328,7 +327,6 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       _isLoadingMore = false;
     }
   }
-
 
   Widget _buildEmptyState() {
     return Center(
@@ -402,7 +400,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     final displayText = widget.helper.getDisplayValue(item.value);
     final isSelected = widget.selectedValue == item.value;
     final TextStyle style = widget.helper.textStyle;
-    
+
     return _FilterPopupMenuTile(
       style: style,
       height: widget.helper.tileHeight,
@@ -430,7 +428,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   @override
   Widget build(BuildContext context) {
     // Show empty state if no items found and not loading
-    if (widget.helper.checkboxFilterHelper.items.isEmpty && 
+    if (widget.helper.checkboxFilterHelper.items.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading) {
       return _buildEmptyState();
     }
@@ -450,7 +448,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
               backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
             ),
           ),
-        
+
         // Show the list even when loading
         Expanded(
           child: widget.helper.checkboxFilterHelper.items.isEmpty
@@ -514,13 +512,13 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
     if (_currentSearchText == value) {
       return;
     }
-    
+
     setState(() {
       _currentSearchText = value;
     });
 
     widget.helper.checkboxFilterHelper.onSearchTextFieldTextChanged(
-      value, 
+      value,
       onCompleted: () {
         if (mounted) {
           setState(() {});
@@ -600,7 +598,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
                 backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
               ),
             ),
-          
+
           // Values list
           Expanded(
             child: Container(
