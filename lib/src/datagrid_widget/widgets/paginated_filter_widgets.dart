@@ -75,6 +75,7 @@ class PaginatedFilterListView extends StatefulWidget {
 
 class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -92,7 +93,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
         if (widget.helper.checkboxFilterHelper.hasMoreData &&
-            !widget.helper.checkboxFilterHelper.isLoading) {
+            !widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore) {
           _loadMoreData();
         }
       }
@@ -100,11 +102,23 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   }
 
   Future<void> _loadMoreData() async {
+    if (_isLoadingMore) {
+      return; // Prevent multiple concurrent requests
+    }
+    
+    _isLoadingMore = true;
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
+      if (mounted) {
+        setState(() {
+          // Update local state to refresh the ListView with new data
+        });
+      }
       widget.onStateChanged();
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
+    } finally {
+      _isLoadingMore = false;
     }
   }
 
@@ -268,6 +282,7 @@ class _PaginatedSingleSelectionListView extends StatefulWidget {
 
 class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelectionListView> {
   final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -285,7 +300,8 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
         if (widget.helper.checkboxFilterHelper.hasMoreData &&
-            !widget.helper.checkboxFilterHelper.isLoading) {
+            !widget.helper.checkboxFilterHelper.isLoading &&
+            !_isLoadingMore) {
           _loadMoreData();
         }
       }
@@ -293,44 +309,26 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   }
 
   Future<void> _loadMoreData() async {
+    if (_isLoadingMore) {
+      return; // Prevent multiple concurrent requests
+    }
+    
+    _isLoadingMore = true;
     try {
       await widget.helper.checkboxFilterHelper.loadNextPage();
+      if (mounted) {
+        setState(() {
+          // Update local state to refresh the ListView with new data
+        });
+      }
       widget.onStateChanged();
     } catch (e) {
       debugPrint('Error loading more filter data: $e');
+    } finally {
+      _isLoadingMore = false;
     }
   }
 
-  Widget _buildInitialLoadingIndicator() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 32.0,
-              height: 32.0,
-              child: CircularProgressIndicator(
-                strokeWidth: 3.0,
-                color: widget.helper.primaryColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.searchText.isEmpty 
-                  ? 'Loading filter values...'
-                  : 'Searching...',
-              style: widget.helper.textStyle.copyWith(
-                color: widget.helper.textStyle.color?.withOpacity(0.7),
-                fontSize: 14.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildEmptyState() {
     return Center(
