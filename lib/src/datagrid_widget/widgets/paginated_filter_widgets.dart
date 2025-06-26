@@ -3,6 +3,54 @@ import 'package:flutter/material.dart';
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
 
+/// A filter popup menu tile widget identical to the one used in cell_widget.dart
+class _FilterPopupMenuTile extends StatelessWidget {
+  const _FilterPopupMenuTile(
+      {Key? key,
+      required this.child,
+      this.onTap,
+      this.prefix,
+      this.suffix,
+      this.height,
+      required this.style,
+      this.prefixPadding = EdgeInsets.zero})
+      : super(key: key);
+
+  final Widget child;
+  final Widget? prefix;
+  final Widget? suffix;
+  final double? height;
+  final TextStyle style;
+  final VoidCallback? onTap;
+  final EdgeInsets prefixPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: MaterialButton(
+        onPressed: onTap,
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: prefixPadding,
+              child: SizedBox(
+                width: 24.0,
+                height: 24.0,
+                child: prefix,
+              ),
+            ),
+            Expanded(
+              child: DefaultTextStyle(style: style, child: child),
+            ),
+            if (suffix != null) SizedBox(width: 40.0, child: suffix)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// A paginated list view widget specifically designed for checkbox filter values.
 /// This widget handles loading states, pagination, and search functionality.
 class PaginatedFilterListView extends StatefulWidget {
@@ -161,48 +209,18 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   Widget _buildListItem(FilterElement item, int index) {
     final displayText = widget.helper.getDisplayValue(item.value);
+    final TextStyle style = widget.helper.textStyle;
     
-    return Column(
-      children: [
-        ListTile(
-          dense: true,
-          minVerticalPadding: 0.0,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12.0,
-            vertical: 0.0,
-          ),
-          leading: SizedBox(
-            width: 24.0,
-            height: 24.0,
-            child: Checkbox(
-              value: item.isSelected,
-              onChanged: (_) => widget.onItemTap(item),
-              activeColor: widget.helper.primaryColor,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
-          title: Text(
-            displayText,
-            style: widget.helper.textStyle.copyWith(
-              color: item.isSelected 
-                  ? widget.helper.primaryColor 
-                  : widget.helper.textStyle.color,
-              fontWeight: item.isSelected ? FontWeight.w500 : FontWeight.normal,
-              fontSize: 14.0,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: () => widget.onItemTap(item),
-        ),
-        if (index < widget.helper.checkboxFilterHelper.items.length - 1)
-          Divider(
-            height: 1.0,
-            thickness: 0.5,
-            color: widget.dataGridThemeHelper.filterPopupBorderColor?.withOpacity(0.2),
-            indent: 16.0,
-            endIndent: 16.0,
-          ),
-      ],
+    return _FilterPopupMenuTile(
+      style: style,
+      height: widget.helper.tileHeight,
+      prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
+      prefix: Checkbox(
+        value: item.isSelected,
+        onChanged: (_) => widget.onItemTap(item),
+      ),
+      onTap: () => widget.onItemTap(item),
+      child: Text(displayText, overflow: TextOverflow.ellipsis),
     );
   }
 
@@ -399,53 +417,29 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   Widget _buildListItem(FilterElement item, int index) {
     final displayText = widget.helper.getDisplayValue(item.value);
     final isSelected = widget.selectedValue == item.value;
+    final TextStyle style = widget.helper.textStyle;
     
-    return Column(
-      children: [
-        ListTile(
-          dense: true,
-          minVerticalPadding: 0.0,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: 0.0,
-          ),
-          title: Text(
-            displayText,
-            style: widget.helper.textStyle.copyWith(
-              color: isSelected 
-                  ? widget.helper.primaryColor 
-                  : widget.helper.textStyle.color,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              fontSize: 14.0,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: isSelected
-              ? Container(
-                  width: 20.0,
-                  height: 20.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: widget.helper.primaryColor,
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 14.0,
-                  ),
-                )
-              : null,
-          onTap: () => widget.onItemTap(item),
-        ),
-        if (index < widget.helper.checkboxFilterHelper.items.length - 1)
-          Divider(
-            height: 1.0,
-            thickness: 0.5,
-            color: widget.dataGridThemeHelper.filterPopupBorderColor?.withOpacity(0.2),
-            indent: 16.0,
-            endIndent: 16.0,
-          ),
-      ],
+    return _FilterPopupMenuTile(
+      style: style,
+      height: widget.helper.tileHeight,
+      prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
+      prefix: isSelected
+          ? Container(
+              width: 20.0,
+              height: 20.0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.helper.primaryColor,
+              ),
+              child: const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 14.0,
+              ),
+            )
+          : const SizedBox(width: 20.0, height: 20.0),
+      onTap: () => widget.onItemTap(item),
+      child: Text(displayText, overflow: TextOverflow.ellipsis),
     );
   }
 
