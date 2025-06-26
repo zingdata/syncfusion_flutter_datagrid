@@ -290,6 +290,7 @@ class _PaginatedSingleSelectionListView extends StatefulWidget {
     required this.selectedValue,
     required this.onStateChanged,
     this.searchText = '',
+    this.isAdvancedFilter = false,
   }) : super(key: key);
 
   final DataGridFilterHelper helper;
@@ -298,6 +299,7 @@ class _PaginatedSingleSelectionListView extends StatefulWidget {
   final Object? selectedValue;
   final VoidCallback onStateChanged;
   final String searchText;
+  final bool isAdvancedFilter;
 
   @override
   State<_PaginatedSingleSelectionListView> createState() =>
@@ -483,7 +485,8 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
         // Show horizontal progress indicator when loading/searching
         if (widget.helper.checkboxFilterHelper.items.isEmpty &&
             widget.helper.checkboxFilterHelper.isLoading &&
-            !_isLoadingMore)
+            !_isLoadingMore &&
+            !widget.isAdvancedFilter)
           Expanded(
             child: Center(
               child: SizedBox(
@@ -496,7 +499,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
               ),
             ),
           ),
-        if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
+        if ((widget.helper.checkboxFilterHelper.items.isNotEmpty || widget.isAdvancedFilter) &&
             widget.helper.checkboxFilterHelper.isLoading &&
             !_isLoadingMore)
           Container(
@@ -648,18 +651,6 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
     return Expanded(
       child: Column(
         children: [
-          // Show horizontal progress indicator when loading/searching
-          if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
-              widget.helper.checkboxFilterHelper.isLoading)
-            Container(
-              height: 4.0,
-              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: LinearProgressIndicator(
-                color: widget.helper.primaryColor,
-                backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
-              ),
-            ),
-
           // Values list
           Expanded(
             child: Container(
@@ -669,6 +660,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
                 dataGridThemeHelper: widget.dataGridThemeHelper,
                 onItemTap: _onItemTap,
                 selectedValue: _selectedValue,
+                isAdvancedFilter: true,
                 onStateChanged: () {
                   if (mounted) {
                     setState(() {});
