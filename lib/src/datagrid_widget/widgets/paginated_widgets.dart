@@ -198,7 +198,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   }
 
   Widget _buildListItem(FilterElement item, int index) {
-    final displayText = widget.helper.getDisplayValue(_convertValueToAppropriateType(item.value));
+    final displayText = widget.helper.getDisplayValue(item.value);
     final TextStyle style = widget.helper.textStyle;
 
     return _FilterPopupMenuTile(
@@ -443,7 +443,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   }
 
   Widget _buildListItem(FilterElement item, int index) {
-    final displayText = widget.helper.getDisplayValue(_convertValueToAppropriateType(item.value));
+    final displayText = widget.helper.getDisplayValue(item.value);
     final isSelected = widget.selectedValue == item.value;
     final TextStyle style = widget.helper.textStyle;
 
