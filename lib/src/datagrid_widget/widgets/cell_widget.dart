@@ -1160,6 +1160,7 @@ class _FilterPopupState extends State<_FilterPopup> {
     bool canShowClearFilterOption = filterPopupMenuOptions.canShowClearFilterOption;
     bool showColumnName = filterPopupMenuOptions.showColumnName;
     double advanceFilterTopPadding = 12;
+    bool usePaginatedFiltering = widget.column.usePaginatedFiltering;
 
     if (widget.column.filterPopupMenuOptions != null) {
       isCheckboxFilterEnabled =
@@ -1260,6 +1261,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                   setState: setState,
                   dataGridConfiguration: widget.dataGridConfiguration,
                   advanceFilterTopPadding: advanceFilterTopPadding,
+                  usePaginatedFiltering: usePaginatedFiltering,
                 ),
               if (isBothFilterEnabled)
                 _FilterPopupMenuTile(
@@ -1776,18 +1778,21 @@ class _CheckboxFilterMenu extends StatelessWidget {
 }
 
 class _AdvancedFilterPopupMenu extends StatelessWidget {
-  const _AdvancedFilterPopupMenu(
-      {Key? key,
-      required this.setState,
-      required this.dataGridConfiguration,
-      required this.advanceFilterTopPadding})
-      : super(key: key);
+  const _AdvancedFilterPopupMenu({
+    Key? key,
+    required this.setState,
+    required this.dataGridConfiguration,
+    required this.advanceFilterTopPadding,
+    this.usePaginatedFiltering = false,
+  }) : super(key: key);
 
   final StateSetter setState;
 
   final DataGridConfiguration dataGridConfiguration;
 
   final double advanceFilterTopPadding;
+
+  final bool usePaginatedFiltering;
 
   bool get isMobile {
     return !dataGridConfiguration.isDesktop;
@@ -1826,7 +1831,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
           _FilterMenuDropdown(
             height: isMobile ? helper.tileHeight + 4 : helper.tileHeight - 4,
             padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-            suffix: _getTrailingWidget(context, true),
+            suffix: _getTrailingWidget(context, true, usePaginatedFiltering),
             child: _buildFilterValueDropdown(isTopButton: true),
           ),
           _buildRadioButtons(),
@@ -1838,7 +1843,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
           _FilterMenuDropdown(
             height: isMobile ? helper.tileHeight + 4 : helper.tileHeight - 4,
             padding: const EdgeInsets.only(bottom: 8.0),
-            suffix: _getTrailingWidget(context, false),
+            suffix: _getTrailingWidget(context, false, usePaginatedFiltering),
             child: _buildFilterValueDropdown(isTopButton: false),
           ),
         ],
@@ -1931,14 +1936,14 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
     Widget buildDropdownFormField() {
       // Check if using paginated filtering - show custom dropdown
-    //   if (helper.checkboxFilterHelper.usePaginatedFiltering) {
-    //     return _buildPaginatedDropdownField(
-    //       isTopButton: isTopButton,
-    //       setValue: setValue,
-    //       helper: helper,
-    //       dataGridThemeHelper: dataGridThemeHelper,
-    //     );
-    //   }
+      if (helper.checkboxFilterHelper.usePaginatedFiltering) {
+        return _buildPaginatedDropdownField(
+          isTopButton: isTopButton,
+          setValue: setValue,
+          helper: helper,
+          dataGridThemeHelper: dataGridThemeHelper,
+        );
+      }
 
       // Original dropdown for non-paginated filtering
       return DropdownButtonHideUnderline(
@@ -2152,7 +2157,11 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     );
   }
 
-  Widget? _getTrailingWidget(BuildContext context, bool isFirstButton) {
+  Widget? _getTrailingWidget(
+    BuildContext context,
+    bool isFirstButton,
+    bool usePaginatedFiltering,
+  ) {
     final DataGridFilterHelper helper = dataGridConfiguration.dataGridFilterHelper!;
     final DataGridThemeHelper dataGridThemeHelper = dataGridConfiguration.dataGridThemeHelper!;
 
@@ -2185,7 +2194,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         return;
       }
 
-      final bool isVaildDate =
+      final bool isVaildDate = usePaginatedFiltering ||
           filterHelper.items.any((FilterElement element) => element.value == selectedDate);
       final String? filterType =
           isFirstButton ? filterHelper.filterType1 : filterHelper.filterType2;
