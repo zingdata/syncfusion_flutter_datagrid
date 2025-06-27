@@ -23,23 +23,25 @@ import 'generator.dart';
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
   /// Creates the [GridColumn] for [SfDataGrid] widget.
-  GridColumn(
-      {required this.columnName,
-      required this.label,
-      this.columnWidthMode = ColumnWidthMode.none,
-      this.visible = true,
-      this.allowSorting = true,
-      this.sortIconPosition = ColumnHeaderIconPosition.end,
-      this.filterIconPosition = ColumnHeaderIconPosition.end,
-      this.autoFitPadding = const EdgeInsets.all(16.0),
-      this.minimumWidth = double.nan,
-      this.maximumWidth = double.nan,
-      this.width = double.nan,
-      this.allowEditing = true,
-      this.allowFiltering = true,
-      this.filterPopupMenuOptions,
-      this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
-      this.usePaginatedFiltering = false}) {
+  GridColumn({
+    required this.columnName,
+    required this.label,
+    this.columnWidthMode = ColumnWidthMode.none,
+    this.visible = true,
+    this.allowSorting = true,
+    this.sortIconPosition = ColumnHeaderIconPosition.end,
+    this.filterIconPosition = ColumnHeaderIconPosition.end,
+    this.autoFitPadding = const EdgeInsets.all(16.0),
+    this.minimumWidth = double.nan,
+    this.maximumWidth = double.nan,
+    this.width = double.nan,
+    this.allowEditing = true,
+    this.allowFiltering = true,
+    this.filterPopupMenuOptions,
+    this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
+    this.usePaginatedFiltering = false,
+    this.columnIndex = -1,
+  }) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
   }
@@ -191,6 +193,9 @@ class GridColumn {
   /// Note: This feature requires implementing the appropriate callback
   /// to handle paginated data fetching.
   final bool usePaginatedFiltering;
+
+  /// The index of the column in the [SfDataGrid.columns] collection.
+  final int columnIndex;
 }
 
 /// A column which displays the checkbox column in its cells.
@@ -2291,13 +2296,10 @@ class DataGridFilterHelper {
       return;
     }
 
-    // Get the column index
-    final int columnIndex = dataGridConfiguration.columns.indexOf(column);
-
     // Initialize paginated filtering
     checkboxFilterHelper.initializePaginatedFiltering(
       column.columnName,
-      columnIndex,
+      column.columnIndex,
       callback,
       dataGridConfiguration.source,
     );
@@ -3582,7 +3584,7 @@ class PaginatedFilterHelper {
   bool _hasMoreData = true;
 
   /// Whether data is currently being loaded.
-  ValueNotifier<bool> _isLoading = ValueNotifier(false);
+  final ValueNotifier<bool> _isLoading = ValueNotifier(false);
 
   /// Gets the current items.
   List<FilterElement> get items => _items;
