@@ -1304,6 +1304,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                     setState: setState,
                     dataGridConfiguration: widget.dataGridConfiguration,
                     advanceFilterTopPadding: advanceFilterTopPadding,
+                    usePaginatedFiltering: usePaginatedFiltering,
                   ),
                 ),
               if (!isMobile) const Divider(height: 10),
