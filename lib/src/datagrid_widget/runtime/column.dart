@@ -1988,10 +1988,6 @@ class DataGridFilterHelper {
       if (value == '(Blanks)') {
         return '(Blanks)';
       }
-      // Check if value is a JSON/Map and contains 'displayValue' key
-      if (value is Map && value.containsKey('displayValue')) {
-        return value['displayValue'].toString();
-      }
       switch (advancedFilterHelper.advancedFilterType) {
         case AdvancedFilterType.text:
         case AdvancedFilterType.numeric:
