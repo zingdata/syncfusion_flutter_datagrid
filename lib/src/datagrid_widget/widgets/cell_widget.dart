@@ -1160,7 +1160,7 @@ class _FilterPopupState extends State<_FilterPopup> {
     bool canShowClearFilterOption = filterPopupMenuOptions.canShowClearFilterOption;
     bool showColumnName = filterPopupMenuOptions.showColumnName;
     double advanceFilterTopPadding = 12;
-    bool usePaginatedFiltering = widget.column.usePaginatedFiltering;
+    final bool usePaginatedFiltering = widget.column.usePaginatedFiltering;
 
     if (widget.column.filterPopupMenuOptions != null) {
       isCheckboxFilterEnabled =
