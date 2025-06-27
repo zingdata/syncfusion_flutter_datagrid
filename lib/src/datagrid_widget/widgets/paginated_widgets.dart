@@ -442,8 +442,30 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     );
   }
 
+  static dynamic _convertValueToAppropriateType(dynamic value) {
+    // First try to convert to DateTime if it looks like a date
+    if (value is String && value.isNotEmpty) {
+      final dateValue = DateTime.tryParse(value);
+      if (dateValue != null) {
+        value = dateValue;
+      } else {
+        // Try to convert to number if it's numeric
+        final numericValue = num.tryParse(value.replaceAll(',', ''));
+        if (numericValue != null) {
+          value = numericValue;
+        }
+        // Otherwise keep as string
+      }
+    } else if (value is! DateTime && value is! num) {
+      // Convert to string if it's not already a DateTime or number
+      value = value.toString();
+    }
+
+    return value;
+  }
+
   Widget _buildListItem(FilterElement item, int index) {
-    final displayText = widget.helper.getDisplayValue(item.value);
+    final displayText = widget.helper.getDisplayValue(_convertValueToAppropriateType(item.value));
     final isSelected = widget.selectedValue == item.value;
     final TextStyle style = widget.helper.textStyle;
 

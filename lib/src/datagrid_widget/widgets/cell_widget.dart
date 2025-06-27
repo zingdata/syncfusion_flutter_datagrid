@@ -1931,14 +1931,14 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
     Widget buildDropdownFormField() {
       // Check if using paginated filtering - show custom dropdown
-      if (helper.checkboxFilterHelper.usePaginatedFiltering) {
-        return _buildPaginatedDropdownField(
-          isTopButton: isTopButton,
-          setValue: setValue,
-          helper: helper,
-          dataGridThemeHelper: dataGridThemeHelper,
-        );
-      }
+    //   if (helper.checkboxFilterHelper.usePaginatedFiltering) {
+    //     return _buildPaginatedDropdownField(
+    //       isTopButton: isTopButton,
+    //       setValue: setValue,
+    //       helper: helper,
+    //       dataGridThemeHelper: dataGridThemeHelper,
+    //     );
+    //   }
 
       // Original dropdown for non-paginated filtering
       return DropdownButtonHideUnderline(
