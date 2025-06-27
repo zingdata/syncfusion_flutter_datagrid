@@ -1907,7 +1907,9 @@ class DataGridFilterHelper {
 
   void _createCheckboxFilterConditions(GridColumn column) {
     final DataGridSource source = _dataGridStateDetails().source;
-    if (_unCheckedItemsCount == 0 && checkboxFilterHelper._searchedItems.isEmpty) {
+    if (_unCheckedItemsCount == 0 &&
+        checkboxFilterHelper._searchedItems.isEmpty &&
+        (checkboxFilterHelper.textController.text.isEmpty || !column.usePaginatedFiltering)) {
       // Need to invoke `onFilterChanging` and `onFilterChanged` callback to notify
       // the filtering changes when tapping `SelectAll` button to select all the
       // rows in the Checkbox UI filtering.

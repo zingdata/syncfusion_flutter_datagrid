@@ -1603,7 +1603,10 @@ class _CheckboxFilterMenu extends StatelessWidget {
     // Gets the remaining height of the current view to fill the checkbox
     // listview in the mobile platform.
     final double checkboxHeight = isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0;
-    final double selectAllButtonHeight = isMobile ? helper.tileHeight - 4 : helper.tileHeight;
+    final canShowSelectAllButton =
+        filterHelper.textController.text.isEmpty || !column.usePaginatedFiltering;
+    final double selectAllButtonHeight =
+        canShowSelectAllButton ? (isMobile ? helper.tileHeight - 4 : helper.tileHeight) : 0.0;
 
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
@@ -1632,22 +1635,23 @@ class _CheckboxFilterMenu extends StatelessWidget {
             }),
           ),
           child: Column(children: <Widget>[
-            _FilterPopupMenuTile(
-              style: helper.textStyle,
-              height: selectAllButtonHeight,
-              prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-              prefix: Checkbox(
-                focusNode: checkboxFocusNode,
-                tristate: filterHelper.isSelectAllInTriState,
-                value: filterHelper.isSelectAllChecked,
-                onChanged: (_) => onHandleSelectAllCheckboxTap(),
+            if (canShowSelectAllButton)
+              _FilterPopupMenuTile(
+                style: helper.textStyle,
+                height: selectAllButtonHeight,
+                prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
+                prefix: Checkbox(
+                  focusNode: checkboxFocusNode,
+                  tristate: filterHelper.isSelectAllInTriState,
+                  value: filterHelper.isSelectAllChecked,
+                  onChanged: (_) => onHandleSelectAllCheckboxTap(),
+                ),
+                onTap: onHandleSelectAllCheckboxTap,
+                child: Text(
+                  dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              onTap: onHandleSelectAllCheckboxTap,
-              child: Text(
-                dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
             SizedBox(
               height: checkboxHeight,
               child: filterHelper.usePaginatedFiltering

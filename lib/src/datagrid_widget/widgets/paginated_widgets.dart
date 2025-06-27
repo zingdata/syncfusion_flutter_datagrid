@@ -493,11 +493,12 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
           Expanded(
             child: Center(
               child: SizedBox(
-                height: 30,
-                width: 30,
+                height: 25,
+                width: 25,
                 child: CircularProgressIndicator(
                   color: widget.helper.primaryColor,
                   backgroundColor: widget.helper.primaryColor.withOpacity(0.2),
+                  strokeWidth: 2.0,
                 ),
               ),
             ),
