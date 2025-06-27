@@ -2171,16 +2171,24 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
     Future<void> handleDatePickerTap() async {
       final DateTime currentDate = DateTime.now();
-      final DateTime firstDate = filterHelper.items.first.value as DateTime;
-      final DateTime lastDate = filterHelper.items.last.value as DateTime;
+      DateTime firstDate = filterHelper.items.first.value as DateTime;
+      DateTime lastDate = filterHelper.items.last.value as DateTime;
       DateTime initialDate = firstDate;
-
-      if ((currentDate.isAfter(firstDate) && currentDate.isBefore(lastDate)) ||
-          (lastDate.day == currentDate.day &&
-              lastDate.month == currentDate.month &&
-              lastDate.year == currentDate.year)) {
-        initialDate = currentDate;
+      if (usePaginatedFiltering) {
+        initialDate = (isFirstButton
+            ? filterHelper.filterValue1 ?? currentDate
+            : filterHelper.filterValue2 ?? currentDate) as DateTime;
+        firstDate = DateTime(firstDate.year - 25, firstDate.month, firstDate.day);
+        lastDate = DateTime(lastDate.year + 25, lastDate.month, lastDate.day);
+      } else {
+        if ((currentDate.isAfter(firstDate) && currentDate.isBefore(lastDate)) ||
+            (lastDate.day == currentDate.day &&
+                lastDate.month == currentDate.month &&
+                lastDate.year == currentDate.year)) {
+          initialDate = currentDate;
+        }
       }
+
       DateTime? selectedDate = await showDatePicker(
         context: context,
         initialDate: initialDate,
