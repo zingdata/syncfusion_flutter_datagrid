@@ -20,6 +20,12 @@
       "languageVersion": "3.7"
     },
     {
+      "name": "flutter_hooks",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/flutter_hooks-0.21.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "material_color_utilities",
       "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1",
       "packageUri": "lib/",

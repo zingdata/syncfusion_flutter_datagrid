@@ -2823,7 +2823,7 @@ class DataGridCheckboxFilterHelper {
   bool get hasMoreData => _paginatedFilterHelper?.hasMoreData ?? false;
 
   /// Gets whether data is currently being loaded.
-  bool get isLoading => _paginatedFilterHelper?.isLoading ?? false;
+  ValueNotifier<bool> get isLoading => _paginatedFilterHelper?.isLoading ?? ValueNotifier(false);
 
   /// Gets whether the column is using paginated filtering.
   bool get usePaginatedFiltering => _usePaginatedFiltering;
@@ -3584,7 +3584,7 @@ class PaginatedFilterHelper {
   bool _hasMoreData = true;
 
   /// Whether data is currently being loaded.
-  bool _isLoading = false;
+  ValueNotifier<bool> _isLoading = ValueNotifier(false);
 
   /// Gets the current items.
   List<FilterElement> get items => _items;
@@ -3593,7 +3593,7 @@ class PaginatedFilterHelper {
   bool get hasMoreData => _hasMoreData;
 
   /// Gets whether data is currently being loaded.
-  bool get isLoading => _isLoading;
+  ValueNotifier<bool> get isLoading => _isLoading;
 
   /// Loads the first page of data or refreshes with new search text.
   Future<void> loadInitialData({String searchText = ''}) async {
@@ -3607,7 +3607,7 @@ class PaginatedFilterHelper {
 
   /// Loads the next page of data.
   Future<void> loadNextPage() async {
-    if (!_hasMoreData || _isLoading) {
+    if (!_hasMoreData || _isLoading.value) {
       return;
     }
 
@@ -3617,7 +3617,7 @@ class PaginatedFilterHelper {
 
   /// Internal method to load a page of data.
   Future<void> _loadPage({DataGridSource? dataGridSource}) async {
-    _isLoading = true;
+    _isLoading.value = true;
 
     try {
       final PaginatedFilterRequest request = PaginatedFilterRequest(
@@ -3668,7 +3668,7 @@ class PaginatedFilterHelper {
       }
       rethrow;
     } finally {
-      _isLoading = false;
+      _isLoading.value = false;
     }
   }
 
@@ -3677,7 +3677,7 @@ class PaginatedFilterHelper {
     _items.clear();
     _currentPageIndex = 0;
     _hasMoreData = true;
-    _isLoading = false;
+    _isLoading.value = false;
     _currentSearchText = '';
   }
 }

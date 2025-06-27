@@ -9,9 +9,17 @@
       "dependencies": [
         "collection",
         "flutter",
+        "flutter_hooks",
         "syncfusion_flutter_core"
       ],
       "devDependencies": []
+    },
+    {
+      "name": "flutter_hooks",
+      "version": "0.21.2",
+      "dependencies": [
+        "flutter"
+      ]
     },
     {
       "name": "collection",

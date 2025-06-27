@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
@@ -53,7 +54,7 @@ class _FilterPopupMenuTile extends StatelessWidget {
 
 /// A paginated list view widget specifically designed for checkbox filter values.
 /// This widget handles loading states, pagination, and search functionality.
-class PaginatedFilterListView extends StatefulWidget {
+class PaginatedFilterListView extends StatefulHookWidget {
   const PaginatedFilterListView({
     Key? key,
     required this.helper,
@@ -93,7 +94,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
         if (widget.helper.checkboxFilterHelper.hasMoreData &&
-            !widget.helper.checkboxFilterHelper.isLoading &&
+            !widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore) {
           _loadMoreData();
         }
@@ -170,7 +171,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       height: 45,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: widget.helper.checkboxFilterHelper.isLoading
+      child: widget.helper.checkboxFilterHelper.isLoading.value
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -215,9 +216,10 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 
   @override
   Widget build(BuildContext context) {
+    useListenable(widget.helper.checkboxFilterHelper.isLoading);
     // Show empty state if no items found and not loading
     if (widget.helper.checkboxFilterHelper.items.isEmpty &&
-        !widget.helper.checkboxFilterHelper.isLoading) {
+        !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
@@ -228,7 +230,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       children: [
         // Show horizontal progress indicator when loading/searching
         if (widget.helper.checkboxFilterHelper.items.isEmpty &&
-            widget.helper.checkboxFilterHelper.isLoading &&
+            widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Expanded(
             child: Center(
@@ -245,7 +247,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             ),
           ),
         if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
-            widget.helper.checkboxFilterHelper.isLoading &&
+            widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Container(
             height: 4.0,
@@ -281,7 +283,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
 }
 
 /// A specialized paginated list view for single selection in dialogs.
-class _PaginatedSingleSelectionListView extends StatefulWidget {
+class _PaginatedSingleSelectionListView extends StatefulHookWidget {
   const _PaginatedSingleSelectionListView({
     Key? key,
     required this.helper,
@@ -364,7 +366,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50) {
         if (widget.helper.checkboxFilterHelper.hasMoreData &&
-            !widget.helper.checkboxFilterHelper.isLoading &&
+            !widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore) {
           _loadMoreData();
         }
@@ -414,7 +416,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       height: 50,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: widget.helper.checkboxFilterHelper.isLoading
+      child: widget.helper.checkboxFilterHelper.isLoading.value
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -471,9 +473,10 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
 
   @override
   Widget build(BuildContext context) {
+    useListenable(widget.helper.checkboxFilterHelper.isLoading);
     // Show empty state if no items found and not loading
     if (widget.helper.checkboxFilterHelper.items.isEmpty &&
-        !widget.helper.checkboxFilterHelper.isLoading) {
+        !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
@@ -484,7 +487,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       children: [
         // Show horizontal progress indicator when loading/searching
         if (widget.helper.checkboxFilterHelper.items.isEmpty &&
-            widget.helper.checkboxFilterHelper.isLoading &&
+            widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore &&
             !widget.isAdvancedFilter)
           Expanded(
@@ -500,7 +503,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
             ),
           ),
         if ((widget.helper.checkboxFilterHelper.items.isNotEmpty || widget.isAdvancedFilter) &&
-            widget.helper.checkboxFilterHelper.isLoading &&
+            widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Container(
             height: 4.0,

@@ -54,6 +54,7 @@
       "dependencies": [
         "collection",
         "flutter",
+        "flutter_hooks",
         "syncfusion_flutter_core"
       ]
     },
@@ -225,6 +226,13 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "flutter_hooks",
+      "version": "0.21.2",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

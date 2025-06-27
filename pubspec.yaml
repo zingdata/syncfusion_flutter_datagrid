@@ -12,6 +12,7 @@ dependencies:
 
   syncfusion_flutter_core: ^29.1.38      
   collection: ">=1.9.0 <=2.0.0"
+  flutter_hooks: ^0.21.2
 
 flutter:
   fonts:
