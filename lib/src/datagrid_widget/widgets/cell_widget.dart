@@ -2198,6 +2198,15 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         helpText: 'Select a date',
       );
 
+      // Convert selected date to UTC if a date was selected
+      if (selectedDate != null) {
+        selectedDate = DateTime.utc(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+        );
+      }
+
       // Need to return if user presses the cancel button to close the data picker view.
       if (selectedDate == null) {
         return;
