@@ -2749,7 +2749,7 @@ class DataGridCheckboxFilterHelper {
       // Set loading state
       _usePaginatedFiltering = true;
 
-      if (selectedItems.isNotEmpty) {
+      if (searchText.trim().isNotEmpty) {
         await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
         _searchedItems = _paginatedFilterHelper!.items;
         filterCheckboxItems = _searchedItems;
