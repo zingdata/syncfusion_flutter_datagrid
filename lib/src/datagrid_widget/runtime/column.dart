@@ -2737,6 +2737,8 @@ class DataGridCheckboxFilterHelper {
     );
     // Initialize the select all checkbox state
     ensureSelectAllCheckboxState();
+    // Initialize the previous data grid source for state tracking
+    _previousDataGridSource = <FilterElement>[];
   }
 
   /// Handles search text changes for paginated filtering.
@@ -2752,15 +2754,56 @@ class DataGridCheckboxFilterHelper {
 
       await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
       items = _paginatedFilterHelper!.items;
-      if (filterElements != null && filterElements.isNotEmpty) {
-        final selectedFilterElements =
-            filterElements.where((FilterElement element) => element.isSelected).toList();
-        for (final FilterElement element in selectedFilterElements) {
-          if (items.firstWhereOrNull((e) => e.value == element.value) == null) {
-            items.insert(0, element);
+      
+      // Handle search text cleared - restore previous selection state properly
+      if (searchText.isEmpty && filterElements != null && filterElements.isNotEmpty) {
+        // Similar logic to regular filtering - restore based on explicit selections
+        if (_previousDataGridSource.isNotEmpty) {
+          final int checkedCount =
+              _previousDataGridSource.where((FilterElement element) => element.isSelected).length;
+          final bool isSelected = checkedCount > 0;
+          
+          for (final FilterElement item in items) {
+            final FilterElement? filterElement =
+                _previousDataGridSource.firstWhereOrNull((FilterElement i) => item.value == i.value);
+            item.isSelected = filterElement != null ? filterElement.isSelected : !isSelected;
+          }
+        } else {
+          // If no previous state, restore only explicitly selected items
+          final explicitlySelectedItems = filterElements
+              .where((FilterElement element) => element.isSelected)
+              .toList();
+          
+          // Reset all items to unselected first
+          for (final FilterElement item in items) {
+            item.isSelected = false;
+          }
+          
+          // Only select items that were explicitly selected
+          for (final FilterElement selectedElement in explicitlySelectedItems) {
+            final FilterElement? matchingItem = 
+                items.firstWhereOrNull((e) => e.value == selectedElement.value);
+            if (matchingItem != null) {
+              matchingItem.isSelected = true;
+            } else {
+              // Add the explicitly selected item if it's not in the current page
+              items.insert(0, selectedElement);
+            }
+          }
+        }
+      } else if (searchText.isNotEmpty && filterElements != null && filterElements.isNotEmpty) {
+        // For search with text, preserve only explicitly selected items
+        final explicitlySelectedItems = filterElements
+            .where((FilterElement element) => element.isSelected)
+            .toList();
+        
+        for (final FilterElement selectedElement in explicitlySelectedItems) {
+          if (items.firstWhereOrNull((e) => e.value == selectedElement.value) == null) {
+            items.insert(0, selectedElement);
           }
         }
       }
+      
       filterCheckboxItems = items;
       ensureSelectAllCheckboxState();
       onCompleted?.call();
@@ -2840,6 +2883,22 @@ class DataGridCheckboxFilterHelper {
 
   /// Gets whether the column is using paginated filtering.
   bool get usePaginatedFiltering => _usePaginatedFiltering;
+
+  /// Captures current selection state for paginated filtering.
+  /// Should be called when user makes explicit selections.
+  void capturePaginatedSelectionState() {
+    if (!_usePaginatedFiltering) {
+      return;
+    }
+    
+    _previousDataGridSource.clear();
+    // Only capture items that are explicitly selected (not due to select all)
+    if (isSelectAllChecked != true) {
+      _previousDataGridSource.addAll(
+        filterCheckboxItems.where((FilterElement element) => element.isSelected)
+      );
+    }
+  }
 
   /// Disposes paginated filtering resources.
   void disposePaginatedFiltering() {

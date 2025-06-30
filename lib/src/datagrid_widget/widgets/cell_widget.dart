@@ -1746,6 +1746,12 @@ class _CheckboxFilterMenu extends StatelessWidget {
   void onHandleCheckboxTap(FilterElement element) {
     element.isSelected = !element.isSelected;
     filterHelper.ensureSelectAllCheckboxState();
+    
+    // Capture selection state for paginated filtering when user makes explicit selections
+    if (column.usePaginatedFiltering) {
+      filterHelper.capturePaginatedSelectionState();
+    }
+    
     setState(() {});
   }
 
@@ -1757,6 +1763,12 @@ class _CheckboxFilterMenu extends StatelessWidget {
     }
 
     filterHelper.ensureSelectAllCheckboxState();
+    
+    // Capture selection state for paginated filtering when user toggles select all
+    if (column.usePaginatedFiltering) {
+      filterHelper.capturePaginatedSelectionState();
+    }
+    
     setState(() {});
   }
 
