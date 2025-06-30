@@ -2743,6 +2743,9 @@ class DataGridCheckboxFilterHelper {
     }
 
     try {
+      final selectedItems = searchText.trim().isEmpty
+          ? items.where((FilterElement element) => element.isSelected).toList()
+          : [];
       // Set loading state
       _usePaginatedFiltering = true;
 
@@ -2750,7 +2753,6 @@ class DataGridCheckboxFilterHelper {
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
       if (searchText.isEmpty) {
-        final selectedItems = items.where((FilterElement element) => element.isSelected).toList();
         _searchedItems = <FilterElement>[];
         if (selectedItems.isNotEmpty) {
           for (final FilterElement item in selectedItems) {
