@@ -3685,28 +3685,13 @@ class PaginatedFilterHelper {
           final List<FilterCondition> conditions =
               dataGridSource.filterConditions[columnName] ?? <FilterCondition>[];
 
-          if (_currentSearchText.isNotEmpty) {
-            // Check if value exists in any filter condition
-            for (final FilterCondition condition in conditions) {
-              if (condition.value?.toString() == value?.toString()) {
-                return true;
-              }
+          // Check if value exists in any filter condition
+          for (final FilterCondition condition in conditions) {
+            if (condition.value?.toString() == value?.toString()) {
+              return true;
             }
-            return false;
           }
-
-          if (conditions.isNotEmpty) {
-            // Check if the value exists in current effective rows (means it's selected/applied)
-            for (final DataGridRow row in dataGridSource.effectiveRows) {
-              final DataGridCell? cell = row
-                  .getCells()
-                  .firstWhereOrNull((DataGridCell element) => element.columnName == columnName);
-              if (cell?.value?.toString() == value?.toString()) {
-                return true;
-              }
-            }
-            return false;
-          }
+          return false;
         }
         return selectAll; // Default to selected if no filters are applied
       }
