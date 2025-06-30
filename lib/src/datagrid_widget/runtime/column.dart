@@ -2756,10 +2756,10 @@ class DataGridCheckboxFilterHelper {
         _searchedItems = <FilterElement>[];
         if (selectedItems.isNotEmpty) {
           for (final FilterElement item in selectedItems) {
-            final FilterElement? filterElement =
-                filterCheckboxItems.firstWhereOrNull((FilterElement i) => item.value == i.value);
-            if (filterElement != null) {
-              item.isSelected = filterElement.isSelected;
+            final int filterElementIndex =
+                filterCheckboxItems.indexWhere((FilterElement i) => item.value == i.value);
+            if (filterElementIndex > -1) {
+              filterCheckboxItems[filterElementIndex].isSelected = item.isSelected;
             } else {
               filterCheckboxItems.insert(0, item);
             }
