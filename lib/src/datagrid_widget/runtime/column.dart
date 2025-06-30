@@ -2749,6 +2749,22 @@ class DataGridCheckboxFilterHelper {
       await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
+      if (searchText.isEmpty) {
+        final selectedItems = items.where((FilterElement element) => element.isSelected).toList();
+        _searchedItems = <FilterElement>[];
+        if (selectedItems.isNotEmpty) {
+          for (final FilterElement item in selectedItems) {
+            final FilterElement? filterElement =
+                filterCheckboxItems.firstWhereOrNull((FilterElement i) => item.value == i.value);
+            if (filterElement != null) {
+              item.isSelected = filterElement.isSelected;
+            } else {
+              filterCheckboxItems.insert(0, item);
+            }
+          }
+        }
+        items = filterCheckboxItems;
+      }
       ensureSelectAllCheckboxState();
       onCompleted?.call();
     } catch (e) {
