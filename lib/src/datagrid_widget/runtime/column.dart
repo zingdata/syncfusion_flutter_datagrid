@@ -2681,7 +2681,9 @@ class DataGridCheckboxFilterHelper {
   void onSearchTextFieldTextChanged(String searchText, {VoidCallback? onCompleted}) {
     if (_usePaginatedFiltering && _paginatedFilterHelper != null) {
       // For paginated filtering, we need to handle search differently
-      _handlePaginatedSearch(searchText, onCompleted: onCompleted);
+      if (searchText.isNotEmpty) {
+        _handlePaginatedSearch(searchText, onCompleted: onCompleted);
+      }
       return;
     }
 
