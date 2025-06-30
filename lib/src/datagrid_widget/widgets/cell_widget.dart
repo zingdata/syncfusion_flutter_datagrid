@@ -1004,7 +1004,7 @@ class _FilterPopupMenuItemState<T> extends PopupMenuItemState<T, _FilterPopupMen
   }
 }
 
-class _FilterPopup extends StatefulHookWidget {
+class _FilterPopup extends StatefulWidget {
   const _FilterPopup({Key? key, required this.column, required this.dataGridConfiguration})
       : super(key: key);
 
@@ -1544,7 +1544,7 @@ class _FilterMenuDropdown extends StatelessWidget {
   }
 }
 
-class _CheckboxFilterMenu extends StatelessWidget {
+class _CheckboxFilterMenu extends HookWidget {
   _CheckboxFilterMenu(
       {Key? key,
       required this.setState,
@@ -1574,6 +1574,8 @@ class _CheckboxFilterMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color onSurface = dataGridConfiguration.colorScheme!.onSurface;
+    useListenable(filterHelper.textController);
+    useListenable(filterHelper.isLoading);
 
     return Column(
       children: <Widget>[
@@ -1607,8 +1609,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
     // Gets the remaining height of the current view to fill the checkbox
     // listview in the mobile platform.
     final double checkboxHeight = isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0;
-    useListenable(filterHelper.textController);
-    useListenable(helper.checkboxFilterHelper.isLoading);
+
     final canShowSelectAllButton =
         filterHelper.textController.text.isEmpty || !column.usePaginatedFiltering;
     final double selectAllButtonHeight =
