@@ -3693,6 +3693,8 @@ class PaginatedFilterHelper {
               }
             }
             return false;
+          } else {
+            return true;
           }
         }
         return selectAll; // Default to selected if no filters are applied
