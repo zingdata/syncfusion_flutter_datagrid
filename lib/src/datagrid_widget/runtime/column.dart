@@ -2754,7 +2754,7 @@ class DataGridCheckboxFilterHelper {
         _searchedItems = _paginatedFilterHelper!.items;
         filterCheckboxItems = _searchedItems;
       } else {
-        filterCheckboxItems = items;
+        filterCheckboxItems = _previousDataGridSource;
       }
       if (searchText.isEmpty) {
         _searchedItems = <FilterElement>[];
