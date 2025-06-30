@@ -2755,13 +2755,13 @@ class DataGridCheckboxFilterHelper {
       if (searchText.isEmpty) {
         _searchedItems = <FilterElement>[];
         if (selectedItems.isNotEmpty) {
-          for (final FilterElement item in selectedItems) {
-            final int filterElementIndex =
-                filterCheckboxItems.indexWhere((FilterElement i) => item.value == i.value);
-            if (filterElementIndex > -1) {
-              filterCheckboxItems[filterElementIndex].isSelected = item.isSelected;
+          for (final FilterElement item in filterCheckboxItems.toList()) {
+            final FilterElement? filterElement =
+                selectedItems.firstWhereOrNull((i) => item.value == i.value);
+            if (filterElement == null) {
+              item.isSelected = false;
             } else {
-              filterCheckboxItems.insert(0, item);
+              filterCheckboxItems.insert(0, filterElement);
             }
           }
         }
