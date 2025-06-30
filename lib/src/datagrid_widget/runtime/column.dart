@@ -2364,7 +2364,9 @@ class DataGridFilterHelper {
 
   void setPreviousDataGridSource() {
     if (checkboxFilterHelper._usePaginatedFiltering) {
-      checkboxFilterHelper._previousDataGridSource = checkboxFilterHelper.filterCheckboxItems;
+      checkboxFilterHelper._previousDataGridSource = copyDeepList(
+        checkboxFilterHelper.filterCheckboxItems,
+      );
     } else {
       final bool useSelected =
           !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
