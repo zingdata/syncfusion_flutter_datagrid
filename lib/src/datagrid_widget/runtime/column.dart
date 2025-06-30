@@ -2678,12 +2678,13 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Handles the search box's text changed callback.
-  void onSearchTextFieldTextChanged(String searchText, {VoidCallback? onCompleted}) {
+  void onSearchTextFieldTextChanged(String searchText,
+      {List<FilterElement>? filterElements, VoidCallback? onCompleted}) {
     if (_usePaginatedFiltering && _paginatedFilterHelper != null) {
       // For paginated filtering, we need to handle search differently
-      if (searchText.isNotEmpty) {
-        _handlePaginatedSearch(searchText, onCompleted: onCompleted);
-      }
+
+      _handlePaginatedSearch(searchText, filterElements: filterElements, onCompleted: onCompleted);
+
       return;
     }
 
@@ -2739,7 +2740,8 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Handles search text changes for paginated filtering.
-  Future<void> _handlePaginatedSearch(String searchText, {VoidCallback? onCompleted}) async {
+  Future<void> _handlePaginatedSearch(String searchText,
+      {List<FilterElement>? filterElements, VoidCallback? onCompleted}) async {
     if (_paginatedFilterHelper == null) {
       return;
     }
@@ -2750,6 +2752,15 @@ class DataGridCheckboxFilterHelper {
 
       await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
       items = _paginatedFilterHelper!.items;
+      if (filterElements != null && filterElements.isNotEmpty) {
+        final selectedFilterElements =
+            filterElements.where((FilterElement element) => element.isSelected).toList();
+        for (final FilterElement element in selectedFilterElements) {
+          if (items.firstWhereOrNull((e) => e.value == element.value) == null) {
+            items.insert(0, element);
+          }
+        }
+      }
       filterCheckboxItems = items;
       ensureSelectAllCheckboxState();
       onCompleted?.call();

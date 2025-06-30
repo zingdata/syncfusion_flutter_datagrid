@@ -1761,7 +1761,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
   }
 
   void onHandleSearchTextFieldChanged(String value) {
-    filterHelper.onSearchTextFieldTextChanged(value, onCompleted: () {
+    filterHelper.onSearchTextFieldTextChanged(value, filterElements: filterHelper.filterCheckboxItems, onCompleted: () {
       setState(() {});
     });
   }
