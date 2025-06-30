@@ -3685,13 +3685,15 @@ class PaginatedFilterHelper {
           final List<FilterCondition> conditions =
               dataGridSource.filterConditions[columnName] ?? <FilterCondition>[];
 
-          // Check if value exists in any filter condition
-          for (final FilterCondition condition in conditions) {
-            if (condition.value?.toString() == value?.toString()) {
-              return true;
+          if (conditions.isNotEmpty) {
+            // Check if value exists in any filter condition
+            for (final FilterCondition condition in conditions) {
+              if (condition.value?.toString() == value?.toString()) {
+                return true;
+              }
             }
+            return false;
           }
-          return false;
         }
         return selectAll; // Default to selected if no filters are applied
       }
