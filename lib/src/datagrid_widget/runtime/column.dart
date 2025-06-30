@@ -2364,9 +2364,8 @@ class DataGridFilterHelper {
 
   void setPreviousDataGridSource() {
     if (checkboxFilterHelper._usePaginatedFiltering) {
-      checkboxFilterHelper._previousDataGridSource = copyDeepList(
-        checkboxFilterHelper.filterCheckboxItems,
-      );
+      checkboxFilterHelper._previousDataGridSource =
+          copyDeepList(checkboxFilterHelper.filterCheckboxItems);
     } else {
       final bool useSelected =
           !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
@@ -2835,13 +2834,15 @@ class DataGridCheckboxFilterHelper {
 
   /// Loads next page of paginated data.
   Future<void> loadNextPage(
-      {required FilteredFrom filterFrom, required VoidCallback onSetPreviousDataGridSource}) async {
+      {required FilteredFrom filterFrom,
+      required VoidCallback onSetPreviousDataGridSource,
+      bool selectAll = false}) async {
     if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
       return;
     }
 
     try {
-      await _paginatedFilterHelper!.loadNextPage();
+      await _paginatedFilterHelper!.loadNextPage(selectAll: selectAll);
       if (_paginatedFilterHelper!.currentSearchText.trim().isNotEmpty) {
         _searchedItems = _paginatedFilterHelper!.items;
         filterCheckboxItems = _searchedItems;
@@ -3652,17 +3653,20 @@ class PaginatedFilterHelper {
   }
 
   /// Loads the next page of data.
-  Future<void> loadNextPage() async {
+  Future<void> loadNextPage({bool selectAll = false}) async {
     if (!_hasMoreData || _isLoading.value) {
       return;
     }
 
     _currentPageIndex++;
-    await _loadPage(dataGridSource: dataGridSource);
+    await _loadPage(dataGridSource: dataGridSource, selectAll: selectAll);
   }
 
   /// Internal method to load a page of data.
-  Future<void> _loadPage({DataGridSource? dataGridSource}) async {
+  Future<void> _loadPage({
+    bool selectAll = false,
+    DataGridSource? dataGridSource,
+  }) async {
     _isLoading.value = true;
 
     try {
@@ -3704,7 +3708,7 @@ class PaginatedFilterHelper {
             return false;
           }
         }
-        return true; // Default to selected if no filters are applied
+        return selectAll; // Default to selected if no filters are applied
       }
 
       // Convert response values to FilterElements

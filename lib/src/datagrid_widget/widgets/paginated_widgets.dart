@@ -114,6 +114,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       await widget.helper.checkboxFilterHelper.loadNextPage(
         filterFrom: widget.helper.filterFrom,
         onSetPreviousDataGridSource: widget.helper.setPreviousDataGridSource,
+        selectAll: widget.helper.checkboxFilterHelper.isSelectAllChecked ?? false,
       );
       if (mounted) {
         setState(() {
@@ -338,6 +339,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       await widget.helper.checkboxFilterHelper.loadNextPage(
         filterFrom: widget.helper.filterFrom,
         onSetPreviousDataGridSource: widget.helper.setPreviousDataGridSource,
+        selectAll: widget.helper.checkboxFilterHelper.isSelectAllChecked ?? false,
       );
       if (mounted) {
         setState(() {
