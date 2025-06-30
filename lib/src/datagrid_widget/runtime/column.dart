@@ -2836,11 +2836,17 @@ class DataGridCheckboxFilterHelper {
 
     try {
       await _paginatedFilterHelper!.loadNextPage();
-      items = _paginatedFilterHelper!.items;
-      filterCheckboxItems = items;
-      ensureSelectAllCheckboxState();
+      if (_paginatedFilterHelper!.currentSearchText.trim().isNotEmpty) {
+        _searchedItems = _paginatedFilterHelper!.items;
+        filterCheckboxItems = _searchedItems;
+      } else {
+        items = _paginatedFilterHelper!.items;
+        filterCheckboxItems = items;
+        ensureSelectAllCheckboxState();
+      }
 
-      if (filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) {
+      if ((filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) &&
+          _paginatedFilterHelper!.currentSearchText.trim().isEmpty) {
         onSetPreviousDataGridSource();
       }
       // The UI update is automatically triggered by the PaginatedFilterHelper callback
@@ -3625,6 +3631,9 @@ class PaginatedFilterHelper {
 
   /// Gets whether data is currently being loaded.
   ValueNotifier<bool> get isLoading => _isLoading;
+
+  /// Gets the current search text.
+  String get currentSearchText => _currentSearchText;
 
   /// Loads the first page of data or refreshes with new search text.
   Future<void> loadInitialData({String searchText = ''}) async {
