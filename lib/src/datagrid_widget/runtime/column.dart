@@ -2363,11 +2363,15 @@ class DataGridFilterHelper {
   }
 
   void setPreviousDataGridSource() {
-    final bool useSelected =
-        !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
-    final List<FilterElement> items =
-        checkboxFilterHelper.filterCheckboxItems.where((FilterElement i) => useSelected).toList();
-    checkboxFilterHelper._previousDataGridSource.addAll(items);
+    if (checkboxFilterHelper._usePaginatedFiltering) {
+      checkboxFilterHelper._previousDataGridSource = checkboxFilterHelper.filterCheckboxItems;
+    } else {
+      final bool useSelected =
+          !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
+      final List<FilterElement> items =
+          checkboxFilterHelper.filterCheckboxItems.where((FilterElement i) => useSelected).toList();
+      checkboxFilterHelper._previousDataGridSource.addAll(items);
+    }
   }
 
   /// Handles the filter form's sort buttons callback.
