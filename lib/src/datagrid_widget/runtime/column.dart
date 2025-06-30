@@ -2320,7 +2320,7 @@ class DataGridFilterHelper {
     }
 
     if (filterFrom == FilteredFrom.checkboxFilter) {
-      _setPreviousDataGridSource();
+      setPreviousDataGridSource();
     }
 
     checkboxFilterHelper.items = distinctCollection.toList();
@@ -2345,7 +2345,7 @@ class DataGridFilterHelper {
         onCompleted: onCompleted,
         advancedFilterHelper: advancedFilterHelper,
         filterFrom: filterFrom,
-        onSetPreviousDataGridSource: _setPreviousDataGridSource,
+        onSetPreviousDataGridSource: setPreviousDataGridSource,
       );
     } catch (e) {
       debugPrint('Error loading initial paginated data for column ${column.columnName}: $e');
@@ -2362,7 +2362,7 @@ class DataGridFilterHelper {
     return rows.where((DataGridRow row) => _filterRow(row, conditions)).toList();
   }
 
-  void _setPreviousDataGridSource() {
+  void setPreviousDataGridSource() {
     final bool useSelected =
         !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
     final List<FilterElement> items =
@@ -2744,24 +2744,32 @@ class DataGridCheckboxFilterHelper {
 
     try {
       final selectedItems = searchText.trim().isEmpty
-          ? items.where((FilterElement element) => element.isSelected).toList()
+          ? _searchedItems.where((FilterElement element) => element.isSelected).toList()
           : [];
       // Set loading state
       _usePaginatedFiltering = true;
 
-      await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
-      items = _paginatedFilterHelper!.items;
-      filterCheckboxItems = items;
+      if (selectedItems.isNotEmpty) {
+        await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
+        _searchedItems = _paginatedFilterHelper!.items;
+        filterCheckboxItems = _searchedItems;
+      } else {
+        filterCheckboxItems = items;
+      }
       if (searchText.isEmpty) {
         _searchedItems = <FilterElement>[];
         if (selectedItems.isNotEmpty) {
           for (final FilterElement item in filterCheckboxItems.toList()) {
             final FilterElement? filterElement =
                 selectedItems.firstWhereOrNull((i) => item.value == i.value);
+
+            item.isSelected = filterElement != null;
+          }
+          for (final FilterElement item in selectedItems) {
+            final FilterElement? filterElement =
+                filterCheckboxItems.firstWhereOrNull((i) => item.value == i.value);
             if (filterElement == null) {
-              item.isSelected = false;
-            } else {
-              filterCheckboxItems.insert(0, filterElement);
+              filterCheckboxItems.insert(0, item);
             }
           }
         }
@@ -2799,7 +2807,7 @@ class DataGridCheckboxFilterHelper {
       filterCheckboxItems = items;
       _previousDataGridSource = <FilterElement>[];
 
-      if (filterFrom == FilteredFrom.checkboxFilter) {
+      if (filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) {
         onSetPreviousDataGridSource();
       }
 
@@ -2820,7 +2828,8 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Loads next page of paginated data.
-  Future<void> loadNextPage() async {
+  Future<void> loadNextPage(
+      {required FilteredFrom filterFrom, required VoidCallback onSetPreviousDataGridSource}) async {
     if (!_usePaginatedFiltering || _paginatedFilterHelper == null) {
       return;
     }
@@ -2830,6 +2839,10 @@ class DataGridCheckboxFilterHelper {
       items = _paginatedFilterHelper!.items;
       filterCheckboxItems = items;
       ensureSelectAllCheckboxState();
+
+      if (filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) {
+        onSetPreviousDataGridSource();
+      }
       // The UI update is automatically triggered by the PaginatedFilterHelper callback
     } catch (e) {
       // Handle error - could notify parent widget

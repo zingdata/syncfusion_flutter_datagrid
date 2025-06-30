@@ -111,7 +111,10 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       _isLoadingMore = true;
     });
     try {
-      await widget.helper.checkboxFilterHelper.loadNextPage();
+      await widget.helper.checkboxFilterHelper.loadNextPage(
+        filterFrom: widget.helper.filterFrom,
+        onSetPreviousDataGridSource: widget.helper.setPreviousDataGridSource,
+      );
       if (mounted) {
         setState(() {
           // Update local state to refresh the ListView with new data
@@ -332,7 +335,10 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       curve: Curves.easeInOut,
     );
     try {
-      await widget.helper.checkboxFilterHelper.loadNextPage();
+      await widget.helper.checkboxFilterHelper.loadNextPage(
+        filterFrom: widget.helper.filterFrom,
+        onSetPreviousDataGridSource: widget.helper.setPreviousDataGridSource,
+      );
       if (mounted) {
         setState(() {
           // Update local state to refresh the ListView with new data
