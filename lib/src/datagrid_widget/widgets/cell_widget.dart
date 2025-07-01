@@ -1028,7 +1028,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   // Animation controller for hiding/showing top section
   late AnimationController _topSectionAnimationController;
   late Animation<double> _topSectionAnimation;
-  
+
   // State to track if search is active
   bool _isSearchActive = false;
 
@@ -1046,26 +1046,24 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
       duration: const Duration(milliseconds: 280),
       vsync: this,
     );
-    
+
     _topSectionAnimation = CurvedAnimation(
       parent: _topSectionAnimationController,
       curve: Curves.easeInOutCubic,
       reverseCurve: Curves.easeInOutCubic,
     );
-    
+
     // Set initial animation state
     _topSectionAnimationController.forward();
   }
 
-
-
   void _unfocusSearch() {
     if (!isMobile) return;
-    
+
     // Unfocus search field when tapping outside on mobile
     if (filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus) {
       filterHelper.checkboxFilterHelper.searchboxFocusNode.unfocus();
-      
+
       // If there's no search text, show top section again
       if (filterHelper.checkboxFilterHelper.textController.text.isEmpty && _isSearchActive) {
         setState(() {
@@ -1080,12 +1078,12 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     useListenable(filterHelper.checkboxFilterHelper.textController);
     useListenable(filterHelper.checkboxFilterHelper.isLoading);
-    
+
     // Handle search state changes for animation (mobile only)
     if (isMobile) {
       final String searchText = filterHelper.checkboxFilterHelper.textController.text;
       final bool shouldBeActive = searchText.isNotEmpty;
-      
+
       if (shouldBeActive != _isSearchActive) {
         // Update state and trigger animation
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1093,7 +1091,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
             setState(() {
               _isSearchActive = shouldBeActive;
             });
-            
+
             if (_isSearchActive) {
               _topSectionAnimationController.reverse();
             } else {
@@ -1103,7 +1101,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
         });
       }
     }
-    
+
     return Visibility(
       visible: isMobile,
       replacement: Material(
@@ -1253,9 +1251,8 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
         children: [
           if (canShowSortingOptions)
             _FilterPopupMenuTile(
-                style: isSortAscendingEnabled
-                    ? filterHelper.textStyle
-                    : filterHelper.disableTextStyle,
+                style:
+                    isSortAscendingEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
                 height: filterHelper.tileHeight,
                 prefix: Icon(
                   const IconData(0xe700,
@@ -1276,9 +1273,8 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                     overflow: TextOverflow.ellipsis)),
           if (canShowSortingOptions)
             _FilterPopupMenuTile(
-              style: isSortDescendingEnabled
-                  ? filterHelper.textStyle
-                  : filterHelper.disableTextStyle,
+              style:
+                  isSortDescendingEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
               height: filterHelper.tileHeight,
               prefix: Icon(
                 const IconData(0xe701,
@@ -1307,8 +1303,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
           if (canShowSortingOptions) const Divider(indent: 8.0, endIndent: 8.0),
           if (canShowClearFilterOption)
             _FilterPopupMenuTile(
-              style:
-                  isClearFilterEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
+              style: isClearFilterEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
               height: filterHelper.tileHeight,
               prefix: Icon(
                   const IconData(0xe703,
@@ -1341,7 +1336,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
         animation: _topSectionAnimation,
         builder: (context, child) {
           final double animationValue = _topSectionAnimation.value;
-          
+
           return ClipRect(
             child: Align(
               alignment: Alignment.topCenter,
@@ -1717,9 +1712,17 @@ class _CheckboxFilterMenu extends StatelessWidget {
       }
     }
 
+    // Determine if we're actively searching on mobile
+    final bool isSearchingOnMobile = isMobile && 
+        helper.checkboxFilterHelper.textController.text.trim().isNotEmpty;
+    
     // Gets the remaining height of the current view to fill the checkbox
     // listview in the mobile platform.
-    final double checkboxHeight = isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0;
+    final double? checkboxHeight = isSearchingOnMobile
+        ? null // Use Expanded when searching on mobile
+        : isMobile 
+            ? max(viewSize!.height - occupiedHeight, 120.0)
+            : 200.0;
 
     final canShowSelectAllButton =
         filterHelper.textController.text.isEmpty || !column.usePaginatedFiltering;
@@ -1737,12 +1740,26 @@ class _CheckboxFilterMenu extends StatelessWidget {
             ? 'Clear All'
             : '';
 
+    final valuesListView = filterHelper.usePaginatedFiltering
+        ? _buildPaginatedListView(context, helper.textStyle)
+        : ListView.builder(
+            key: const ValueKey<String>('datagrid_filtering_checkbox_listView'),
+            prototypeItem: buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle),
+            itemCount: filterHelper.items.length,
+            itemBuilder: (BuildContext context, int index) =>
+                buildCheckboxTile(index, helper.textStyle));
+
+    // Calculate safe height for empty state - use actual calculated height or fallback
+    final double emptyStateHeight = (checkboxHeight ?? 
+        (isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0)) + 
+        selectAllButtonHeight;
+
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: Visibility(
         visible: filterHelper.items.isNotEmpty || column.usePaginatedFiltering,
         replacement: SizedBox(
-          height: checkboxHeight + selectAllButtonHeight,
+          height: emptyStateHeight,
           child: Center(
               child: Text(dataGridConfiguration.localizations.noMatchesDataGridFilteringLabel)),
         ),
@@ -1796,18 +1813,14 @@ class _CheckboxFilterMenu extends StatelessWidget {
                   ],
                 ),
               ),
-            SizedBox(
-              height: checkboxHeight,
-              child: filterHelper.usePaginatedFiltering
-                  ? _buildPaginatedListView(context, helper.textStyle)
-                  : ListView.builder(
-                      key: const ValueKey<String>('datagrid_filtering_checkbox_listView'),
-                      prototypeItem:
-                          buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle),
-                      itemCount: filterHelper.items.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          buildCheckboxTile(index, helper.textStyle)),
-            ),
+            // Use Expanded when searching on mobile, SizedBox with fixed height otherwise
+            if (isSearchingOnMobile)
+              Expanded(child: valuesListView)
+            else
+              SizedBox(
+                height: checkboxHeight,
+                child: valuesListView,
+              )
           ]),
         ),
       ),
