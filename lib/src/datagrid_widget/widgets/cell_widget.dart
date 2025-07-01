@@ -1004,7 +1004,7 @@ class _FilterPopupMenuItemState<T> extends PopupMenuItemState<T, _FilterPopupMen
   }
 }
 
-class _FilterPopup extends StatefulWidget {
+class _FilterPopup extends StatefulHookWidget {
   const _FilterPopup({Key? key, required this.column, required this.dataGridConfiguration})
       : super(key: key);
 
@@ -1016,7 +1016,7 @@ class _FilterPopup extends StatefulWidget {
   _FilterPopupState createState() => _FilterPopupState();
 }
 
-class _FilterPopupState extends State<_FilterPopup> {
+class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixin {
   late bool isMobile;
 
   late bool isAdvancedFilter;
@@ -1025,15 +1025,94 @@ class _FilterPopupState extends State<_FilterPopup> {
 
   late DataGridThemeHelper dataGridThemeHelper;
 
+  // Animation controller for hiding/showing top section
+  late AnimationController _topSectionAnimationController;
+  late Animation<double> _topSectionAnimation;
+  
+  // State to track if search is active
+  bool _isSearchActive = false;
+
   @override
   void initState() {
     super.initState();
     _initializeFilterProperties();
+    _initializeAnimations();
     filterHelper.isFilterPopupMenuShowing = true;
+  }
+
+  void _initializeAnimations() {
+    // Initialize animation controller for top section visibility
+    _topSectionAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 280),
+      vsync: this,
+    );
+    
+    _topSectionAnimation = CurvedAnimation(
+      parent: _topSectionAnimationController,
+      curve: Curves.easeInOutCubic,
+      reverseCurve: Curves.easeInOutCubic,
+    );
+    
+    // Set initial animation state
+    _topSectionAnimationController.forward();
+    
+    // Listen to search text changes (only for mobile)
+    if (isMobile) {
+      filterHelper.checkboxFilterHelper.textController.addListener(_onSearchTextChanged);
+      filterHelper.checkboxFilterHelper.searchboxFocusNode.addListener(_onSearchFocusChanged);
+    }
+  }
+
+  void _onSearchTextChanged() {
+    if (!isMobile) return;
+    
+    final String searchText = filterHelper.checkboxFilterHelper.textController.text;
+    final bool shouldBeActive = searchText.isNotEmpty;
+    
+    if (shouldBeActive != _isSearchActive) {
+      setState(() {
+        _isSearchActive = shouldBeActive;
+      });
+      
+      if (_isSearchActive) {
+        // Hide top section with smooth animation when searching
+        _topSectionAnimationController.reverse();
+      } else {
+        // Show top section with smooth animation when not searching
+        _topSectionAnimationController.forward();
+      }
+    }
+  }
+
+  void _onSearchFocusChanged() {
+    if (!isMobile) return;
+    
+    // When search field loses focus and there's no search text, 
+    // smoothly show the top section again
+    final bool hasFocus = filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus;
+    final bool hasText = filterHelper.checkboxFilterHelper.textController.text.isNotEmpty;
+    
+    if (!hasFocus && !hasText && _isSearchActive) {
+      setState(() {
+        _isSearchActive = false;
+      });
+      _topSectionAnimationController.forward();
+    }
+  }
+
+  void _unfocusSearch() {
+    if (!isMobile) return;
+    
+    // Unfocus search field when tapping outside on mobile
+    if (filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus) {
+      filterHelper.checkboxFilterHelper.searchboxFocusNode.unfocus();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    useListenable(filterHelper.checkboxFilterHelper.textController);
+    useListenable(filterHelper.checkboxFilterHelper.isLoading);
     return Visibility(
       visible: isMobile,
       replacement: Material(
@@ -1052,7 +1131,10 @@ class _FilterPopupState extends State<_FilterPopup> {
             backgroundColor: dataGridThemeHelper.filterPopupOuterColor,
             appBar: buildAppBar(context),
             resizeToAvoidBottomInset: true,
-            body: _buildPopupView(),
+            body: GestureDetector(
+              onTap: _unfocusSearch,
+              child: _buildPopupView(),
+            ),
           ),
         ),
       ),
@@ -1061,6 +1143,11 @@ class _FilterPopupState extends State<_FilterPopup> {
 
   @override
   void dispose() {
+    if (isMobile) {
+      filterHelper.checkboxFilterHelper.textController.removeListener(_onSearchTextChanged);
+      filterHelper.checkboxFilterHelper.searchboxFocusNode.removeListener(_onSearchFocusChanged);
+    }
+    _topSectionAnimationController.dispose();
     filterHelper.isFilterPopupMenuShowing = false;
     super.dispose();
   }
@@ -1173,6 +1260,120 @@ class _FilterPopupState extends State<_FilterPopup> {
       canShowClearFilterOption = widget.column.filterPopupMenuOptions!.canShowClearFilterOption;
       showColumnName = widget.column.filterPopupMenuOptions!.showColumnName;
     }
+
+    Widget buildTopSection() {
+      return Column(
+        children: [
+          if (canShowSortingOptions)
+            _FilterPopupMenuTile(
+                style: isSortAscendingEnabled
+                    ? filterHelper.textStyle
+                    : filterHelper.disableTextStyle,
+                height: filterHelper.tileHeight,
+                prefix: Icon(
+                  const IconData(0xe700,
+                      fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
+                  color: isSortAscendingEnabled
+                      ? iconColor
+                      : dataGridThemeHelper.filterPopupDisableIconColor,
+                  size: filterHelper.textStyle.fontSize! + 10,
+                ),
+                prefixPadding: EdgeInsets.only(
+                    left: 4.0,
+                    right: filterHelper.textStyle.fontSize!,
+                    bottom: filterHelper.textStyle.fontSize! > 14
+                        ? filterHelper.textStyle.fontSize! - 14
+                        : 0),
+                onTap: isSortAscendingEnabled ? onHandleSortAscendingTap : null,
+                child: Text(grid_helper.getSortButtonText(localizations, true, filterType),
+                    overflow: TextOverflow.ellipsis)),
+          if (canShowSortingOptions)
+            _FilterPopupMenuTile(
+              style: isSortDescendingEnabled
+                  ? filterHelper.textStyle
+                  : filterHelper.disableTextStyle,
+              height: filterHelper.tileHeight,
+              prefix: Icon(
+                const IconData(0xe701,
+                    fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
+                color: isSortDescendingEnabled
+                    ? iconColor
+                    : dataGridThemeHelper.filterPopupDisableIconColor,
+                size: filterHelper.textStyle.fontSize! + 10,
+              ),
+              prefixPadding: EdgeInsets.only(
+                  left: 4.0,
+                  right: filterHelper.textStyle.fontSize!,
+                  bottom: filterHelper.textStyle.fontSize! > 14
+                      ? filterHelper.textStyle.fontSize! - 14
+                      : 0),
+              onTap: isSortDescendingEnabled ? onHandleSortDescendingTap : null,
+              child: Text(
+                grid_helper.getSortButtonText(
+                  localizations,
+                  false,
+                  filterType,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          if (canShowSortingOptions) const Divider(indent: 8.0, endIndent: 8.0),
+          if (canShowClearFilterOption)
+            _FilterPopupMenuTile(
+              style:
+                  isClearFilterEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
+              height: filterHelper.tileHeight,
+              prefix: Icon(
+                  const IconData(0xe703,
+                      fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
+                  size: filterHelper.textStyle.fontSize! + 8,
+                  color: isClearFilterEnabled
+                      ? iconColor
+                      : dataGridThemeHelper.filterPopupDisableIconColor),
+              prefixPadding: EdgeInsets.only(
+                  left: 4.0,
+                  right: filterHelper.textStyle.fontSize!,
+                  bottom: filterHelper.textStyle.fontSize! > 14
+                      ? filterHelper.textStyle.fontSize! - 14
+                      : 0),
+              onTap: isClearFilterEnabled ? onHandleClearFilterTap : null,
+              child: Text(getClearFilterText(localizations, showColumnName),
+                  overflow: TextOverflow.ellipsis),
+            ),
+        ],
+      );
+    }
+
+    Widget buildAnimatedTopSection() {
+      // Only animate on mobile - desktop shows static top section
+      if (!isMobile) {
+        return buildTopSection();
+      }
+
+      return AnimatedBuilder(
+        animation: _topSectionAnimation,
+        builder: (context, child) {
+          final double animationValue = _topSectionAnimation.value;
+          
+          return ClipRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: animationValue,
+              child: Opacity(
+                // Fade out/in with smooth opacity transition
+                opacity: animationValue,
+                child: Transform.translate(
+                  // Subtle slide up/down effect for more polish
+                  offset: Offset(0, -16 * (1 - animationValue)),
+                  child: buildTopSection(),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     Widget buildPopup({Size? viewSize}) {
       return SingleChildScrollView(
         key: const ValueKey<String>('datagrid_filtering_scrollView'),
@@ -1181,82 +1382,7 @@ class _FilterPopupState extends State<_FilterPopup> {
           color: dataGridThemeHelper.filterPopupBackgroundColor,
           child: Column(
             children: <Widget>[
-              if (canShowSortingOptions)
-                _FilterPopupMenuTile(
-                    style: isSortAscendingEnabled
-                        ? filterHelper.textStyle
-                        : filterHelper.disableTextStyle,
-                    height: filterHelper.tileHeight,
-                    prefix: Icon(
-                      const IconData(0xe700,
-                          fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
-                      color: isSortAscendingEnabled
-                          ? iconColor
-                          : dataGridThemeHelper.filterPopupDisableIconColor,
-                      size: filterHelper.textStyle.fontSize! + 10,
-                    ),
-                    prefixPadding: EdgeInsets.only(
-                        left: 4.0,
-                        right: filterHelper.textStyle.fontSize!,
-                        bottom: filterHelper.textStyle.fontSize! > 14
-                            ? filterHelper.textStyle.fontSize! - 14
-                            : 0),
-                    onTap: isSortAscendingEnabled ? onHandleSortAscendingTap : null,
-                    child: Text(grid_helper.getSortButtonText(localizations, true, filterType),
-                        overflow: TextOverflow.ellipsis)),
-              if (canShowSortingOptions)
-                _FilterPopupMenuTile(
-                  style: isSortDescendingEnabled
-                      ? filterHelper.textStyle
-                      : filterHelper.disableTextStyle,
-                  height: filterHelper.tileHeight,
-                  prefix: Icon(
-                    const IconData(0xe701,
-                        fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
-                    color: isSortDescendingEnabled
-                        ? iconColor
-                        : dataGridThemeHelper.filterPopupDisableIconColor,
-                    size: filterHelper.textStyle.fontSize! + 10,
-                  ),
-                  prefixPadding: EdgeInsets.only(
-                      left: 4.0,
-                      right: filterHelper.textStyle.fontSize!,
-                      bottom: filterHelper.textStyle.fontSize! > 14
-                          ? filterHelper.textStyle.fontSize! - 14
-                          : 0),
-                  onTap: isSortDescendingEnabled ? onHandleSortDescendingTap : null,
-                  child: Text(
-                    grid_helper.getSortButtonText(
-                      localizations,
-                      false,
-                      filterType,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              if (canShowSortingOptions) const Divider(indent: 8.0, endIndent: 8.0),
-              if (canShowClearFilterOption)
-                _FilterPopupMenuTile(
-                  style:
-                      isClearFilterEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
-                  height: filterHelper.tileHeight,
-                  prefix: Icon(
-                      const IconData(0xe703,
-                          fontFamily: 'FilterIcon', fontPackage: 'syncfusion_flutter_datagrid'),
-                      size: filterHelper.textStyle.fontSize! + 8,
-                      color: isClearFilterEnabled
-                          ? iconColor
-                          : dataGridThemeHelper.filterPopupDisableIconColor),
-                  prefixPadding: EdgeInsets.only(
-                      left: 4.0,
-                      right: filterHelper.textStyle.fontSize!,
-                      bottom: filterHelper.textStyle.fontSize! > 14
-                          ? filterHelper.textStyle.fontSize! - 14
-                          : 0),
-                  onTap: isClearFilterEnabled ? onHandleClearFilterTap : null,
-                  child: Text(getClearFilterText(localizations, showColumnName),
-                      overflow: TextOverflow.ellipsis),
-                ),
+              buildAnimatedTopSection(),
               if (isAdvancedFilterEnabled)
                 _AdvancedFilterPopupMenu(
                   setState: setState,
@@ -1544,7 +1670,7 @@ class _FilterMenuDropdown extends StatelessWidget {
   }
 }
 
-class _CheckboxFilterMenu extends HookWidget {
+class _CheckboxFilterMenu extends StatelessWidget {
   _CheckboxFilterMenu(
       {Key? key,
       required this.setState,
@@ -1574,8 +1700,6 @@ class _CheckboxFilterMenu extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final Color onSurface = dataGridConfiguration.colorScheme!.onSurface;
-    useListenable(filterHelper.textController);
-    useListenable(filterHelper.isLoading);
 
     return Column(
       children: <Widget>[
