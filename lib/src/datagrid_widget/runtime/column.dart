@@ -2811,6 +2811,7 @@ class DataGridCheckboxFilterHelper {
     try {
       items = _paginatedFilterHelper!.items;
       advancedFilterHelper.items = items;
+      filterCheckboxItems = items;
       await _paginatedFilterHelper!.loadInitialData();
       items = _paginatedFilterHelper!.items;
       advancedFilterHelper.items = items;
