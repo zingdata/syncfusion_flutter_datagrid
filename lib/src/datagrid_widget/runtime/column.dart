@@ -2668,6 +2668,8 @@ class DataGridCheckboxFilterHelper {
   /// Whether the column is using paginated filtering.
   bool _usePaginatedFiltering = false;
 
+  List<FilterElement> get previousItems => _previousDataGridSource;
+
   /// Ensures the `selectAll` checkbox state.
   void ensureSelectAllCheckboxState() {
     final List<FilterElement> unCheckedItems =

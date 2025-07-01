@@ -2201,7 +2201,8 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       builder: (BuildContext context) => GestureDetector(
         onTap: enableDropdownButton(isTopButton)
             ? () {
-                helper.checkboxFilterHelper.filterCheckboxItems = filterHelper.items;
+                helper.checkboxFilterHelper.filterCheckboxItems =
+                    helper.checkboxFilterHelper.previousItems;
                 _showPaginatedValuePicker(
                   context: context,
                   isTopButton: isTopButton,
