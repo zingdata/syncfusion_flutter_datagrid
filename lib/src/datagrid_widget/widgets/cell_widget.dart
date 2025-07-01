@@ -1682,11 +1682,12 @@ class _CheckboxFilterMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color onSurface = dataGridConfiguration.colorScheme!.onSurface;
-
+    final bool isSearchingOnMobile =
+        isMobile && filterHelper.textController.text.trim().isNotEmpty;
     return Column(
       children: <Widget>[
         _buildSearchBox(onSurface, context),
-        _buildCheckboxListView(context),
+        if (isSearchingOnMobile) Expanded(child: _buildCheckboxListView(context)) else _buildCheckboxListView(context),
       ],
     );
   }
@@ -1713,14 +1714,14 @@ class _CheckboxFilterMenu extends StatelessWidget {
     }
 
     // Determine if we're actively searching on mobile
-    final bool isSearchingOnMobile = isMobile && 
-        helper.checkboxFilterHelper.textController.text.trim().isNotEmpty;
-    
+    final bool isSearchingOnMobile =
+        isMobile && helper.checkboxFilterHelper.textController.text.trim().isNotEmpty;
+
     // Gets the remaining height of the current view to fill the checkbox
     // listview in the mobile platform.
     final double? checkboxHeight = isSearchingOnMobile
         ? null // Use Expanded when searching on mobile
-        : isMobile 
+        : isMobile
             ? max(viewSize!.height - occupiedHeight, 120.0)
             : 200.0;
 
@@ -1743,23 +1744,25 @@ class _CheckboxFilterMenu extends StatelessWidget {
     final valuesListView = filterHelper.usePaginatedFiltering
         ? _buildPaginatedListView(context, helper.textStyle)
         : ListView.builder(
-            key: ValueKey<String>('datagrid_filtering_checkbox_listView_${filterHelper.items.length}_${filterHelper.textController.text}'),
-            prototypeItem: filterHelper.items.isNotEmpty 
-                ? buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle) 
+            key: ValueKey<String>(
+                'datagrid_filtering_checkbox_listView_${filterHelper.items.length}_${filterHelper.textController.text}'),
+            prototypeItem: filterHelper.items.isNotEmpty
+                ? buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle)
                 : null,
             itemCount: filterHelper.items.length,
             itemBuilder: (BuildContext context, int index) =>
                 buildCheckboxTile(index, helper.textStyle));
 
     // Calculate safe height for empty state - use actual calculated height or fallback
-    final double emptyStateHeight = (checkboxHeight ?? 
-        (isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0)) + 
-        selectAllButtonHeight;
+    final double emptyStateHeight =
+        (checkboxHeight ?? (isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0)) +
+            selectAllButtonHeight;
 
     // Improved visibility logic to handle search results better
     final bool hasItems = filterHelper.items.isNotEmpty;
     final bool hasSearchText = filterHelper.textController.text.trim().isNotEmpty;
-    final bool showListView = hasItems || column.usePaginatedFiltering || 
+    final bool showListView = hasItems ||
+        column.usePaginatedFiltering ||
         (hasSearchText && filterHelper.usePaginatedFiltering);
 
     return Padding(
@@ -1769,7 +1772,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
         replacement: SizedBox(
           height: emptyStateHeight,
           child: Center(
-              child: Text(hasSearchText 
+              child: Text(hasSearchText
                   ? dataGridConfiguration.localizations.noMatchesDataGridFilteringLabel
                   : 'No items available')),
         ),
@@ -1894,7 +1897,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
       final FilterElement element = filterHelper.items[index];
       final String displayText =
           dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(element.value);
-      
+
       return _FilterPopupMenuTile(
           style: style,
           height: isMobile ? style.fontSize! + 34 : style.fontSize! + 26,
@@ -1906,7 +1909,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
           onTap: () => onHandleCheckboxTap(element),
           child: Text(displayText, overflow: TextOverflow.ellipsis));
     }
-    
+
     return null;
   }
 
