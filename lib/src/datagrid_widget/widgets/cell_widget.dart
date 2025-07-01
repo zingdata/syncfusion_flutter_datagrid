@@ -1682,12 +1682,10 @@ class _CheckboxFilterMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color onSurface = dataGridConfiguration.colorScheme!.onSurface;
-    final bool isSearchingOnMobile =
-        isMobile && filterHelper.textController.text.trim().isNotEmpty;
     return Column(
       children: <Widget>[
         _buildSearchBox(onSurface, context),
-        if (isSearchingOnMobile) Expanded(child: _buildCheckboxListView(context)) else _buildCheckboxListView(context),
+        _buildCheckboxListView(context),
       ],
     );
   }
@@ -1717,13 +1715,33 @@ class _CheckboxFilterMenu extends StatelessWidget {
     final bool isSearchingOnMobile =
         isMobile && helper.checkboxFilterHelper.textController.text.trim().isNotEmpty;
 
-    // Gets the remaining height of the current view to fill the checkbox
-    // listview in the mobile platform.
-    final double? checkboxHeight = isSearchingOnMobile
-        ? null // Use Expanded when searching on mobile
-        : isMobile
-            ? max(viewSize!.height - occupiedHeight, 120.0)
-            : 200.0;
+    // Calculate height for mobile search scenario considering hidden top portion
+    double? checkboxHeight;
+    if (isSearchingOnMobile) {
+      // When searching, we need to account for the space taken by the search box
+      // and any other UI elements that remain visible during search
+      double searchOccupiedHeight = 340.0;
+      
+      // Adjust for the same filter popup menu options as above
+      if (column.filterPopupMenuOptions != null) {
+        if (!column.filterPopupMenuOptions!.canShowSortingOptions) {
+          searchOccupiedHeight -= (helper.tileHeight * 2) + 16.0;
+        }
+        if (!column.filterPopupMenuOptions!.canShowClearFilterOption) {
+          searchOccupiedHeight -= helper.tileHeight;
+        }
+        if (column.filterPopupMenuOptions!.filterMode == FilterMode.checkboxFilter) {
+          searchOccupiedHeight -= helper.tileHeight;
+        }
+      }
+      
+      // Calculate available height for search results
+      checkboxHeight = max(viewSize!.height - searchOccupiedHeight, 120.0);
+    } else {
+      checkboxHeight = isMobile
+          ? max(viewSize!.height - occupiedHeight, 120.0)
+          : 200.0;
+    }
 
     final canShowSelectAllButton =
         filterHelper.textController.text.isEmpty || !column.usePaginatedFiltering;
@@ -1753,10 +1771,8 @@ class _CheckboxFilterMenu extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) =>
                 buildCheckboxTile(index, helper.textStyle));
 
-    // Calculate safe height for empty state - use actual calculated height or fallback
-    final double emptyStateHeight =
-        (checkboxHeight ?? (isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0)) +
-            selectAllButtonHeight;
+    // Calculate safe height for empty state - use actual calculated height
+    final double emptyStateHeight = checkboxHeight + selectAllButtonHeight;
 
     // Improved visibility logic to handle search results better
     final bool hasItems = filterHelper.items.isNotEmpty;
@@ -1827,13 +1843,11 @@ class _CheckboxFilterMenu extends StatelessWidget {
                 ),
               ),
             // Use Expanded when searching on mobile, SizedBox with fixed height otherwise
-            if (isSearchingOnMobile)
-              Expanded(child: valuesListView)
-            else
-              SizedBox(
-                height: checkboxHeight,
-                child: valuesListView,
-              )
+
+            SizedBox(
+              height: checkboxHeight,
+              child: valuesListView,
+            )
           ]),
         ),
       ),
