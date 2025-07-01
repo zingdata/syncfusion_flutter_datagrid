@@ -3669,7 +3669,7 @@ class PaginatedFilterHelper {
 
   /// Internal method to load a page of data.
   Future<void> _loadPage({
-    bool selectAll = false,
+    bool selectAll = true,
     DataGridSource? dataGridSource,
   }) async {
     _isLoading.value = true;
