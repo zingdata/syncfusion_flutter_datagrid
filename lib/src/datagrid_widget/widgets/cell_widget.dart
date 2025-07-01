@@ -1721,7 +1721,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
       // When searching, we need to account for the space taken by the search box
       // and any other UI elements that remain visible during search
       double searchOccupiedHeight = 340.0;
-      
+
       // Adjust for the same filter popup menu options as above
       if (column.filterPopupMenuOptions != null) {
         if (!column.filterPopupMenuOptions!.canShowSortingOptions) {
@@ -1734,13 +1734,11 @@ class _CheckboxFilterMenu extends StatelessWidget {
           searchOccupiedHeight -= helper.tileHeight;
         }
       }
-      
+
       // Calculate available height for search results
       checkboxHeight = max(viewSize!.height - searchOccupiedHeight, 120.0);
     } else {
-      checkboxHeight = isMobile
-          ? max(viewSize!.height - occupiedHeight, 120.0)
-          : 200.0;
+      checkboxHeight = isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0;
     }
 
     final canShowSelectAllButton =
@@ -2202,14 +2200,17 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     return Builder(
       builder: (BuildContext context) => GestureDetector(
         onTap: enableDropdownButton(isTopButton)
-            ? () => _showPaginatedValuePicker(
+            ? () {
+                helper.checkboxFilterHelper.filterCheckboxItems = filterHelper.items;
+                _showPaginatedValuePicker(
                   context: context,
                   isTopButton: isTopButton,
                   setValue: setValue,
                   helper: helper,
                   dataGridThemeHelper: dataGridThemeHelper,
                   currentValue: currentValue,
-                )
+                );
+              }
             : null,
         child: Container(
           decoration: BoxDecoration(
