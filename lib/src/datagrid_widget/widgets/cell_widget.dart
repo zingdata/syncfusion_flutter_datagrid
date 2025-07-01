@@ -1615,10 +1615,13 @@ class _CheckboxFilterMenu extends HookWidget {
     final double selectAllButtonHeight =
         canShowSelectAllButton ? (isMobile ? helper.tileHeight - 4 : helper.tileHeight) : 0.0;
 
-    final suffixText = filterHelper.isSelectAllChecked == null &&
-            hasExactlyTrue(
-                filterHelper.filterCheckboxItems, 1, (FilterElement element) => element.isSelected)
-        ? 'Clear'
+    final hasExactlyOneSelected = hasExactlyTrue(
+        filterHelper.filterCheckboxItems, 1, (FilterElement element) => element.isSelected);
+
+    final suffixText = filterHelper.isSelectAllChecked == null
+        ? hasExactlyOneSelected
+            ? 'Clear'
+            : 'Clear All'
         : (filterHelper.isSelectAllChecked ?? false)
             ? 'Clear All'
             : '';
@@ -1661,18 +1664,25 @@ class _CheckboxFilterMenu extends HookWidget {
                   value: filterHelper.isSelectAllChecked,
                   onChanged: (_) => onHandleSelectAllCheckboxTap(),
                 ),
-                suffix: suffixText.isNotEmpty
-                    ? Text(
+                onTap: onHandleSelectAllCheckboxTap,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (suffixText.isNotEmpty)
+                      Text(
                         suffixText,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               color: Theme.of(context).colorScheme.secondary,
                             ),
                       )
-                    : null,
-                onTap: onHandleSelectAllCheckboxTap,
-                child: Text(
-                  dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
-                  overflow: TextOverflow.ellipsis,
+                    else
+                      const SizedBox.shrink()
+                  ],
                 ),
               ),
             SizedBox(
