@@ -2268,6 +2268,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     if (selectedValue != null) {
       setValue(selectedValue);
     }
+    helper.checkboxFilterHelper.paginatedFilterHelper?.clear();
   }
 
   Widget _buildFilterTypeDropdown({required bool isFirstButton}) {
