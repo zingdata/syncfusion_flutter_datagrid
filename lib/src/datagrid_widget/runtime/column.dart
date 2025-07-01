@@ -2760,6 +2760,11 @@ class DataGridCheckboxFilterHelper {
         filterCheckboxItems = _searchedItems;
       } else {
         filterCheckboxItems = _previousDataGridSource;
+        final previousSelectedItems =
+            _previousDataGridSource.where((FilterElement element) => element.isSelected).toList();
+        if (previousSelectedItems.isNotEmpty) {
+          selectedItems.addAll(previousSelectedItems);
+        }
       }
       if (searchText.isEmpty) {
         _searchedItems = <FilterElement>[];
@@ -3693,8 +3698,8 @@ class PaginatedFilterHelper {
               }
             }
             return false;
-          } else {
-            return currentSearchText.trim().isEmpty;
+          } else if (currentSearchText.trim().isNotEmpty) {
+            return false;
           }
         }
         return selectAll; // Default to selected if no filters are applied

@@ -1615,6 +1615,14 @@ class _CheckboxFilterMenu extends HookWidget {
     final double selectAllButtonHeight =
         canShowSelectAllButton ? (isMobile ? helper.tileHeight - 4 : helper.tileHeight) : 0.0;
 
+    final suffixText = filterHelper.isSelectAllChecked == null &&
+            hasExactlyTrue(
+                filterHelper.filterCheckboxItems, 1, (FilterElement element) => element.isSelected)
+        ? 'Clear'
+        : (filterHelper.isSelectAllChecked ?? false)
+            ? 'Clear All'
+            : '';
+
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: Visibility(
@@ -1653,6 +1661,14 @@ class _CheckboxFilterMenu extends HookWidget {
                   value: filterHelper.isSelectAllChecked,
                   onChanged: (_) => onHandleSelectAllCheckboxTap(),
                 ),
+                suffix: suffixText.isNotEmpty
+                    ? Text(
+                        suffixText,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      )
+                    : null,
                 onTap: onHandleSelectAllCheckboxTap,
                 child: Text(
                   dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,

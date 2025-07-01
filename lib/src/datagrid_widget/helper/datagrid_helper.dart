@@ -1177,3 +1177,16 @@ List<T> copyDeepList<T>(List<T> list) {
   }
   return newList;
 }
+
+bool hasExactlyTrue<T>(List<T> items, int max, bool Function(T) isTrue) {
+  var count = 0;
+  for (final v in items) {
+    if (isTrue(v)) {
+      count++;
+      if (count > max) {
+        return false;
+      }
+    }
+  }
+  return count == max;
+}
