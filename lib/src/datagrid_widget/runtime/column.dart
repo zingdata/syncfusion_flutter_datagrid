@@ -2755,7 +2755,7 @@ class DataGridCheckboxFilterHelper {
           : [];
       // Set loading state
       _usePaginatedFiltering = true;
-
+      _paginatedFilterHelper!.setCurrentSearchText(searchText);
       if (searchText.trim().isNotEmpty) {
         await _paginatedFilterHelper!.loadInitialData(searchText: searchText);
         _searchedItems = _paginatedFilterHelper!.items;
@@ -3651,6 +3651,14 @@ class PaginatedFilterHelper {
   String get currentSearchText => _currentSearchText;
 
   /// Loads the first page of data or refreshes with new search text.
+  void setCurrentSearchText(String searchText) {
+    if (_currentSearchText.trim().isNotEmpty && searchText.trim().isEmpty) {
+      clear();
+    } else {
+      _currentSearchText = searchText;
+    }
+  }
+
   Future<void> loadInitialData({String searchText = ''}) async {
     _currentSearchText = searchText;
     _currentPageIndex = 0;
