@@ -1055,50 +1055,9 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     
     // Set initial animation state
     _topSectionAnimationController.forward();
-    
-    // Listen to search text changes (only for mobile)
-    if (isMobile) {
-      filterHelper.checkboxFilterHelper.textController.addListener(_onSearchTextChanged);
-      filterHelper.checkboxFilterHelper.searchboxFocusNode.addListener(_onSearchFocusChanged);
-    }
   }
 
-  void _onSearchTextChanged() {
-    if (!isMobile) return;
-    
-    final String searchText = filterHelper.checkboxFilterHelper.textController.text;
-    final bool shouldBeActive = searchText.isNotEmpty;
-    
-    if (shouldBeActive != _isSearchActive) {
-      setState(() {
-        _isSearchActive = shouldBeActive;
-      });
-      
-      if (_isSearchActive) {
-        // Hide top section with smooth animation when searching
-        _topSectionAnimationController.reverse();
-      } else {
-        // Show top section with smooth animation when not searching
-        _topSectionAnimationController.forward();
-      }
-    }
-  }
 
-  void _onSearchFocusChanged() {
-    if (!isMobile) return;
-    
-    // When search field loses focus and there's no search text, 
-    // smoothly show the top section again
-    final bool hasFocus = filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus;
-    final bool hasText = filterHelper.checkboxFilterHelper.textController.text.isNotEmpty;
-    
-    if (!hasFocus && !hasText && _isSearchActive) {
-      setState(() {
-        _isSearchActive = false;
-      });
-      _topSectionAnimationController.forward();
-    }
-  }
 
   void _unfocusSearch() {
     if (!isMobile) return;
@@ -1106,6 +1065,14 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     // Unfocus search field when tapping outside on mobile
     if (filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus) {
       filterHelper.checkboxFilterHelper.searchboxFocusNode.unfocus();
+      
+      // If there's no search text, show top section again
+      if (filterHelper.checkboxFilterHelper.textController.text.isEmpty && _isSearchActive) {
+        setState(() {
+          _isSearchActive = false;
+        });
+        _topSectionAnimationController.forward();
+      }
     }
   }
 
@@ -1113,6 +1080,30 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     useListenable(filterHelper.checkboxFilterHelper.textController);
     useListenable(filterHelper.checkboxFilterHelper.isLoading);
+    
+    // Handle search state changes for animation (mobile only)
+    if (isMobile) {
+      final String searchText = filterHelper.checkboxFilterHelper.textController.text;
+      final bool shouldBeActive = searchText.isNotEmpty;
+      
+      if (shouldBeActive != _isSearchActive) {
+        // Update state and trigger animation
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _isSearchActive = shouldBeActive;
+            });
+            
+            if (_isSearchActive) {
+              _topSectionAnimationController.reverse();
+            } else {
+              _topSectionAnimationController.forward();
+            }
+          }
+        });
+      }
+    }
+    
     return Visibility(
       visible: isMobile,
       replacement: Material(
@@ -1143,10 +1134,6 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
 
   @override
   void dispose() {
-    if (isMobile) {
-      filterHelper.checkboxFilterHelper.textController.removeListener(_onSearchTextChanged);
-      filterHelper.checkboxFilterHelper.searchboxFocusNode.removeListener(_onSearchFocusChanged);
-    }
     _topSectionAnimationController.dispose();
     filterHelper.isFilterPopupMenuShowing = false;
     super.dispose();
