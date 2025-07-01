@@ -222,18 +222,18 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   Widget build(BuildContext context) {
     useListenable(widget.helper.checkboxFilterHelper.isLoading);
     // Show empty state if no items found and not loading
-    if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+    if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
-    final itemCount = widget.helper.checkboxFilterHelper.items.length +
+    final itemCount = widget.helper.checkboxFilterHelper.filterCheckboxItems.length +
         (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
     return Column(
       children: [
         // Show horizontal progress indicator when loading/searching
-        if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+        if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty &&
             widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Expanded(
@@ -250,7 +250,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
               ),
             ),
           ),
-        if (widget.helper.checkboxFilterHelper.items.isNotEmpty &&
+        if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isNotEmpty &&
             widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Container(
@@ -262,7 +262,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
             ),
           ),
         // Show the list even when loading
-        if (widget.helper.checkboxFilterHelper.items.isEmpty)
+        if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty)
           const SizedBox.shrink()
         else
           Expanded(
@@ -271,8 +271,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
               itemCount: itemCount,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                if (index < widget.helper.checkboxFilterHelper.items.length) {
-                  final item = widget.helper.checkboxFilterHelper.items[index];
+                if (index < widget.helper.checkboxFilterHelper.filterCheckboxItems.length) {
+                  final item = widget.helper.checkboxFilterHelper.filterCheckboxItems[index];
                   return _buildListItem(item, index);
                 }
                 return const SizedBox.shrink();
@@ -483,18 +483,18 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   Widget build(BuildContext context) {
     useListenable(widget.helper.checkboxFilterHelper.isLoading);
     // Show empty state if no items found and not loading
-    if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+    if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
-    final itemCount = widget.helper.checkboxFilterHelper.items.length +
+    final itemCount = widget.helper.checkboxFilterHelper.filterCheckboxItems.length +
         (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
     return Column(
       children: [
         // Show horizontal progress indicator when loading/searching
-        if (widget.helper.checkboxFilterHelper.items.isEmpty &&
+        if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty &&
             widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore &&
             !widget.isAdvancedFilter)
@@ -511,7 +511,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
               ),
             ),
           ),
-        if ((widget.helper.checkboxFilterHelper.items.isNotEmpty || widget.isAdvancedFilter) &&
+        if ((widget.helper.checkboxFilterHelper.filterCheckboxItems.isNotEmpty || widget.isAdvancedFilter) &&
             widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Container(
@@ -526,15 +526,15 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
 
         // Show the list even when loading
         Expanded(
-          child: widget.helper.checkboxFilterHelper.items.isEmpty
+          child: widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty
               ? Container() // Empty container when no items yet
               : ListView.builder(
                   controller: _scrollController,
                   itemCount: itemCount,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    if (index < widget.helper.checkboxFilterHelper.items.length) {
-                      final item = widget.helper.checkboxFilterHelper.items[index];
+                    if (index < widget.helper.checkboxFilterHelper.filterCheckboxItems.length) {
+                      final item = widget.helper.checkboxFilterHelper.filterCheckboxItems[index];
                       return _buildListItem(item, index);
                     } else {
                       // Loading indicator for pagination
