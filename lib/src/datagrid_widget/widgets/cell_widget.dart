@@ -1743,8 +1743,10 @@ class _CheckboxFilterMenu extends StatelessWidget {
     final valuesListView = filterHelper.usePaginatedFiltering
         ? _buildPaginatedListView(context, helper.textStyle)
         : ListView.builder(
-            key: const ValueKey<String>('datagrid_filtering_checkbox_listView'),
-            prototypeItem: buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle),
+            key: ValueKey<String>('datagrid_filtering_checkbox_listView_${filterHelper.items.length}_${filterHelper.textController.text}'),
+            prototypeItem: filterHelper.items.isNotEmpty 
+                ? buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle) 
+                : null,
             itemCount: filterHelper.items.length,
             itemBuilder: (BuildContext context, int index) =>
                 buildCheckboxTile(index, helper.textStyle));
@@ -1754,14 +1756,22 @@ class _CheckboxFilterMenu extends StatelessWidget {
         (isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0)) + 
         selectAllButtonHeight;
 
+    // Improved visibility logic to handle search results better
+    final bool hasItems = filterHelper.items.isNotEmpty;
+    final bool hasSearchText = filterHelper.textController.text.trim().isNotEmpty;
+    final bool showListView = hasItems || column.usePaginatedFiltering || 
+        (hasSearchText && filterHelper.usePaginatedFiltering);
+
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: Visibility(
-        visible: filterHelper.items.isNotEmpty || column.usePaginatedFiltering,
+        visible: showListView,
         replacement: SizedBox(
           height: emptyStateHeight,
           child: Center(
-              child: Text(dataGridConfiguration.localizations.noMatchesDataGridFilteringLabel)),
+              child: Text(hasSearchText 
+                  ? dataGridConfiguration.localizations.noMatchesDataGridFilteringLabel
+                  : 'No items available')),
         ),
         child: CheckboxTheme(
           data: CheckboxThemeData(
@@ -1879,10 +1889,12 @@ class _CheckboxFilterMenu extends StatelessWidget {
   }
 
   Widget? buildCheckboxTile(int index, TextStyle style) {
-    if (filterHelper.items.isNotEmpty) {
+    // More robust bounds checking for search results
+    if (filterHelper.items.isNotEmpty && index >= 0 && index < filterHelper.items.length) {
       final FilterElement element = filterHelper.items[index];
       final String displayText =
           dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(element.value);
+      
       return _FilterPopupMenuTile(
           style: style,
           height: isMobile ? style.fontSize! + 34 : style.fontSize! + 26,
@@ -1894,6 +1906,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
           onTap: () => onHandleCheckboxTap(element),
           child: Text(displayText, overflow: TextOverflow.ellipsis));
     }
+    
     return null;
   }
 
@@ -1915,7 +1928,9 @@ class _CheckboxFilterMenu extends StatelessWidget {
   }
 
   void onHandleSearchTextFieldChanged(String value) {
+    // Trigger search with proper state management
     filterHelper.onSearchTextFieldTextChanged(value, onCompleted: () {
+      // Ensure UI rebuilds after search completes
       setState(() {});
     });
   }
