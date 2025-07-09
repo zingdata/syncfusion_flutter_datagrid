@@ -464,11 +464,11 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     );
   }
 
-  List<Widget> _buildPageItems() {
+    List<Widget> _buildPageItems() {
     final List<Widget> items = [];
     final int currentPage = _currentPageIndex + 1;
     final int totalPages = _pageCount;
-
+    
     if (totalPages <= widget.visibleItemsCount) {
       // Show all pages if total pages <= visibleItemsCount
       for (int i = 1; i <= totalPages; i++) {
@@ -479,35 +479,41 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         ));
       }
     } else {
-      // Show first page
+      // Always show first page
       items.add(_buildPageButton(
         text: '1',
         isSelected: currentPage == 1,
         onPressed: () => _handlePageItemTapped(0),
       ));
 
-      if (currentPage > 2) {
-        // Show ellipsis if current page is not 2
-        items.add(_buildEllipsisButton());
-      }
+      // Always show ellipsis after first page if there are more than 2 pages
+      // This ensures page jump is always available
+      if (totalPages > 2) {
+        if (currentPage > 2) {
+          // Show ellipsis before current page (if not adjacent to first page)
+          items.add(_buildEllipsisButton());
+        }
 
-      // Show current page if it's not 1 or last page
-      if (currentPage != 1 && currentPage != totalPages) {
-        items.add(_buildPageButton(
-          text: currentPage.toString(),
-          isSelected: true,
-          onPressed: () => _handlePageItemTapped(_currentPageIndex),
-        ));
-      }
+        // Show current page if it's not 1 or last page
+        if (currentPage != 1 && currentPage != totalPages) {
+          items.add(_buildPageButton(
+            text: currentPage.toString(),
+            isSelected: true,
+            onPressed: () => _handlePageItemTapped(_currentPageIndex),
+          ));
+        }
 
-      if (currentPage < totalPages - 1) {
-        // Show ellipsis if current page is not second to last
-        if (currentPage != 1) {
+        // Always show ellipsis before last page (ensures page jump is always available)
+        if (currentPage < totalPages - 1) {
+          items.add(_buildEllipsisButton());
+        } else if (currentPage == 1 && totalPages > 2) {
+          // Special case: when on first page and there are many pages,
+          // show ellipsis to enable page jumping
           items.add(_buildEllipsisButton());
         }
       }
 
-      // Show last page if more than 1 page
+      // Always show last page if more than 1 page
       if (totalPages > 1) {
         items.add(_buildPageButton(
           text: totalPages.toString(),
