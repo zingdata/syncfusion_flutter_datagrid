@@ -610,16 +610,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
                 ),
             ],
           ),
-        // Page indicator at bottom with labelMedium style
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            'on page ${_formatNumber(_currentPageIndex + 1)}',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-          ),
-        ),
+
       ],
     );
   }
@@ -631,12 +622,12 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     final int totalRows =
         widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Row range indicator on top
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+        // Left side: Row range indicator
+        Expanded(
+          flex: 2,
           child: GestureDetector(
             onTap: _showPageJumpDialog,
             child: Container(
@@ -655,46 +646,59 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
             ),
           ),
         ),
-        // Navigation controls with visible page items
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.firstPageItemVisible)
-              _buildNavigationButton(
-                type: 'First',
-                icon: _isRTL ? Icons.last_page : Icons.first_page,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'first'),
-              ),
-            if (widget.previousPageItemVisible)
-              _buildNavigationButton(
-                type: 'Previous',
-                icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
-              ),
-            ..._buildPageItems(), // Show visible page items
-            if (widget.nextPageItemVisible)
-              _buildNavigationButton(
-                type: 'Next',
-                icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
-              ),
-            if (widget.lastPageItemVisible)
-              _buildNavigationButton(
-                type: 'Last',
-                icon: _isRTL ? Icons.first_page : Icons.last_page,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'last'),
-              ),
-            if (widget.onRowsPerPageChanged != null) ...[
-              const SizedBox(width: 16),
-              Text(
-                _localization.rowsPerPageDataPagerLabel,
-                style: _dataPagerThemeHelper!.itemTextStyle,
-              ),
-              const SizedBox(width: 8),
-              _buildDropDownWidget(),
+        // Center: Navigation controls with visible page items
+        Expanded(
+          flex: 3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.firstPageItemVisible)
+                _buildNavigationButton(
+                  type: 'First',
+                  icon: _isRTL ? Icons.last_page : Icons.first_page,
+                  onPressed: () => _handleDataPagerControlPropertyChanged(property: 'first'),
+                ),
+              if (widget.previousPageItemVisible)
+                _buildNavigationButton(
+                  type: 'Previous',
+                  icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
+                  onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
+                ),
+              ..._buildPageItems(), // Show visible page items
+              if (widget.nextPageItemVisible)
+                _buildNavigationButton(
+                  type: 'Next',
+                  icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
+                  onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
+                ),
+              if (widget.lastPageItemVisible)
+                _buildNavigationButton(
+                  type: 'Last',
+                  icon: _isRTL ? Icons.first_page : Icons.last_page,
+                  onPressed: () => _handleDataPagerControlPropertyChanged(property: 'last'),
+                ),
             ],
-          ],
+          ),
         ),
+        // Right side: Rows per page dropdown
+        if (widget.onRowsPerPageChanged != null)
+          Expanded(
+            flex: 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  _localization.rowsPerPageDataPagerLabel,
+                  style: _dataPagerThemeHelper!.itemTextStyle,
+                ),
+                const SizedBox(width: 8),
+                _buildDropDownWidget(),
+              ],
+            ),
+          )
+        else
+          const Expanded(flex: 2, child: SizedBox.shrink()),
       ],
     );
   }
