@@ -802,6 +802,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         _isDesktop && MediaQuery.of(context).size.width > _kMobileViewWidthOnWeb;
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: _dataPagerThemeHelper!.backgroundColor,
