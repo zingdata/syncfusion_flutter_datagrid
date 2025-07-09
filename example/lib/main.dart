@@ -107,6 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? SfCompactDataPager(
                     delegate: employeeDataSource,
                     pageCount: (employees.length / rowsPerPage).ceil().toDouble(),
+                    visibleItemsCount: 3, // Show max 3 page numbers
+                    totalRows: employees.length, // Total rows for web display
                     availableRowsPerPage: const [5, 10, 15, 20],
                     onRowsPerPageChanged: (int? rowsPerPage) {
                       setState(() {
@@ -134,33 +136,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Employee> getEmployeeData() {
-    return [
-      Employee(10001, 'James', 'Project Lead', 20000),
-      Employee(10002, 'Kathryn', 'Manager', 30000),
-      Employee(10003, 'Lara', 'Developer', 15000),
-      Employee(10004, 'Michael', 'Designer', 15000),
-      Employee(10005, 'Martin', 'Developer', 15000),
-      Employee(10006, 'Newberry', 'Developer', 15000),
-      Employee(10007, 'Balnc', 'Developer', 15000),
-      Employee(10008, 'Perry', 'Developer', 15000),
-      Employee(10009, 'Gable', 'Developer', 15000),
-      Employee(10010, 'Grimes', 'Developer', 15000),
-      Employee(10011, 'Oliver', 'Developer', 15000),
-      Employee(10012, 'Harry', 'Developer', 15000),
-      Employee(10013, 'Jack', 'Developer', 15000),
-      Employee(10014, 'George', 'Developer', 15000),
-      Employee(10015, 'Noah', 'Developer', 15000),
-      Employee(10016, 'Charlie', 'Developer', 15000),
-      Employee(10017, 'Jacob', 'Developer', 15000),
-      Employee(10018, 'Thomas', 'Developer', 15000),
-      Employee(10019, 'Oscar', 'Developer', 15000),
-      Employee(10020, 'William', 'Developer', 15000),
-      Employee(10021, 'James', 'Developer', 15000),
-      Employee(10022, 'Alfie', 'Developer', 15000),
-      Employee(10023, 'Henry', 'Developer', 15000),
-      Employee(10024, 'Alexander', 'Developer', 15000),
-      Employee(10025, 'Leo', 'Developer', 15000),
-    ];
+    List<Employee> employees = [];
+    List<String> names = ['James', 'Kathryn', 'Lara', 'Michael', 'Martin', 'Newberry', 'Blanc', 'Perry', 'Gable', 'Grimes', 'Oliver', 'Harry', 'Jack', 'George', 'Noah', 'Charlie', 'Jacob', 'Thomas', 'Oscar', 'William', 'Alfie', 'Henry', 'Alexander', 'Leo', 'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Mia'];
+    List<String> designations = ['Project Lead', 'Manager', 'Developer', 'Designer', 'Analyst', 'Tester', 'Architect', 'DevOps', 'Consultant'];
+    
+    // Generate 150 employees for better pagination testing
+    for (int i = 1; i <= 150; i++) {
+      employees.add(Employee(
+        10000 + i,
+        names[i % names.length],
+        designations[i % designations.length],
+        15000 + (i % 20) * 1000, // Vary salary
+      ));
+    }
+    
+    return employees;
   }
 }
 

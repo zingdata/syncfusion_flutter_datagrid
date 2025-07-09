@@ -19,14 +19,17 @@ class SfCompactDataPager extends StatefulWidget {
       this.lastPageItemVisible = true,
       this.nextPageItemVisible = true,
       this.previousPageItemVisible = true,
+      this.visibleItemsCount = 3,
       this.initialPageIndex = 0,
       this.onPageNavigationStart,
       this.onPageNavigationEnd,
       this.onRowsPerPageChanged,
       this.availableRowsPerPage = const <int>[10, 15, 20],
-      this.controller})
+      this.controller,
+      this.totalRows})
       : assert(pageCount > 0),
         assert(itemHeight > 0),
+        assert(visibleItemsCount > 0),
         assert(availableRowsPerPage.length != 0),
         assert((firstPageItemVisible ||
                 lastPageItemVisible ||
@@ -37,6 +40,9 @@ class SfCompactDataPager extends StatefulWidget {
 
   /// The number of pages required to display in [SfCompactDataPager].
   final double pageCount;
+
+  /// The maximum number of page items to show in view.
+  final int visibleItemsCount;
 
   /// The height of each item.
   final double itemHeight;
@@ -84,6 +90,10 @@ class SfCompactDataPager extends StatefulWidget {
 
   /// The options to offer for the rowsPerPage.
   final List<int> availableRowsPerPage;
+
+  /// Total number of rows in the data source.
+  /// Used for displaying "Rows X - Y of Total" format on web.
+  final int? totalRows;
 
   @override
   SfCompactDataPagerState createState() => SfCompactDataPagerState();
@@ -306,33 +316,33 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-                 return AlertDialog(
-           title: const Text('Go to Page'),
-           content: TextField(
-             controller: controller,
-             keyboardType: TextInputType.number,
-             decoration: InputDecoration(
-               labelText: 'Page number (1-$_pageCount)',
-               border: const OutlineInputBorder(),
-             ),
+        return AlertDialog(
+          title: const Text('Go to Page'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Page number (1-$_pageCount)',
+              border: const OutlineInputBorder(),
+            ),
             onSubmitted: (String value) {
               _jumpToPage(value);
               Navigator.of(context).pop();
             },
           ),
-                     actions: [
-             TextButton(
-               onPressed: () => Navigator.of(context).pop(),
-               child: const Text('Cancel'),
-             ),
-             TextButton(
-               onPressed: () {
-                 _jumpToPage(controller.text);
-                 Navigator.of(context).pop();
-               },
-               child: const Text('Go'),
-             ),
-           ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _jumpToPage(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Go'),
+            ),
+          ],
         );
       },
     );
@@ -361,10 +371,10 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
           color: isDisabled 
               ? _dataPagerThemeHelper!.disabledItemColor
               : _dataPagerThemeHelper!.itemColor,
-          borderRadius: _dataPagerThemeHelper!.itemBorderRadius,
-                     child: InkWell(
-             borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
-             onTap: isDisabled ? null : onPressed,
+          borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+          child: InkWell(
+            borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+            onTap: isDisabled ? null : onPressed,
             child: Icon(
               icon,
               size: 20,
@@ -378,46 +388,118 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     );
   }
 
-  Widget _buildCurrentPageIndicator() {
-    return GestureDetector(
-      onTap: _showPageJumpDialog,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: _dataPagerThemeHelper!.itemBorderColor!,
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '...',
-              style: _dataPagerThemeHelper!.itemTextStyle,
-            ),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: _dataPagerThemeHelper!.selectedItemColor,
-                borderRadius: BorderRadius.circular(50),
-              ),
+  Widget _buildPageButton({
+    required String text,
+    required bool isSelected,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: widget.itemPadding,
+      child: SizedBox(
+        width: widget.navigationItemWidth,
+        height: widget.navigationItemHeight,
+        child: Material(
+          color: isSelected 
+              ? _dataPagerThemeHelper!.selectedItemColor
+              : _dataPagerThemeHelper!.itemColor,
+          borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+          child: InkWell(
+            borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+            onTap: onPressed,
+            child: Center(
               child: Text(
-                '${_currentPageIndex + 1}',
-                style: _dataPagerThemeHelper!.selectedItemTextStyle,
+                text,
+                style: isSelected
+                    ? _dataPagerThemeHelper!.selectedItemTextStyle
+                    : _dataPagerThemeHelper!.itemTextStyle,
               ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              '...',
-              style: _dataPagerThemeHelper!.itemTextStyle,
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildEllipsisButton() {
+    return Padding(
+      padding: widget.itemPadding,
+      child: GestureDetector(
+        onTap: _showPageJumpDialog,
+        child: Container(
+          width: widget.navigationItemWidth + 10,
+          height: widget.navigationItemHeight,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: _dataPagerThemeHelper!.itemBorderColor!,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Center(
+            child: Text(
+              '...',
+              style: _dataPagerThemeHelper!.itemTextStyle,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildPageItems() {
+    final List<Widget> items = [];
+    final int currentPage = _currentPageIndex + 1;
+    final int totalPages = _pageCount;
+    
+    if (totalPages <= widget.visibleItemsCount) {
+      // Show all pages if total pages <= visibleItemsCount
+      for (int i = 1; i <= totalPages; i++) {
+        items.add(_buildPageButton(
+          text: i.toString(),
+          isSelected: i == currentPage,
+          onPressed: () => _handlePageItemTapped(i - 1),
+        ));
+      }
+    } else {
+      // Show first page
+      items.add(_buildPageButton(
+        text: '1',
+        isSelected: currentPage == 1,
+        onPressed: () => _handlePageItemTapped(0),
+      ));
+
+      if (currentPage > 2) {
+        // Show ellipsis if current page is not 2
+        items.add(_buildEllipsisButton());
+      }
+
+      // Show current page if it's not 1 or last page
+      if (currentPage != 1 && currentPage != totalPages) {
+        items.add(_buildPageButton(
+          text: currentPage.toString(),
+          isSelected: true,
+          onPressed: () => _handlePageItemTapped(_currentPageIndex),
+        ));
+      }
+
+      if (currentPage < totalPages - 1) {
+        // Show ellipsis if current page is not second to last
+        if (currentPage != 1) {
+          items.add(_buildEllipsisButton());
+        }
+      }
+
+      // Show last page if more than 1 page
+      if (totalPages > 1) {
+        items.add(_buildPageButton(
+          text: totalPages.toString(),
+          isSelected: currentPage == totalPages,
+          onPressed: () => _handlePageItemTapped(totalPages - 1),
+        ));
+      }
+    }
+
+    return items;
   }
 
   Widget _buildMobileCompactPager() {
@@ -425,31 +507,41 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'on page ',
+          'on page ${_currentPageIndex + 1}',
           style: _dataPagerThemeHelper!.itemTextStyle,
         ),
+        const SizedBox(width: 16),
         if (widget.previousPageItemVisible)
           _buildNavigationButton(
             type: 'Previous',
             icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
             onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
           ),
-        _buildCurrentPageIndicator(),
+        ..._buildPageItems(),
         if (widget.nextPageItemVisible)
           _buildNavigationButton(
             type: 'Next',
             icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
             onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
           ),
+        const SizedBox(width: 16),
+        if (widget.onRowsPerPageChanged != null) ...[
+          Text(
+            'Rows/page',
+            style: _dataPagerThemeHelper!.itemTextStyle,
+          ),
+          const SizedBox(width: 8),
+          _buildDropDownWidget(),
+        ],
       ],
     );
   }
 
-     Widget _buildWebRowRangePager() {
-     final int startRow = (_currentPageIndex * _rowsPerPage!) + 1;
-     final int endRow = min((_currentPageIndex + 1) * _rowsPerPage!, 
-                                (widget.delegate as DataGridSource?)?.rows.length ?? 0);
-     final int totalRows = (widget.delegate as DataGridSource?)?.rows.length ?? 0;
+  Widget _buildWebRowRangePager() {
+    final int startRow = (_currentPageIndex * _rowsPerPage!) + 1;
+    final int endRow = min((_currentPageIndex + 1) * _rowsPerPage!, 
+                           widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0);
+    final int totalRows = widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0;
     
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -574,6 +666,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         oldWidget.pageCount != widget.pageCount ||
         oldWidget.availableRowsPerPage != widget.availableRowsPerPage ||
         oldWidget.onRowsPerPageChanged != widget.onRowsPerPageChanged ||
+        oldWidget.visibleItemsCount != widget.visibleItemsCount ||
         oldWidget.initialPageIndex != widget.initialPageIndex) {
       
       _setPageCountInDataGridSource(widget.pageCount);
