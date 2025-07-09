@@ -805,7 +805,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: _dataPagerThemeHelper!.backgroundColor,
-        border: Border(top: BorderSide(color: _dataPagerThemeHelper!.itemBorderColor!)),
+        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline)),
       ),
       child: isWebLayout ? _buildWebRowRangePager() : _buildMobileCompactPager(),
     );
