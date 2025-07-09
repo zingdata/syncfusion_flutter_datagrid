@@ -464,11 +464,11 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     );
   }
 
-    List<Widget> _buildPageItems() {
+  List<Widget> _buildPageItems() {
     final List<Widget> items = [];
     final int currentPage = _currentPageIndex + 1;
     final int totalPages = _pageCount;
-    
+
     if (totalPages <= widget.visibleItemsCount) {
       // Show all pages if total pages <= visibleItemsCount
       for (int i = 1; i <= totalPages; i++) {
@@ -529,7 +529,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   Widget _buildMobileCompactPager() {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool canFitInOneLine = screenWidth > 480; // For larger mobile screens
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -579,7 +579,8 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
                       _buildNavigationButton(
                         type: 'Previous',
                         icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
-                        onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
+                        onPressed: () =>
+                            _handleDataPagerControlPropertyChanged(property: 'previous'),
                       ),
                     ..._buildPageItems(),
                     if (widget.nextPageItemVisible)
@@ -800,13 +801,13 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     final bool isWebLayout =
         _isDesktop && MediaQuery.of(context).size.width > _kMobileViewWidthOnWeb;
 
-    return Card(
-      elevation: 0.0,
-      color: _dataPagerThemeHelper!.backgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: isWebLayout ? _buildWebRowRangePager() : _buildMobileCompactPager(),
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: _dataPagerThemeHelper!.backgroundColor,
+        border: Border(top: BorderSide(color: _dataPagerThemeHelper!.itemBorderColor!)),
       ),
+      child: isWebLayout ? _buildWebRowRangePager() : _buildMobileCompactPager(),
     );
   }
 
