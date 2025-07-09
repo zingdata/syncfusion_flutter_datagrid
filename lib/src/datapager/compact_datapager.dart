@@ -521,38 +521,89 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   }
 
   Widget _buildMobileCompactPager() {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool canFitInOneLine = screenWidth > 480; // For larger mobile screens
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Navigation controls in a row
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.previousPageItemVisible)
-              _buildNavigationButton(
-                type: 'Previous',
-                icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
+        // Navigation controls - responsive layout
+        if (canFitInOneLine && widget.onRowsPerPageChanged != null)
+          // Single row layout for larger screens
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.previousPageItemVisible)
+                  _buildNavigationButton(
+                    type: 'Previous',
+                    icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
+                    onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
+                  ),
+                ..._buildPageItems(),
+                if (widget.nextPageItemVisible)
+                  _buildNavigationButton(
+                    type: 'Next',
+                    icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
+                    onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
+                  ),
+                const SizedBox(width: 16),
+                Text(
+                  'Rows/page',
+                  style: _dataPagerThemeHelper!.itemTextStyle,
+                ),
+                const SizedBox(width: 8),
+                _buildDropDownWidget(),
+              ],
+            ),
+          )
+        else
+          // Multi-row layout for smaller screens
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Navigation row
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.previousPageItemVisible)
+                      _buildNavigationButton(
+                        type: 'Previous',
+                        icon: _isRTL ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_left,
+                        onPressed: () => _handleDataPagerControlPropertyChanged(property: 'previous'),
+                      ),
+                    ..._buildPageItems(),
+                    if (widget.nextPageItemVisible)
+                      _buildNavigationButton(
+                        type: 'Next',
+                        icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
+                        onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
+                      ),
+                  ],
+                ),
               ),
-            ..._buildPageItems(),
-            if (widget.nextPageItemVisible)
-              _buildNavigationButton(
-                type: 'Next',
-                icon: _isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
-                onPressed: () => _handleDataPagerControlPropertyChanged(property: 'next'),
-              ),
-            const SizedBox(width: 16),
-            if (widget.onRowsPerPageChanged != null) ...[
-              Text(
-                'Rows/page',
-                style: _dataPagerThemeHelper!.itemTextStyle,
-              ),
-              const SizedBox(width: 8),
-              _buildDropDownWidget(),
+              // Rows per page row - always visible and centered
+              if (widget.onRowsPerPageChanged != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Rows/page',
+                        style: _dataPagerThemeHelper!.itemTextStyle,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildDropDownWidget(),
+                    ],
+                  ),
+                ),
             ],
-          ],
-        ),
-        // Page indicator on top with labelMedium style
+          ),
+        // Page indicator at bottom with labelMedium style
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text(
