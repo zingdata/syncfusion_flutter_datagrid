@@ -36,7 +36,7 @@ export './src/datagrid_widget/sfdatagrid.dart'
         performGrouping,
         DataGridThemeHelper;
 export './src/datapager/sfdatapager.dart'
-    hide SfDataPagerState, DataPagerThemeHelper;
+    hide SfDataPagerState, SfCompactDataPagerState, DataPagerThemeHelper;
 export './src/grid_common/row_column_index.dart';
 export 'src/datagrid_widget/helper/callbackargs.dart'
     hide setColumnSizerInRowHeightDetailsArgs;

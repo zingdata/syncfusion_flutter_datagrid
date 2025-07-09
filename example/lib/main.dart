@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Employee> employees = <Employee>[];
   late EmployeeDataSource employeeDataSource;
+  int rowsPerPage = 10;
+  bool useCompactPager = true;
 
   @override
   void initState() {
@@ -42,40 +44,90 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Syncfusion Flutter DataGrid'),
+        actions: [
+          Switch(
+            value: useCompactPager,
+            onChanged: (value) {
+              setState(() {
+                useCompactPager = value;
+              });
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: Text(useCompactPager ? 'Compact' : 'Regular'),
+            ),
+          ),
+        ],
       ),
-      body: SfDataGrid(
-        source: employeeDataSource,
-        columnWidthMode: ColumnWidthMode.fill,
-        columns: <GridColumn>[
-          GridColumn(
-              columnName: 'id',
-              label: Container(
-                  padding: EdgeInsets.all(16.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'ID',
-                  ))),
-          GridColumn(
-              columnName: 'name',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Name'))),
-          GridColumn(
-              columnName: 'designation',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Designation',
-                    overflow: TextOverflow.ellipsis,
-                  ))),
-          GridColumn(
-              columnName: 'salary',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Salary'))),
+      body: Column(
+        children: [
+          Expanded(
+            child: SfDataGrid(
+              source: employeeDataSource,
+              columnWidthMode: ColumnWidthMode.fill,
+              rowsPerPage: rowsPerPage,
+              columns: <GridColumn>[
+                GridColumn(
+                    columnName: 'id',
+                    label: Container(
+                        padding: EdgeInsets.all(16.0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'ID',
+                        ))),
+                GridColumn(
+                    columnName: 'name',
+                    label: Container(
+                        padding: EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: Text('Name'))),
+                GridColumn(
+                    columnName: 'designation',
+                    label: Container(
+                        padding: EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Designation',
+                          overflow: TextOverflow.ellipsis,
+                        ))),
+                GridColumn(
+                    columnName: 'salary',
+                    label: Container(
+                        padding: EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: Text('Salary'))),
+              ],
+            ),
+          ),
+          Container(
+            height: 60,
+            child: useCompactPager
+                ? SfCompactDataPager(
+                    delegate: employeeDataSource,
+                    pageCount: (employees.length / rowsPerPage).ceil().toDouble(),
+                    availableRowsPerPage: const [5, 10, 15, 20],
+                    onRowsPerPageChanged: (int? rowsPerPage) {
+                      setState(() {
+                        this.rowsPerPage = rowsPerPage!;
+                        employeeDataSource.updateDataGrindSource();
+                      });
+                    },
+                  )
+                : SfDataPager(
+                    delegate: employeeDataSource,
+                    pageCount: (employees.length / rowsPerPage).ceil().toDouble(),
+                    visibleItemsCount: 5,
+                    availableRowsPerPage: const [5, 10, 15, 20],
+                    onRowsPerPageChanged: (int? rowsPerPage) {
+                      setState(() {
+                        this.rowsPerPage = rowsPerPage!;
+                        employeeDataSource.updateDataGrindSource();
+                      });
+                    },
+                  ),
+          ),
         ],
       ),
     );
@@ -92,7 +144,22 @@ class _MyHomePageState extends State<MyHomePage> {
       Employee(10007, 'Balnc', 'Developer', 15000),
       Employee(10008, 'Perry', 'Developer', 15000),
       Employee(10009, 'Gable', 'Developer', 15000),
-      Employee(10010, 'Grimes', 'Developer', 15000)
+      Employee(10010, 'Grimes', 'Developer', 15000),
+      Employee(10011, 'Oliver', 'Developer', 15000),
+      Employee(10012, 'Harry', 'Developer', 15000),
+      Employee(10013, 'Jack', 'Developer', 15000),
+      Employee(10014, 'George', 'Developer', 15000),
+      Employee(10015, 'Noah', 'Developer', 15000),
+      Employee(10016, 'Charlie', 'Developer', 15000),
+      Employee(10017, 'Jacob', 'Developer', 15000),
+      Employee(10018, 'Thomas', 'Developer', 15000),
+      Employee(10019, 'Oscar', 'Developer', 15000),
+      Employee(10020, 'William', 'Developer', 15000),
+      Employee(10021, 'James', 'Developer', 15000),
+      Employee(10022, 'Alfie', 'Developer', 15000),
+      Employee(10023, 'Henry', 'Developer', 15000),
+      Employee(10024, 'Alexander', 'Developer', 15000),
+      Employee(10025, 'Leo', 'Developer', 15000),
     ];
   }
 }
@@ -147,5 +214,15 @@ class EmployeeDataSource extends DataGridSource {
         child: Text(e.value.toString()),
       );
     }).toList());
+  }
+
+  @override
+  Future<bool> handlePageChange(int oldPageIndex, int newPageIndex) async {
+    return true;
+  }
+
+  /// Update DataGrid source
+  void updateDataGrindSource() {
+    notifyListeners();
   }
 }

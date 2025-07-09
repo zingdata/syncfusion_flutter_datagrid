@@ -11,6 +11,8 @@ import 'package:syncfusion_flutter_core/theme.dart';
 
 import '../datagrid_widget/sfdatagrid.dart';
 
+part 'compact_datapager.dart';
+
 /// Signature for the [SfDataPager.pageItemBuilder] callback.
 typedef DataPagerItemBuilderCallback<Widget> = Widget? Function(String text);
 
