@@ -103,7 +103,7 @@ class SfCompactDataPager extends StatefulWidget {
 class SfCompactDataPagerState extends State<SfCompactDataPager> {
   static const double _kMobileViewWidthOnWeb = 767.0;
   static const Size _dropdownSize = Size(82, 36);
-  
+
   DataPagerController? _controller;
   late SfLocalizations _localization;
   late DataPagerThemeHelper? _dataPagerThemeHelper;
@@ -122,9 +122,9 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   /// Formats numbers with comma separators (e.g., 1000 -> 1,000)
   String _formatNumber(int number) {
     return number.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match match) => '${match[1]},',
-    );
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match match) => '${match[1]},',
+        );
   }
 
   @override
@@ -212,7 +212,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
 
   Future<void> _handleDataPagerControlPropertyChanged({String? property}) async {
     _suspendDataPagerUpdate = true;
-    
+
     switch (property) {
       case 'first':
         if (_currentPageIndex == 0) {
@@ -369,14 +369,14 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     required VoidCallback onPressed,
   }) {
     final bool isDisabled = _isNavigationItemDisabled(type);
-    
+
     return Padding(
       padding: widget.itemPadding,
       child: SizedBox(
         width: widget.navigationItemWidth,
         height: widget.navigationItemHeight,
         child: Material(
-          color: isDisabled 
+          color: isDisabled
               ? _dataPagerThemeHelper!.disabledItemColor
               : _dataPagerThemeHelper!.itemColor,
           borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
@@ -407,7 +407,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         width: widget.navigationItemWidth,
         height: widget.navigationItemHeight,
         child: Material(
-          color: isSelected 
+          color: isSelected
               ? _dataPagerThemeHelper!.selectedItemColor
               : _dataPagerThemeHelper!.itemColor,
           borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
@@ -431,22 +431,32 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   Widget _buildEllipsisButton() {
     return Padding(
       padding: widget.itemPadding,
-      child: GestureDetector(
-        onTap: _showPageJumpDialog,
-        child: Container(
-          width: widget.navigationItemWidth + 10,
-          height: widget.navigationItemHeight,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: _dataPagerThemeHelper!.itemBorderColor!,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Center(
-            child: Text(
-              '...',
-              style: _dataPagerThemeHelper!.itemTextStyle,
+      child: SizedBox(
+        width: widget.navigationItemWidth + 10,
+        height: widget.navigationItemHeight,
+        child: Material(
+          color: _dataPagerThemeHelper!.itemColor,
+          borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+          child: InkWell(
+            borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+            onTap: _showPageJumpDialog,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: _dataPagerThemeHelper!.itemBorderColor!,
+                  width: 1.5,
+                ),
+                borderRadius: _dataPagerThemeHelper!.itemBorderRadius as BorderRadius?,
+              ),
+              child: Center(
+                child: Text(
+                  '...',
+                  style: _dataPagerThemeHelper!.itemTextStyle?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -458,7 +468,7 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     final List<Widget> items = [];
     final int currentPage = _currentPageIndex + 1;
     final int totalPages = _pageCount;
-    
+
     if (totalPages <= widget.visibleItemsCount) {
       // Show all pages if total pages <= visibleItemsCount
       for (int i = 1; i <= totalPages; i++) {
@@ -514,14 +524,6 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Page indicator on top with labelMedium style
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            'on page ${_formatNumber(_currentPageIndex + 1)}',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-        ),
         // Navigation controls in a row
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -550,16 +552,27 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
             ],
           ],
         ),
+        // Page indicator on top with labelMedium style
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            'on page ${_formatNumber(_currentPageIndex + 1)}',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildWebRowRangePager() {
     final int startRow = (_currentPageIndex * _rowsPerPage!) + 1;
-    final int endRow = min((_currentPageIndex + 1) * _rowsPerPage!, 
-                           widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0);
-    final int totalRows = widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0;
-    
+    final int endRow = min((_currentPageIndex + 1) * _rowsPerPage!,
+        widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0);
+    final int totalRows =
+        widget.totalRows ?? (widget.delegate as DataGridSource?)?.rows.length ?? 0;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -644,9 +657,8 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     return Container(
       width: _dropdownSize.width,
       height: _dropdownSize.height,
-      padding: !_isRTL
-          ? const EdgeInsets.fromLTRB(16, 8, 7, 8)
-          : const EdgeInsets.fromLTRB(7, 8, 16, 8),
+      padding:
+          !_isRTL ? const EdgeInsets.fromLTRB(16, 8, 7, 8) : const EdgeInsets.fromLTRB(7, 8, 16, 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(3.0),
         border: Border.all(
@@ -696,7 +708,6 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         oldWidget.onRowsPerPageChanged != widget.onRowsPerPageChanged ||
         oldWidget.visibleItemsCount != widget.visibleItemsCount ||
         oldWidget.initialPageIndex != widget.initialPageIndex) {
-      
       _setPageCountInDataGridSource(widget.pageCount);
 
       if (isDelegateChanged) {
@@ -724,12 +735,13 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   @override
   Widget build(BuildContext context) {
     _pageCount = widget.pageCount.toInt();
-    
+
     if (_currentPageIndex >= _pageCount && _pageCount > 0) {
       _currentPageIndex = _pageCount - 1;
     }
 
-    final bool isWebLayout = _isDesktop && MediaQuery.of(context).size.width > _kMobileViewWidthOnWeb;
+    final bool isWebLayout =
+        _isDesktop && MediaQuery.of(context).size.width > _kMobileViewWidthOnWeb;
 
     return Card(
       elevation: 0.0,
