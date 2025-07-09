@@ -140,8 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
     List<String> names = ['James', 'Kathryn', 'Lara', 'Michael', 'Martin', 'Newberry', 'Blanc', 'Perry', 'Gable', 'Grimes', 'Oliver', 'Harry', 'Jack', 'George', 'Noah', 'Charlie', 'Jacob', 'Thomas', 'Oscar', 'William', 'Alfie', 'Henry', 'Alexander', 'Leo', 'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Mia'];
     List<String> designations = ['Project Lead', 'Manager', 'Developer', 'Designer', 'Analyst', 'Tester', 'Architect', 'DevOps', 'Consultant'];
     
-    // Generate 150 employees for better pagination testing
-    for (int i = 1; i <= 150; i++) {
+    // Generate 6700 employees for better pagination testing with comma formatting
+    for (int i = 1; i <= 6700; i++) {
       employees.add(Employee(
         10000 + i,
         names[i % names.length],
