@@ -1540,7 +1540,8 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     } else {
       final bool? isSelectAllChecked = filterHelper.checkboxFilterHelper.isSelectAllChecked;
       return (isSelectAllChecked != null && !isSelectAllChecked) ||
-          filterHelper.checkboxFilterHelper.items.isEmpty;
+          (!filterHelper.checkboxFilterHelper.usePaginatedFiltering &&
+              filterHelper.checkboxFilterHelper.items.isEmpty);
     }
   }
 
