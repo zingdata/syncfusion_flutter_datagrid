@@ -683,10 +683,13 @@ class ColumnSizer {
   }
 
   Object? _getCellValue(DataGridRow dataGridRow, GridColumn column) {
-    return dataGridRow
+    final firstCell = dataGridRow
         .getCells()
-        .firstWhereOrNull((DataGridCell cell) => cell.columnName == column.columnName)
-        ?.value;
+        .firstWhereOrNull((DataGridCell cell) => cell.columnName == column.columnName);
+    if (firstCell?.metaData != null && firstCell!.metaData?['displayValue'] != null) {
+      return firstCell.metaData!['displayValue'];
+    }
+    return firstCell?.value;
   }
 
   void _setFillWidth(DataGridConfiguration dataGridConfiguration, double remainingColumnWidth,
