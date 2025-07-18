@@ -2252,8 +2252,15 @@ class DataGridFilterHelper {
 
       // Sort the items to display in the ascending order.
       cellValues.sort((Object a, Object b) {
+        // Convert to appropriate types for proper sorting
         final dynamic value1 = convertToString ? a.toString() : a;
         final dynamic value2 = convertToString ? b.toString() : b;
+
+        // Ensure both values are of the same type for comparison
+        if (value1.runtimeType != value2.runtimeType) {
+          // If types don't match, convert both to strings for safe comparison
+          return value1.toString().compareTo(value2.toString());
+        }
 
         return value1.compareTo(value2);
       });
