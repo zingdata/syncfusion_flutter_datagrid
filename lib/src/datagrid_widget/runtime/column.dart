@@ -2306,9 +2306,10 @@ class DataGridFilterHelper {
       callback,
       dataGridConfiguration.source,
     );
-
+    final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
+    final List<FilterElement> distinctCollection = _getCellValues(column, items);
     // Load initial data
-    _loadInitialPaginatedData(column, onCompleted: onCompleted);
+    _loadInitialPaginatedData(column, distinctCollection, onCompleted: onCompleted);
   }
 
   /// Sets up regular filtering (fallback method).
@@ -2342,13 +2343,15 @@ class DataGridFilterHelper {
   }
 
   /// Loads initial paginated data for a column.
-  Future<void> _loadInitialPaginatedData(GridColumn column, {VoidCallback? onCompleted}) async {
+  Future<void> _loadInitialPaginatedData(GridColumn column, List<FilterElement> localItems,
+      {VoidCallback? onCompleted}) async {
     try {
       await checkboxFilterHelper.loadInitialPaginatedData(
         onCompleted: onCompleted,
         advancedFilterHelper: advancedFilterHelper,
         filterFrom: filterFrom,
         onSetPreviousDataGridSource: setPreviousDataGridSource,
+        localItems: localItems,
       );
     } catch (e) {
       debugPrint('Error loading initial paginated data for column ${column.columnName}: $e');
@@ -2807,6 +2810,7 @@ class DataGridCheckboxFilterHelper {
     required DataGridAdvancedFilterHelper advancedFilterHelper,
     required FilteredFrom filterFrom,
     required VoidCallback onSetPreviousDataGridSource,
+    required List<FilterElement> localItems,
   }) async {
     if (!_usePaginatedFiltering || paginatedFilterHelper == null) {
       onCompleted?.call();
@@ -2816,6 +2820,10 @@ class DataGridCheckboxFilterHelper {
     try {
       if (paginatedFilterHelper!.items.isNotEmpty) {
         items = paginatedFilterHelper!.items;
+        advancedFilterHelper.items = items;
+        filterCheckboxItems = items;
+      } else {
+        items = localItems;
         advancedFilterHelper.items = items;
         filterCheckboxItems = items;
       }
