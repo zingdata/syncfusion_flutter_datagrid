@@ -3,49 +3,49 @@
   "packages": [
     {
       "name": "characters",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.3.0",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/characters-1.4.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.4"
     },
     {
       "name": "collection",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.18.0",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.4"
     },
     {
       "name": "flutter",
-      "rootUri": "file:///R:/Development/fvm/versions/stable/packages/flutter",
+      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.7"
     },
     {
       "name": "material_color_utilities",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1",
       "packageUri": "lib/",
       "languageVersion": "2.17"
     },
     {
       "name": "meta",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.15.0",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/meta-1.16.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///R:/Development/fvm/versions/stable/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.7"
     },
     {
       "name": "syncfusion_flutter_core",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/syncfusion_flutter_core-26.2.8",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-30.1.41",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.7"
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///C:/Users/Raza/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/vector_math-2.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -53,13 +53,12 @@
       "name": "syncfusion_flutter_datagrid",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.7"
     }
   ],
-  "generated": "2024-08-08T07:36:39.315316Z",
   "generator": "pub",
-  "generatorVersion": "3.5.0",
-  "flutterRoot": "file:///R:/Development/fvm/versions/stable",
-  "flutterVersion": "3.24.0",
-  "pubCache": "file:///C:/Users/Raza/AppData/Local/Pub/Cache"
+  "generatorVersion": "3.8.1",
+  "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable",
+  "flutterVersion": "3.32.7",
+  "pubCache": "file:///Users/razaabbas/.pub-cache"
 }
