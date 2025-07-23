@@ -1443,3 +1443,25 @@ GridColumn? getGridColumn(
   }
   return column;
 }
+
+List<T> copyDeepList<T>(List<T> list) {
+  final List<T> newList = <T>[];
+  // ignore: prefer_foreach
+  for (final T element in list) {
+    newList.add(element);
+  }
+  return newList;
+}
+
+bool hasExactlyTrue<T>(List<T> items, int max, bool Function(T) isTrue) {
+  var count = 0;
+  for (final v in items) {
+    if (isTrue(v)) {
+      count++;
+      if (count > max) {
+        return false;
+      }
+    }
+  }
+  return count == max;
+}

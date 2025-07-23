@@ -2756,6 +2756,13 @@ class DataGridFilterHelper {
       dataGridConfiguration.source,
     );
     final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
+    final List<FilterElement> distinctCollection = _getCellValues(column, items);
+    // Load initial data
+    _loadInitialPaginatedData(column, distinctCollection, onCompleted: onCompleted);
+  }
+  /// Sets up regular filtering (fallback method).
+  void _setupRegularFiltering(GridColumn column, {VoidCallback? onCompleted}) {
+      final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
     final List<FilterElement> distinctCollection = _getCellValues(
       column,
       items,
@@ -2786,7 +2793,6 @@ class DataGridFilterHelper {
     checkboxFilterHelper.ensureSelectAllCheckboxState();
     onCompleted?.call();
   }
-
   /// Loads initial paginated data for a column.
   Future<void> _loadInitialPaginatedData(GridColumn column, List<FilterElement> localItems,
       {VoidCallback? onCompleted}) async {
@@ -2817,7 +2823,7 @@ class DataGridFilterHelper {
         .toList();
   }
 
-  void _setPreviousDataGridSource() {
+  void setPreviousDataGridSource() {
     final bool useSelected =
         !(_checkedItemsCount > _unCheckedItemsCount &&
             _unCheckedItemsCount > 0);
@@ -3959,6 +3965,12 @@ class ColumnDragAndDropController {
 
     if (dataCell != null && dataCell.cellType == CellType.headerCell) {
       dragColumnStartIndex = getStartIndex(
+        dataCell.columnIndex,
+        dataGridConfiguration.showCheckboxColumn,
+        dataGridConfiguration,
+      );
+      dragColumnEndIndex =
+          dataCell.columnIndex -
           dataGridConfiguration.source.groupedColumns.length;
       canWrapDraggableView = dataGridConfiguration.onColumnDragging!(
         _invokeOnColumnDragging(action: DataGridColumnDragAction.starting),
@@ -3969,6 +3981,7 @@ class ColumnDragAndDropController {
         _rebuild(dataGridConfiguration);
       }
 
+      if (canWrapDraggableView && dragColumnStartIndex != null) {
         canWrapDraggableView = dataGridConfiguration.onColumnDragging!(
           _invokeOnColumnDragging(action: DataGridColumnDragAction.started),
         );
@@ -3978,6 +3991,7 @@ class ColumnDragAndDropController {
       }
     }
   }
+  
 
   /// Handles the pointer move event for the column dragging.
   void onPointerMove(PointerMoveEvent event) {
@@ -4103,6 +4117,7 @@ class ColumnDragAndDropController {
           dataGridConfiguration,
         );
         columnIndex =
+            columnIndex! - dataGridConfiguration.source.groupedColumns.length;
         offset = event.localPosition;
 
         allowColumnDrag = dataGridConfiguration.onColumnDragging!(
@@ -4119,6 +4134,7 @@ class ColumnDragAndDropController {
     allowColumnDrag = false;
     isHoverDisabled = false;
     canDrawRightIndicator = null;
+    disableScrolling = true;
     dragDelta = 0;
     isHoverDisabled = false;
     offset = null;
@@ -4129,6 +4145,7 @@ class ColumnDragAndDropController {
     _isLeftToRightDrag = null;
     _rebuild(dataGridConfiguration);
   }
+
 
   DataGridColumnDragDetails _invokeOnColumnDragging({
     required DataGridColumnDragAction action,
@@ -4164,7 +4181,6 @@ class ColumnDragAndDropController {
     );
   }
 }
-
 /// Details about the paginated filter request.
 class PaginatedFilterRequest {
   /// Creates the [PaginatedFilterRequest].

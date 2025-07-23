@@ -2,6 +2,10 @@
 
 part of 'sfdatapager.dart';
 
+
+
+
+
 class SfCompactDataPager extends StatefulWidget {
   /// Creates a compact widget describing a datapager.
   ///
