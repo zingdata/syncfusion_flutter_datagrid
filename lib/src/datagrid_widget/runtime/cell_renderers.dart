@@ -437,6 +437,7 @@ class GridCaptionSummaryCellRenderer
                   .buildGroupCaptionCellWidget(
                     rowColumnIndex,
                     groupCaptionTitleFormat,
+                    groupItems,
                   );
 
               result = cell;

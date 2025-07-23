@@ -4650,6 +4650,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   Widget? buildGroupCaptionCellWidget(
     RowColumnIndex rowColumnIndex,
     String summaryValue,
+    Group group,
   ) {
     return null;
   }
