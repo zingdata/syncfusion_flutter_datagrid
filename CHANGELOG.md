@@ -1,4 +1,30 @@
-﻿## [29.1.38] - 04/15/2025
+﻿## [30.1.41] - 07/22/2025
+
+## [30.1.38] - 07/02/2025
+
+**Bugs**
+
+* The `SfDataGrid` now properly handles the tap action on the Filter icon.
+
+## [30.1.37] - 06/25/2025
+
+**General**
+
+* The compatible version of our Flutter DataGrid widget has been updated to Flutter SDK 3.32.0.
+
+**Features**
+
+* Provided support to customize the default appearance of checkbox and advanced filtering popup menus.
+* Provided support to obtain the row details by row index using a helper method.
+* Provided built-in support to customize the background color of the caption summary row.
+
+## [29.1.39] - 04/22/2025
+
+**General**
+
+* The minimum Dart version has been updated to 3.7.
+
+## [29.1.33] - 03/25/2025
 
 **General**
 
@@ -22,12 +48,6 @@
 
 * The `SfDataGrid` now handles selection and provides selected details based on visible rows.
 
-## [28.2.6] - 18/02/2025
-
-**General**
-
-* The minimum Dart version of our Flutter widgets has been updated to 3.4 from 3.3.
-
 ## [28.2.3] - 01/29/2025
 
 **Bugs**
@@ -39,19 +59,6 @@
 **Bugs**
 
 * The `SfDataGrid` now creates new rows instead of reusing them when the `rowCacheExtent` is set.
-
-## [28.1.36] - 24/12/2024
-
-**General**
-
-* The compatible version of our Flutter DataGrid widget has been updated to Flutter SDK 3.27.0.
-
-## [28.1.33] - 12/12/2024
-
-**General**
-
-* All of our Syncfusion<sup>&reg;</sup> Flutter widgets have been updated to support [`WebAssembly`](https://docs.flutter.dev/platform-integration/web/wasm) (WASM) as a compilation target for building web applications.
-* The minimum Dart version of our Flutter widgets has been updated to 3.3 from 2.17.
 
 ## [27.1.58] - 11/05/2024
 
@@ -70,12 +77,6 @@
 **Bugs**
 
 * The RangeError exception will no longer occur when collapsing a group with the column width mode set to fill the last column for all rows.
-
-## [27.1.48] - 09/18/2024
-
-**General**
-
-* The compatible version of our Flutter DataGrid widget has been updated to Flutter SDK 3.24.0.
 
 ## [27.0.0] - 09/09/2024
 
@@ -128,9 +129,6 @@
 * The page navigation callbacks will only be invoked when the page is changed interactively.
 
 ## [25.1.35] - 03/15/2024
-
-**General**
-* Provided th​e Material 3 themes support.
 
 **Features**
 

@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "syncfusion_flutter_datagrid",
-      "version": "29.1.38",
+      "version": "30.1.41",
       "dependencies": [
         "collection",
         "flutter",
@@ -28,7 +28,7 @@
     },
     {
       "name": "syncfusion_flutter_core",
-      "version": "29.2.4",
+      "version": "30.1.41",
       "dependencies": [
         "flutter",
         "vector_math"
