@@ -518,6 +518,7 @@ class SfDataGrid extends StatefulWidget {
     this.allowFiltering = false,
     this.onFilterChanging,
     this.onFilterChanged,
+    this.paginatedFilterCallback,
     this.checkboxShape,
     this.showHorizontalScrollbar = true,
     this.showVerticalScrollbar = true,
@@ -1693,6 +1694,48 @@ class SfDataGrid extends StatefulWidget {
   /// programmatically.
   final DataGridFilterChangedCallback? onFilterChanged;
 
+
+   /// Called to fetch paginated filter values for columns that have
+  /// [GridColumn.usePaginatedFiltering] set to true.
+  ///
+  /// This callback is invoked when the filter popup is opened for such columns
+  /// to load filter values in a paginated manner instead of loading all values
+  /// at once from the local data source.
+  ///
+  /// The callback provides [PaginatedFilterRequest] with details about the
+  /// column (name and index), search text, page size, and page index.
+  /// It should return a [PaginatedFilterResponse] with the filter values for
+  /// the requested page and whether more data is available.
+  ///
+  /// Example:
+  /// ```dart
+  /// SfDataGrid(
+  ///   paginatedFilterCallback: (PaginatedFilterRequest request) async {
+  ///     final response = await api.getFilterValues(
+  ///       columnName: request.columnName,
+  ///       columnIndex: request.columnIndex,
+  ///       searchText: request.searchText,
+  ///       page: request.pageIndex,
+  ///       pageSize: request.pageSize,
+  ///     );
+  ///     return PaginatedFilterResponse(
+  ///       values: response.data,
+  ///       hasMoreData: response.hasNext,
+  ///       totalCount: response.total,
+  ///     );
+  ///   },
+  ///   columns: [
+  ///     GridColumn(
+  ///       columnName: 'productName',
+  ///       label: Text('Product Name'),
+  ///       usePaginatedFiltering: true, // Enable for this column
+  ///     ),
+  ///     // ... other columns
+  ///   ],
+  /// )
+  /// ```
+  final PaginatedFilterCallback? paginatedFilterCallback;
+
   /// The shape of the checkbox.
   ///
   /// This is applicable for checkbox which is shown when enable the [showCheckboxColumn] property.
@@ -2828,7 +2871,8 @@ class SfDataGridState extends State<SfDataGrid>
       ..groupExpanded = widget.groupExpanded
       ..groupCollapsing = widget.groupCollapsing
       ..groupCollapsed = widget.groupCollapsed
-      ..groupCaptionTitleFormat = widget.groupCaptionTitleFormat;
+      ..groupCaptionTitleFormat = widget.groupCaptionTitleFormat
+      ..paginatedFilterCallback = widget.paginatedFilterCallback;
 
     if (widget.allowPullToRefresh) {
       _dataGridConfiguration.refreshIndicatorKey ??=
