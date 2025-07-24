@@ -1117,7 +1117,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
             useMaterial3: Theme.of(context).useMaterial3),
         child: SafeArea(
           child: Scaffold(
-            backgroundColor: dataGridThemeHelper.filterPopupOuterColor,
+            backgroundColor: dataGridThemeHelper.filterPopupBackgroundColor,
             appBar: buildAppBar(context),
             resizeToAvoidBottomInset: true,
             body: GestureDetector(
