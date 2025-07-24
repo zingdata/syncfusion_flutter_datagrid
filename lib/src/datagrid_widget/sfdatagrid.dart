@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -3889,16 +3891,23 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// Called when grouping is applied to the [SfDataGrid.groupedColumns].
   ///
   /// Overriding this method provides complete control over grouping. It is invoked when each row is being grouped based on a key. Custom grouping can be achieved by returning a key for the rows.
+  /// added by raza to handle the map values
   @protected
   String performGrouping(String columnName, DataGridRow row) {
-    return row
-            .getCells()
-            .firstWhereOrNull(
-              (DataGridCell cell) => cell.columnName == columnName,
-            )
-            ?.value
-            ?.toString() ??
-        '';
+    final dynamic value = row
+        .getCells()
+        .firstWhereOrNull((DataGridCell cell) => cell.columnName == columnName)
+        ?.value;
+
+    if (value == null) {
+      return '';
+    }
+
+    if (value is Map) {
+      return jsonEncode(value);
+    }
+
+    return value.toString();
   }
 
   /// To update the sorted or filtered collection in _paginatedRows, notifyListener should be
