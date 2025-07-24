@@ -78,9 +78,10 @@ class _ScrollViewWidgetState extends State<ScrollViewWidget> {
       //_dataGridFocusNode = FocusNode(onKey: _handleFocusKeyOperation);
       _dataGridFocusNode = FocusNode();
       dataGridConfiguration.dataGridFocusNode = _dataGridFocusNode;
-      if (dataGridConfiguration.source.sortedColumns.isNotEmpty) {
-        _dataGridFocusNode!.requestFocus();
-      }
+      /// commented by raza to fix issue where it auto scrolls in home/search screen
+    //   if (dataGridConfiguration.source.sortedColumns.isNotEmpty) {
+    //     _dataGridFocusNode!.requestFocus();
+    //   }
     }
 
     super.initState();
