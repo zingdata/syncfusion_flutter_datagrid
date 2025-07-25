@@ -1058,7 +1058,9 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   }
 
   void _unfocusSearch() {
-    if (!isMobile) return;
+    if (!isMobile) {
+      return;
+    }
 
     // Unfocus search field when tapping outside on mobile
     if (filterHelper.checkboxFilterHelper.searchboxFocusNode.hasFocus) {
