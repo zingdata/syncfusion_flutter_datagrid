@@ -2518,7 +2518,6 @@ class DataGridFilterHelper {
       onCompleted?.call();
       return;
     }
-    createFilterConditions(filterFrom == FilteredFrom.checkboxFilter, column);
     // Initialize paginated filtering
     checkboxFilterHelper.initializePaginatedFiltering(
       column.columnName,
@@ -2595,8 +2594,11 @@ class DataGridFilterHelper {
   }
 
   void setPreviousDataGridSource() {
-    final bool useSelected =
-        !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
+    bool useSelected = true;
+    try {
+      useSelected = !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
+    } catch (_) {}
+
     final List<FilterElement> items =
         checkboxFilterHelper.filterCheckboxItems.where((FilterElement i) => useSelected).toList();
     checkboxFilterHelper._previousDataGridSource.addAll(items);
