@@ -1536,9 +1536,12 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   bool canDisableOkButton() {
     if (isAdvancedFilter) {
       final DataGridAdvancedFilterHelper helper = filterHelper.advancedFilterHelper;
-      return (helper.filterValue1 == null && helper.filterValue2 == null) &&
-          !helper.disableFilterTypes.contains(helper.filterType1) &&
-          !helper.disableFilterTypes.contains(helper.filterType2);
+          return (helper.filterValue1 == null && helper.filterValue2 == null) &&
+          helper.disableFilterTypes.contains(helper.filterType1) &&
+          helper.disableFilterTypes.contains(helper.filterType2);
+    //   return (helper.filterValue1 == null && helper.filterValue2 == null) &&
+    //       !helper.disableFilterTypes.contains(helper.filterType1) &&
+    //       !helper.disableFilterTypes.contains(helper.filterType2);
     } else {
       final bool? isSelectAllChecked = filterHelper.checkboxFilterHelper.isSelectAllChecked;
       return (isSelectAllChecked != null && !isSelectAllChecked) ||
