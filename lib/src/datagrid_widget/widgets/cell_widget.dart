@@ -2206,10 +2206,10 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
     return Builder(
       builder: (BuildContext context) => GestureDetector(
         onTap: enableDropdownButton(isTopButton)
-            ? () {
+            ? () async {
                 helper.checkboxFilterHelper.filterCheckboxItems =
                     helper.checkboxFilterHelper.previousItems;
-                _showPaginatedValuePicker(
+                await _showPaginatedValuePicker(
                   context: context,
                   isTopButton: isTopButton,
                   setValue: setValue,
@@ -2217,6 +2217,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
                   dataGridThemeHelper: dataGridThemeHelper,
                   currentValue: currentValue,
                 );
+                helper.checkboxFilterHelper.items = helper.checkboxFilterHelper.previousItems;
               }
             : null,
         child: Container(
