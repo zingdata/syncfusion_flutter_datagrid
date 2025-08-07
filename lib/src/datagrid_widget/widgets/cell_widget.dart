@@ -2218,6 +2218,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
                   currentValue: currentValue,
                 );
                 helper.checkboxFilterHelper.items = helper.checkboxFilterHelper.previousItems;
+                filterHelper.items = helper.checkboxFilterHelper.items;
               }
             : null,
         child: Container(
