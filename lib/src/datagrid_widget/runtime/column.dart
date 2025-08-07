@@ -3080,9 +3080,9 @@ class DataGridCheckboxFilterHelper {
       filterCheckboxItems = items;
       _previousDataGridSource = <FilterElement>[];
 
-      if (filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) {
-        onSetPreviousDataGridSource();
-      }
+      // if (filterFrom == FilteredFrom.checkboxFilter || filterFrom == FilteredFrom.none) {
+      onSetPreviousDataGridSource();
+      // }
 
       if (advancedFilterHelper.items.isNotEmpty) {
         bool isNullOrEmpty(String value) => value == '(Blanks)' || value == '';
