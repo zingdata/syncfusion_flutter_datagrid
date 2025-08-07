@@ -201,11 +201,8 @@ class GridColumn {
 /// A column which displays the checkbox column in its cells.
 class GridCheckboxColumn extends GridColumn {
   /// Creates the [GridCheckboxColumn] for [SfDataGrid] widget.
-  GridCheckboxColumn({
-    required String columnName,
-    required Widget label,
-    double width = double.nan,
-  }) : super(columnName: columnName, label: label, width: width);
+  GridCheckboxColumn({required String columnName, required Widget label, double width = double.nan})
+    : super(columnName: columnName, label: label, width: width);
 }
 
 /// Contains all the properties of the checkbox column.
@@ -312,9 +309,7 @@ class ColumnSizer {
 
   /// Defines the outer padding of the sort and filter icon's container. We need
   /// to consider this padding to measure the auto-width and height calculation.
-  EdgeInsetsGeometry iconsOuterPadding = const EdgeInsets.symmetric(
-    horizontal: 4.0,
-  );
+  EdgeInsetsGeometry iconsOuterPadding = const EdgeInsets.symmetric(horizontal: 4.0);
 
   void _initialRefresh(double availableWidth) {
     final LineSizeCollection lineSizeCollection =
@@ -359,27 +354,16 @@ class ColumnSizer {
     for (final GridColumn column in dataGridConfiguration.columns) {
       int index = dataGridConfiguration.columns.indexOf(column);
       if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-        index = grid_helper.resolveToScrollColumnIndex(
-          dataGridConfiguration,
-          index,
-        );
+        index = grid_helper.resolveToScrollColumnIndex(dataGridConfiguration, index);
       }
-      dataGridConfiguration.container.columnWidths.setHidden(
-        index,
-        index,
-        !column.visible,
-      );
+      dataGridConfiguration.container.columnWidths.setHidden(index, index, !column.visible);
     }
     // Columns will be auto sized only if Columns doesn't have explicit width
     // defined.
     _sizerColumnWidth(dataGridConfiguration, 0.0);
   }
 
-
-  void _sizerColumnWidth(
-    DataGridConfiguration dataGridConfiguration,
-    double viewPortWidth,
-  ) {
+  void _sizerColumnWidth(DataGridConfiguration dataGridConfiguration, double viewPortWidth) {
     double totalColumnSize = 0.0;
     final List<GridColumn> calculatedColumns = <GridColumn>[];
 
@@ -387,19 +371,13 @@ class ColumnSizer {
 
     // Hide Hidden columns
     final List<GridColumn> hiddenColumns =
-        dataGridConfiguration.columns
-            .where((GridColumn column) => !column.visible)
-            .toList();
+        dataGridConfiguration.columns.where((GridColumn column) => !column.visible).toList();
     for (final GridColumn column in hiddenColumns) {
       final int index = grid_helper.resolveToScrollColumnIndex(
         dataGridConfiguration,
         dataGridConfiguration.columns.indexOf(column),
       );
-      dataGridConfiguration.container.columnWidths.setHidden(
-        index,
-        index,
-        true,
-      );
+      dataGridConfiguration.container.columnWidths.setHidden(index, index, true);
       calculatedColumns.add(column);
     }
 
@@ -409,11 +387,7 @@ class ColumnSizer {
             .where((GridColumn column) => column.visible && !column.width.isNaN)
             .toList();
     for (final GridColumn column in widthColumns) {
-      totalColumnSize += _setColumnWidth(
-        dataGridConfiguration,
-        column,
-        column.width,
-      );
+      totalColumnSize += _setColumnWidth(dataGridConfiguration, column, column.width);
       calculatedColumns.add(column);
     }
 
@@ -429,7 +403,6 @@ class ColumnSizer {
             .toList();
     for (final GridColumn column in fitByCellValueColumns) {
       if (column._autoWidth.isNaN) {
-
         final double columnWidth = _getWidthBasedOnColumn(
           dataGridConfiguration,
           column,
@@ -438,11 +411,7 @@ class ColumnSizer {
         totalColumnSize += columnWidth;
         _setAutoWidth(column, columnWidth);
       } else {
-        totalColumnSize += _setColumnWidth(
-          dataGridConfiguration,
-          column,
-          column._autoWidth,
-        );
+        totalColumnSize += _setColumnWidth(dataGridConfiguration, column, column._autoWidth);
       }
       calculatedColumns.add(column);
     }
@@ -502,11 +471,7 @@ class ColumnSizer {
         totalColumnSize += columnWidth;
         _setAutoWidth(column, columnWidth);
       } else {
-        totalColumnSize += _setColumnWidth(
-          dataGridConfiguration,
-          column,
-          column._autoWidth,
-        );
+        totalColumnSize += _setColumnWidth(dataGridConfiguration, column, column._autoWidth);
       }
       calculatedColumns.add(column);
     }
@@ -516,28 +481,22 @@ class ColumnSizer {
           dataGridConfiguration.dataGridThemeHelper!.indentColumnWidth *
           dataGridConfiguration.source.groupedColumns.length;
     }
-    _setWidthBasedOnGrid(
-      dataGridConfiguration,
-      totalColumnSize,
-      calculatedColumns,
-      viewPortWidth,
-    );
+    _setWidthBasedOnGrid(dataGridConfiguration, totalColumnSize, calculatedColumns, viewPortWidth);
     _autoFillColumn = null;
   }
 
   GridColumn? _getColumnToFill(DataGridConfiguration dataGridConfiguration) {
     final GridColumn? column = dataGridConfiguration.columns.lastWhereOrNull(
       (GridColumn c) =>
-          c.visible &&
-          c.width.isNaN &&
-          c.columnWidthMode == ColumnWidthMode.lastColumnFill,
+          c.visible && c.width.isNaN && c.columnWidthMode == ColumnWidthMode.lastColumnFill,
     );
     if (column != null) {
       return column;
     } else {
       if (dataGridConfiguration.columnWidthMode == ColumnWidthMode.lastColumnFill) {
-        final GridColumn? lastColumn = dataGridConfiguration.columns
-            .lastWhereOrNull((GridColumn c) => c.visible && c.width.isNaN);
+        final GridColumn? lastColumn = dataGridConfiguration.columns.lastWhereOrNull(
+          (GridColumn c) => c.visible && c.width.isNaN,
+        );
         if (lastColumn == null) {
           return null;
         }
@@ -574,11 +533,7 @@ class ColumnSizer {
             totalColumnSize += columnWidth;
             _setAutoWidth(column, columnWidth);
           } else {
-            totalColumnSize += _setColumnWidth(
-              dataGridConfiguration,
-              column,
-              column._autoWidth,
-            );
+            totalColumnSize += _setColumnWidth(dataGridConfiguration, column, column._autoWidth);
           }
           calculatedColumns.add(column);
           break;
@@ -604,11 +559,7 @@ class ColumnSizer {
             totalColumnSize += columnWidth;
             _setAutoWidth(column, columnWidth);
           } else {
-            totalColumnSize += _setColumnWidth(
-              dataGridConfiguration,
-              column,
-              column._autoWidth,
-            );
+            totalColumnSize += _setColumnWidth(dataGridConfiguration, column, column._autoWidth);
           }
           calculatedColumns.add(column);
           break;
@@ -642,21 +593,14 @@ class ColumnSizer {
         (totalColumnSize != 0 ||
             (totalColumnSize == 0 && remainingColumns.length == 1) ||
             (dataGridConfiguration.columns.any(
-                  (GridColumn col) =>
-                      col.columnWidthMode == ColumnWidthMode.fill,
+                  (GridColumn col) => col.columnWidthMode == ColumnWidthMode.fill,
                 ) ||
-                dataGridConfiguration.columnWidthMode ==
-                    ColumnWidthMode.fill))) {
-      _setFillWidth(
-        dataGridConfiguration,
-        remainingColumnWidths,
-        remainingColumns,
-      );
+                dataGridConfiguration.columnWidthMode == ColumnWidthMode.fill))) {
+      _setFillWidth(dataGridConfiguration, remainingColumnWidths, remainingColumns);
     } else {
       _setRemainingColumnsWidth(dataGridConfiguration, remainingColumns);
     }
   }
-
 
   double _getWidthBasedOnColumn(
     DataGridConfiguration dataGridConfiguration,
@@ -681,22 +625,12 @@ class ColumnSizer {
   }
 
   double _calculateAllCellsWidth(GridColumn column) {
-
-    final double headerWidth = _calculateColumnHeaderWidth(
-      column,
-      setWidth: false,
-    );
-    final double cellWidth = _calculateAllCellsExceptHeaderWidth(
-      column,
-      setWidth: false,
-    );
+    final double headerWidth = _calculateColumnHeaderWidth(column, setWidth: false);
+    final double cellWidth = _calculateAllCellsExceptHeaderWidth(column, setWidth: false);
     return _getColumnWidth(column, max(cellWidth, headerWidth));
   }
 
-  double _calculateColumnHeaderWidth(
-    GridColumn column, {
-    bool setWidth = true,
-  }) {
+  double _calculateColumnHeaderWidth(GridColumn column, {bool setWidth = true}) {
     double iconsWidth = _getSortIconWidth(column) + _getFilterIconWidth(column);
 
     if (iconsWidth > 0) {
@@ -708,10 +642,7 @@ class ColumnSizer {
     return width;
   }
 
-  double _calculateAllCellsExceptHeaderWidth(
-    GridColumn column, {
-    bool setWidth = true,
-  }) {
+  double _calculateAllCellsExceptHeaderWidth(GridColumn column, {bool setWidth = true}) {
     final double width = _calculateCellWidth(column);
     _updateSetWidth(setWidth, column, width);
     return width;
@@ -738,12 +669,8 @@ class ColumnSizer {
         endRowIndex = dataGridConfiguration.source.rows.length - 1;
         break;
       case ColumnWidthCalculationRange.visibleRows:
-        final VisibleLinesCollection visibleLines = dataGridConfiguration
-            .container
-            .scrollRows
-            .getVisibleLines(
-              dataGridConfiguration.textDirection == TextDirection.rtl,
-            );
+        final VisibleLinesCollection visibleLines = dataGridConfiguration.container.scrollRows
+            .getVisibleLines(dataGridConfiguration.textDirection == TextDirection.rtl);
         startRowIndex =
             visibleLines.firstBodyVisibleIndex <= visibleLines.length - 1
                 ? grid_helper.resolveToRecordIndex(
@@ -769,23 +696,15 @@ class ColumnSizer {
   }
 
   double _getHeaderCellWidth(GridColumn column) {
-    return computeHeaderCellWidth(
-      column,
-      _getDefaultTextStyle(_dataGridStateDetails!(), true),
-    );
+    return computeHeaderCellWidth(column, _getDefaultTextStyle(_dataGridStateDetails!(), true));
   }
 
   double _getCellWidth(GridColumn column, int rowIndex) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     if (dataGridConfiguration.columnWidthCalculationRange ==
             ColumnWidthCalculationRange.visibleRows &&
         (grid_helper.isFooterWidgetRow(rowIndex, dataGridConfiguration) ||
-            grid_helper.isCaptionSummaryRow(
-              dataGridConfiguration,
-              rowIndex,
-              false,
-            ))) {
+            grid_helper.isCaptionSummaryRow(dataGridConfiguration, rowIndex, false))) {
       return 0.0;
     }
 
@@ -811,25 +730,24 @@ class ColumnSizer {
         dataGridRow = effectiveRows(dataGridConfiguration.source)[rowIndex];
         break;
     }
-    return _measureCellWidth(
-      _getCellValue(dataGridRow, column),
-      column,
-      dataGridRow,
-    );
+    return _measureCellWidth(_getCellValue(dataGridRow, column), column, dataGridRow);
   }
 
   Object? _getCellValue(DataGridRow dataGridRow, GridColumn column) {
-    final firstCell = dataGridRow
-        .getCells()
-        .firstWhereOrNull((DataGridCell cell) => cell.columnName == column.columnName);
+    final firstCell = dataGridRow.getCells().firstWhereOrNull(
+      (DataGridCell cell) => cell.columnName == column.columnName,
+    );
     if (firstCell?.metaData != null && firstCell!.metaData?['displayValue'] != null) {
       return firstCell.metaData!['displayValue'];
     }
     return firstCell?.value;
   }
 
-  void _setFillWidth(DataGridConfiguration dataGridConfiguration, double remainingColumnWidth,
-      List<GridColumn> remainingColumns) {
+  void _setFillWidth(
+    DataGridConfiguration dataGridConfiguration,
+    double remainingColumnWidth,
+    List<GridColumn> remainingColumns,
+  ) {
     final List<GridColumn> removedColumns = <GridColumn>[];
     final List<GridColumn> columns = remainingColumns;
     double totalRemainingFillValue = remainingColumnWidth;
@@ -850,11 +768,7 @@ class ColumnSizer {
         continue;
       }
 
-      final double computedWidth = _setColumnWidth(
-        dataGridConfiguration,
-        column,
-        fillWidth,
-      );
+      final double computedWidth = _setColumnWidth(dataGridConfiguration, column, fillWidth);
       if (fillWidth != computedWidth && fillWidth > 0) {
         isRemoved = true;
         columns.remove(column);
@@ -886,11 +800,7 @@ class ColumnSizer {
         columnWidth = fillColumn._autoWidth;
       }
 
-      _setColumnWidth(
-        dataGridConfiguration,
-        fillColumn,
-        max(totalRemainingFillValue, columnWidth),
-      );
+      _setColumnWidth(dataGridConfiguration, fillColumn, max(totalRemainingFillValue, columnWidth));
     }
   }
 
@@ -899,8 +809,7 @@ class ColumnSizer {
     List<GridColumn> remainingColumns,
   ) {
     for (final GridColumn column in remainingColumns) {
-      if (_isLastFillColum(column) ||
-          !_isFillColumn(dataGridConfiguration, column)) {
+      if (_isLastFillColum(column) || !_isFillColumn(dataGridConfiguration, column)) {
         _setColumnWidth(
           dataGridConfiguration,
           column,
@@ -910,11 +819,7 @@ class ColumnSizer {
     }
   }
 
-
-  bool _isFillColumn(
-    DataGridConfiguration dataGridConfiguration,
-    GridColumn column,
-  ) {
+  bool _isFillColumn(DataGridConfiguration dataGridConfiguration, GridColumn column) {
     if (!column.width.isNaN) {
       return false;
     } else {
@@ -951,8 +856,7 @@ class ColumnSizer {
     final bool isSortedColumn = dataGridConfiguration.source.sortedColumns.any(
       (SortColumnDetails element) => element.name == column.columnName,
     );
-    if (isSortedColumn ||
-        (column.allowSorting && dataGridConfiguration.allowSorting)) {
+    if (isSortedColumn || (column.allowSorting && dataGridConfiguration.allowSorting)) {
       width += _sortIconWidth;
       if (dataGridConfiguration.allowMultiColumnSorting && dataGridConfiguration.showSortNumbers) {
         width += _sortNumberWidth;
@@ -976,10 +880,7 @@ class ColumnSizer {
     final int columnIndex = dataGridConfiguration.columns.indexOf(column);
     final double width = _getColumnWidth(column, columnWidth);
     column._actualWidth = width;
-    final int index = grid_helper.resolveToScrollColumnIndex(
-      dataGridConfiguration,
-      columnIndex,
-    );
+    final int index = grid_helper.resolveToScrollColumnIndex(dataGridConfiguration, columnIndex);
     dataGridConfiguration.container.columnWidths[index] = column._actualWidth;
     return width;
   }
@@ -987,10 +888,7 @@ class ColumnSizer {
   double _getColumnWidth(GridColumn column, double columnWidth) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final int columnIndex = dataGridConfiguration.columns.indexOf(column);
-    final int index = grid_helper.resolveToScrollColumnIndex(
-      dataGridConfiguration,
-      columnIndex,
-    );
+    final int index = grid_helper.resolveToScrollColumnIndex(dataGridConfiguration, columnIndex);
     if (column.width < column._actualWidth) {
       return columnWidth;
     }
@@ -999,11 +897,7 @@ class ColumnSizer {
     return _checkWidthConstraints(column, columnWidth, width);
   }
 
-  double _checkWidthConstraints(
-    GridColumn column,
-    double width,
-    double columnWidth,
-  ) {
+  double _checkWidthConstraints(GridColumn column, double width, double columnWidth) {
     if (!column.minimumWidth.isNaN || !column.maximumWidth.isNaN) {
       if (!column.maximumWidth.isNaN) {
         if (!width.isNaN && column.maximumWidth > width) {
@@ -1032,27 +926,19 @@ class ColumnSizer {
     return columnWidth;
   }
 
-
-  int _resolveRowIndex(
-    DataGridConfiguration dataGridConfiguration,
-    int rowIndex,
-  ) {
+  int _resolveRowIndex(DataGridConfiguration dataGridConfiguration, int rowIndex) {
     if (dataGridConfiguration.source.groupedColumns.isEmpty ||
-        dataGridConfiguration.columnWidthCalculationRange ==
-            ColumnWidthCalculationRange.allRows) {
+        dataGridConfiguration.columnWidthCalculationRange == ColumnWidthCalculationRange.allRows) {
       return rowIndex;
     }
 
-    final dynamic row =
-        dataGridConfiguration.group?.displayElements?.grouped[rowIndex];
+    final dynamic row = dataGridConfiguration.group?.displayElements?.grouped[rowIndex];
 
     if (row == null || row is! DataGridRow) {
       return -1;
     }
 
-    final int recordIndex = effectiveRows(
-      dataGridConfiguration.source,
-    ).indexOf(row);
+    final int recordIndex = effectiveRows(dataGridConfiguration.source).indexOf(row);
 
     return recordIndex;
   }
@@ -1119,8 +1005,7 @@ class ColumnSizer {
     Object? cellValue,
     TextStyle textStyle,
   ) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final int rowIndex = grid_helper.resolveToRowIndex(
       dataGridConfiguration,
       effectiveRows(dataGridConfiguration.source).indexOf(row),
@@ -1190,8 +1075,7 @@ class ColumnSizer {
     Object? cellValue,
     TextStyle textStyle,
   ) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final int rowIndex = grid_helper.resolveToRowIndex(
       dataGridConfiguration,
       effectiveRows(dataGridConfiguration.source).indexOf(row),
@@ -1204,8 +1088,7 @@ class ColumnSizer {
     bool canIncludeHiddenColumns = false,
     List<String> excludedColumns = const <String>[],
   }) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     double autoFitHeight = 0.0;
     if (dataGridConfiguration.stackedHeaderRows.isNotEmpty &&
         rowIndex <= dataGridConfiguration.stackedHeaderRows.length - 1) {
@@ -1219,11 +1102,7 @@ class ColumnSizer {
     }
 
     if (grid_helper.isTableSummaryIndex(dataGridConfiguration, rowIndex) ||
-        grid_helper.isCaptionSummaryRow(
-          dataGridConfiguration,
-          rowIndex,
-          true,
-        )) {
+        grid_helper.isCaptionSummaryRow(dataGridConfiguration, rowIndex, true)) {
       return dataGridConfiguration.rowHeight;
     }
 
@@ -1242,25 +1121,16 @@ class ColumnSizer {
   double _getRowHeight(GridColumn column, int rowIndex) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     if (rowIndex == grid_helper.getHeaderIndex(dataGridConfiguration)) {
-      return computeHeaderCellHeight(
-        column,
-        _getDefaultTextStyle(dataGridConfiguration, true),
-      );
+      return computeHeaderCellHeight(column, _getDefaultTextStyle(dataGridConfiguration, true));
     } else {
       if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-        rowIndex = grid_helper.resolveToRecordIndex(
-          dataGridConfiguration,
-          rowIndex,
-        );
+        rowIndex = grid_helper.resolveToRecordIndex(dataGridConfiguration, rowIndex);
 
         if (rowIndex < 0) {
           return dataGridConfiguration.rowHeight;
         }
 
-        final dynamic row = grid_helper.getGroupElement(
-          dataGridConfiguration,
-          rowIndex,
-        );
+        final dynamic row = grid_helper.getGroupElement(dataGridConfiguration, rowIndex);
         if (row is! DataGridRow) {
           return dataGridConfiguration.rowHeight;
         }
@@ -1271,10 +1141,7 @@ class ColumnSizer {
           _getDefaultTextStyle(dataGridConfiguration, false),
         );
       } else {
-        final DataGridRow row = grid_helper.getDataGridRow(
-          dataGridConfiguration,
-          rowIndex,
-        );
+        final DataGridRow row = grid_helper.getDataGridRow(dataGridConfiguration, rowIndex);
         return computeCellHeight(
           column,
           row,
@@ -1285,12 +1152,7 @@ class ColumnSizer {
     }
   }
 
-
-  double _measureCellWidth(
-    Object? cellValue,
-    GridColumn column,
-    DataGridRow dataGridRow,
-  ) {
+  double _measureCellWidth(Object? cellValue, GridColumn column, DataGridRow dataGridRow) {
     return computeCellWidth(
       column,
       dataGridRow,
@@ -1306,8 +1168,7 @@ class ColumnSizer {
     TextStyle textStyle, {
     bool isHeaderCell = false,
   }) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final int columnIndex = resolveToScrollColumnIndex(
       dataGridConfiguration,
       dataGridConfiguration.columns.indexOf(column),
@@ -1347,10 +1208,7 @@ class ColumnSizer {
     ).height.ceilToDouble();
   }
 
-  TextStyle _getDefaultTextStyle(
-    DataGridConfiguration dataGridConfiguration,
-    bool isHeader,
-  ) {
+  TextStyle _getDefaultTextStyle(DataGridConfiguration dataGridConfiguration, bool isHeader) {
     if (isHeader) {
       return TextStyle(
         fontFamily: 'Roboto',
@@ -1368,28 +1226,24 @@ class ColumnSizer {
     }
   }
 
-
   Size _getGridLineStrokeWidth({
     required int rowIndex,
     required DataGridConfiguration dataGridConfiguration,
     required GridColumn column,
   }) {
-    final double strokeWidth =
-        dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
+    final double strokeWidth = dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!;
 
     final GridLinesVisibility gridLinesVisibility =
         rowIndex <= grid_helper.getHeaderIndex(dataGridConfiguration)
             ? dataGridConfiguration.headerGridLinesVisibility
             : dataGridConfiguration.gridLinesVisibility;
 
-    final GridColumn firstVisibleColumn = dataGridConfiguration.columns
-        .firstWhere(
-          (GridColumn column) => column.visible && column.width != 0.0,
-        );
-    final GridColumn lastVisibleColumn = dataGridConfiguration.columns
-        .lastWhere(
-          (GridColumn column) => column.visible && column.width != 0.0,
-        );
+    final GridColumn firstVisibleColumn = dataGridConfiguration.columns.firstWhere(
+      (GridColumn column) => column.visible && column.width != 0.0,
+    );
+    final GridColumn lastVisibleColumn = dataGridConfiguration.columns.lastWhere(
+      (GridColumn column) => column.visible && column.width != 0.0,
+    );
     bool isFirstColumn = firstVisibleColumn.columnName == column.columnName;
     final bool isLastColumn = lastVisibleColumn.columnName == column.columnName;
 
@@ -1448,12 +1302,8 @@ class ColumnSizer {
     )..layout(maxWidth: width);
 
     textSize = Size(
-      textPainter.size.width +
-          strokeWidthSize.width +
-          column.autoFitPadding.horizontal,
-      textPainter.size.height +
-          strokeWidthSize.height +
-          column.autoFitPadding.vertical,
+      textPainter.size.width + strokeWidthSize.width + column.autoFitPadding.horizontal,
+      textPainter.size.height + strokeWidthSize.height + column.autoFitPadding.vertical,
     );
 
     return textSize;
@@ -1476,10 +1326,7 @@ void resetAutoCalculation(ColumnSizer columnSizer) {
 }
 
 /// Updates the column sizer's state whether its loaded or not initially.
-void updateColumnSizerLoadedInitiallyFlag(
-  ColumnSizer columnSizer,
-  bool isLoaded,
-) {
+void updateColumnSizerLoadedInitiallyFlag(ColumnSizer columnSizer, bool isLoaded) {
   columnSizer._isColumnSizerLoadedInitially = isLoaded;
 }
 
@@ -1541,9 +1388,7 @@ class ColumnResizeController {
 
   /// Notifies listeners when [canSwitchResizeColumnCursor] and [isResizeIndicatorVisible] changes.
   /// This is used to trigger rebuilds in UI elements (like feedback widgets)
-  final ValueNotifier<bool> canSwitchResizeColumnCursorNotifier = ValueNotifier(
-    true,
-  );
+  final ValueNotifier<bool> canSwitchResizeColumnCursorNotifier = ValueNotifier(true);
 
   /// Determines whether the resizing indicator is enable or not.
   bool isResizeIndicatorVisible = false;
@@ -1597,9 +1442,7 @@ class ColumnResizeController {
 
       _resizingLine = _getResizingLine(dx, canAllowBuffer);
 
-      int startColumnIndex = grid_helper.resolveToStartColumnIndex(
-        dataGridConfiguration,
-      );
+      int startColumnIndex = grid_helper.resolveToStartColumnIndex(dataGridConfiguration);
       // Need to disable column resizing for the indent columns.
       if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
         startColumnIndex += dataGridConfiguration.source.groupedColumns.length;
@@ -1608,11 +1451,7 @@ class ColumnResizeController {
       if (_resizingLine != null && _resizingLine!.lineIndex >= startColumnIndex) {
         // To ensure the resizing line for the stacked header row.
         if (dataGridConfiguration.stackedHeaderRows.isNotEmpty) {
-          if (!_canAllowResizing(
-            dx,
-            resizingDataCell,
-            canAllowBuffer: canAllowBuffer,
-          )) {
+          if (!_canAllowResizing(dx, resizingDataCell, canAllowBuffer: canAllowBuffer)) {
             return null;
           }
         }
@@ -1681,12 +1520,10 @@ class ColumnResizeController {
 
     // Need to update the resizing line to get the line's updated details after
     // resizing it.
-    _resizingLine = dataGridConfiguration.container.scrollColumns
-        .getVisibleLineAtLineIndex(
-          _resizingLine!.lineIndex,
-          isRightToLeft:
-              dataGridConfiguration.textDirection == TextDirection.rtl,
-        );
+    _resizingLine = dataGridConfiguration.container.scrollColumns.getVisibleLineAtLineIndex(
+      _resizingLine!.lineIndex,
+      isRightToLeft: dataGridConfiguration.textDirection == TextDirection.rtl,
+    );
 
     if (dataGridConfiguration.columnResizeMode == ColumnResizeMode.onResize) {
       dataGridConfiguration.container.isDirty = true;
@@ -1711,11 +1548,7 @@ class ColumnResizeController {
 
   // * Helper methods
 
-  bool _canAllowResizing(
-    double downX,
-    DataCellBase? dataColumn, {
-    bool canAllowBuffer = true,
-  }) {
+  bool _canAllowResizing(double downX, DataCellBase? dataColumn, {bool canAllowBuffer = true}) {
     if (dataColumn != null &&
         _resizingLine != null &&
         dataColumn.dataRow!.rowType == RowType.stackedHeaderRow &&
@@ -1723,16 +1556,17 @@ class ColumnResizeController {
       final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
       late int cellLeft, cellRight, lineIndex;
 
-      final DataCellBase? dataCell = dataColumn.dataRow!.visibleColumns
-          .firstWhereOrNull((DataCellBase dataCell) {
-            cellLeft = dataCell.columnIndex;
-            cellRight = dataCell.columnIndex + dataCell.columnSpan;
-            lineIndex = _resizingLine!.lineIndex;
+      final DataCellBase? dataCell = dataColumn.dataRow!.visibleColumns.firstWhereOrNull((
+        DataCellBase dataCell,
+      ) {
+        cellLeft = dataCell.columnIndex;
+        cellRight = dataCell.columnIndex + dataCell.columnSpan;
+        lineIndex = _resizingLine!.lineIndex;
 
-            return cellLeft == lineIndex ||
-                cellRight == lineIndex ||
-                (lineIndex > cellLeft && lineIndex < cellRight);
-          });
+        return cellLeft == lineIndex ||
+            cellRight == lineIndex ||
+            (lineIndex > cellLeft && lineIndex < cellRight);
+      });
 
       if (dataCell != null) {
         final bool isLTR = dataGridConfiguration.textDirection == TextDirection.ltr;
@@ -1750,8 +1584,10 @@ class ColumnResizeController {
             return false;
           }
         } else {
-          _resizingLine = dataGridConfiguration.container.scrollColumns
-              .getVisibleLineAtLineIndex(cellRight, isRightToLeft: !isLTR);
+          _resizingLine = dataGridConfiguration.container.scrollColumns.getVisibleLineAtLineIndex(
+            cellRight,
+            isRightToLeft: !isLTR,
+          );
           return _resizingLine != null;
         }
       }
@@ -1768,19 +1604,13 @@ class ColumnResizeController {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     final bool isLTR = dataGridConfiguration.textDirection == TextDirection.ltr;
 
-    final VisibleLineInfo? visibleLine = dataGridConfiguration
-        .container
-        .scrollColumns
+    final VisibleLineInfo? visibleLine = dataGridConfiguration.container.scrollColumns
         .getVisibleLineAtLineIndex(dataCell.columnIndex, isRightToLeft: !isLTR);
     if (visibleLine != null) {
       final bool canCheckNearCell =
-          !(visibleLine.isLastLine &&
-              visibleLine.isClippedCorner &&
-              visibleLine.isClippedOrigin);
-      final double origin =
-          isLTR ? visibleLine.clippedOrigin : visibleLine.corner;
-      final double corner =
-          isLTR ? visibleLine.corner : visibleLine.clippedOrigin;
+          !(visibleLine.isLastLine && visibleLine.isClippedCorner && visibleLine.isClippedOrigin);
+      final double origin = isLTR ? visibleLine.clippedOrigin : visibleLine.corner;
+      final double corner = isLTR ? visibleLine.corner : visibleLine.clippedOrigin;
 
       if (canCheckNearCell) {
         if (_hitTestPrecision! > (corner - x).abs()) {
@@ -1811,21 +1641,14 @@ class ColumnResizeController {
     int rowIndex,
     int columnIndex,
   ) {
-    final DataRowBase? dataRow = dataGridConfiguration
-        .container
-        .rowGenerator
-        .items
-        .firstWhereOrNull(
-          (DataRowBase element) =>
-              rowIndex >= 0 && element.rowIndex == rowIndex,
-        );
+    final DataRowBase? dataRow = dataGridConfiguration.container.rowGenerator.items
+        .firstWhereOrNull((DataRowBase element) => rowIndex >= 0 && element.rowIndex == rowIndex);
     if (dataRow == null || dataRow.visibleColumns.isEmpty) {
       return null;
     }
 
     return dataRow.visibleColumns.firstWhereOrNull(
-      (DataCellBase dataCell) =>
-          columnIndex >= 0 && dataCell.columnIndex == columnIndex,
+      (DataCellBase dataCell) => columnIndex >= 0 && dataCell.columnIndex == columnIndex,
     );
   }
 
@@ -1859,10 +1682,7 @@ class ColumnResizeController {
     // To remove the half of stroke width to show the indicator to the
     // center of grid line.
     indicatorLeft -=
-        dataGridConfiguration
-            .dataGridThemeHelper!
-            .columnResizeIndicatorStrokeWidth! /
-        2;
+        dataGridConfiguration.dataGridThemeHelper!.columnResizeIndicatorStrokeWidth! / 2;
 
     return indicatorLeft;
   }
@@ -1907,18 +1727,17 @@ class ColumnResizeController {
         isRightToLeft: isRTL,
       );
     } else {
-      return dataGridConfiguration.container.scrollColumns
-          .getVisibleLineAtPoint(position, true, isRTL);
+      return dataGridConfiguration.container.scrollColumns.getVisibleLineAtPoint(
+        position,
+        true,
+        isRTL,
+      );
     }
   }
 
   /// Resolves the point of the current local position to get the visibleLine.
-  double getXPosition(
-    DataGridConfiguration dataGridConfiguration,
-    double localPosition,
-  ) {
-    final ScrollController scrollController =
-        dataGridConfiguration.horizontalScrollController!;
+  double getXPosition(DataGridConfiguration dataGridConfiguration, double localPosition) {
+    final ScrollController scrollController = dataGridConfiguration.horizontalScrollController!;
     if (dataGridConfiguration.textDirection == TextDirection.ltr) {
       return localPosition - scrollController.offset;
     } else {
@@ -1955,8 +1774,7 @@ class ColumnResizeController {
       return dataGridConfiguration.onColumnResizeStart!(
         ColumnResizeStartDetails(
           columnIndex: dataGridConfiguration.columns.indexWhere(
-            (GridColumn element) =>
-                element.columnName == _currentResizingColumn!.columnName,
+            (GridColumn element) => element.columnName == _currentResizingColumn!.columnName,
           ),
           column: _currentResizingColumn!,
           width: _resizingColumnWidth,
@@ -1972,8 +1790,7 @@ class ColumnResizeController {
       return dataGridConfiguration.onColumnResizeUpdate!(
         ColumnResizeUpdateDetails(
           columnIndex: dataGridConfiguration.columns.indexWhere(
-            (GridColumn element) =>
-                element.columnName == _currentResizingColumn!.columnName,
+            (GridColumn element) => element.columnName == _currentResizingColumn!.columnName,
           ),
           column: _currentResizingColumn!,
           width: currentColumnWidth,
@@ -1989,8 +1806,7 @@ class ColumnResizeController {
       dataGridConfiguration.onColumnResizeEnd!(
         ColumnResizeEndDetails(
           columnIndex: dataGridConfiguration.columns.indexWhere(
-            (GridColumn element) =>
-                element.columnName == _currentResizingColumn!.columnName,
+            (GridColumn element) => element.columnName == _currentResizingColumn!.columnName,
           ),
           column: _currentResizingColumn!,
           width: currentColumnWidth,
@@ -2002,18 +1818,13 @@ class ColumnResizeController {
   // *  Pointer Events
 
   /// Handles the pointer down event for the column resizing.
-  Future<void> onPointerDown(
-    PointerDownEvent event,
-    DataRowBase dataRow,
-  ) async {
+  Future<void> onPointerDown(PointerDownEvent event, DataRowBase dataRow) async {
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     if (dataGridConfiguration.isDesktop || _canStartResizeInMobile) {
       if (_isHeaderRow(dataRow)) {
         // Clears the editing before start resizing a column.
         if (dataGridConfiguration.currentCell.isEditing) {
-          await dataGridConfiguration.currentCell.onCellSubmit(
-            dataGridConfiguration,
-          );
+          await dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration);
         }
 
         final VisibleLineInfo? resizingLine = _getHitTestResult(
@@ -2068,12 +1879,11 @@ class ColumnResizeController {
 
         // To restricts the width of current resizing column from its minimum and
         // maximum width.
-        _resizingColumnWidth = dataGridConfiguration.columnSizer
-            ._checkWidthConstraints(
-              _currentResizingColumn!,
-              _resizingColumnWidth,
-              currentColumnWidth,
-            );
+        _resizingColumnWidth = dataGridConfiguration.columnSizer._checkWidthConstraints(
+          _currentResizingColumn!,
+          _resizingColumnWidth,
+          currentColumnWidth,
+        );
 
         // To avoid resizing of column width after reached zero;
         _resizingColumnWidth = max(0.0, _resizingColumnWidth);
@@ -2137,8 +1947,7 @@ class ColumnResizeController {
 
         if (resizingLine != null && isResizeIndicatorVisible) {
           _isLongPressEnabled = true;
-          if (dataGridConfiguration.columnDragAndDropController
-              .canAllowColumnDragAndDrop()) {
+          if (dataGridConfiguration.columnDragAndDropController.canAllowColumnDragAndDrop()) {
             canSwitchResizeColumnCursorNotifier.value = true;
           }
           // Rebuild to enable the resizing indicator.
@@ -2163,8 +1972,7 @@ class ColumnResizeController {
 
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     if (canSwitchResizeColumnCursor &&
-        dataGridConfiguration.columnDragAndDropController
-            .canAllowColumnDragAndDrop()) {
+        dataGridConfiguration.columnDragAndDropController.canAllowColumnDragAndDrop()) {
       // Notify the feedback widget to initiate a rebuild.
       canSwitchResizeColumnCursorNotifier.value = canSwitchResizeColumnCursor;
     }
@@ -2272,16 +2080,8 @@ class DataGridFilterHelper {
   /// Provides the height of the popup menu tile.
   double get tileHeight =>
       _dataGridStateDetails().isDesktop
-          ? _dataGridStateDetails()
-                  .dataGridThemeHelper!
-                  .filterPopupTextStyle!
-                  .fontSize! +
-              26
-          : _dataGridStateDetails()
-                  .dataGridThemeHelper!
-                  .filterPopupTextStyle!
-                  .fontSize! +
-              38;
+          ? _dataGridStateDetails().dataGridThemeHelper!.filterPopupTextStyle!.fontSize! + 26
+          : _dataGridStateDetails().dataGridThemeHelper!.filterPopupTextStyle!.fontSize! + 38;
 
   /// Provides the primary color.
   Color get primaryColor => _dataGridStateDetails().colorScheme!.primary;
@@ -2291,9 +2091,7 @@ class DataGridFilterHelper {
 
   /// Provides the text style to the disabled tiles.
   TextStyle get disableTextStyle =>
-      _dataGridStateDetails()
-          .dataGridThemeHelper!
-          .filterPopupDisabledTextStyle!;
+      _dataGridStateDetails().dataGridThemeHelper!.filterPopupDisabledTextStyle!;
 
   /// Apply filter to the effective rows based on `filterConditions`.
   void applyFilter() {
@@ -2307,11 +2105,8 @@ class DataGridFilterHelper {
     // Creates filter conditions if it's a checkbox filter.
     if (isCheckboxFilter) {
       _checkedItemsCount =
-          checkboxFilterHelper.items
-              .where((FilterElement element) => element.isSelected)
-              .length;
-      _unCheckedItemsCount =
-          checkboxFilterHelper.items.length - _checkedItemsCount;
+          checkboxFilterHelper.items.where((FilterElement element) => element.isSelected).length;
+      _unCheckedItemsCount = checkboxFilterHelper.items.length - _checkedItemsCount;
 
       _createCheckboxFilterConditions(column);
     } else {
@@ -2336,8 +2131,7 @@ class DataGridFilterHelper {
       }
     } else {
       final bool useSelected =
-          !(_checkedItemsCount > _unCheckedItemsCount &&
-              _unCheckedItemsCount > 0);
+          !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
       final List<FilterCondition> conditions = <FilterCondition>[];
       for (final FilterElement value in checkboxFilterHelper.items) {
         if (value.isSelected == useSelected) {
@@ -2466,23 +2260,16 @@ class DataGridFilterHelper {
     // Should avoid the type checking if the `effectiveRows` contains an empty list.
     if (source.effectiveRows.isNotEmpty && source.filterConditions.isNotEmpty) {
       for (final String columnName in source.filterConditions.keys) {
-        final GridColumn? column = dataGridConfiguration.columns
-            .firstWhereOrNull(
-              (GridColumn column) => column.columnName == columnName,
-            );
+        final GridColumn? column = dataGridConfiguration.columns.firstWhereOrNull(
+          (GridColumn column) => column.columnName == columnName,
+        );
         if (column == null) {
-          throwAssertFailure(
-            "The $columnName doesn't exist in the SfDataGrid.columns collection",
-          );
+          throwAssertFailure("The $columnName doesn't exist in the SfDataGrid.columns collection");
           continue;
         }
 
-        final Object? cellValue = getFirstCellValue(
-          source.effectiveRows,
-          columnName,
-        );
-        for (final FilterCondition condition
-            in source.filterConditions[columnName]!) {
+        final Object? cellValue = getFirstCellValue(source.effectiveRows, columnName);
+        for (final FilterCondition condition in source.filterConditions[columnName]!) {
           assert(() {
             if (condition.filterBehavior == FilterBehavior.strongDataType) {
               // Issue:
@@ -2509,9 +2296,7 @@ class DataGridFilterHelper {
                     condition.type == FilterType.doesNotBeginWith ||
                     condition.type == FilterType.endsWith ||
                     condition.type == FilterType.doesNotEndsWith) {
-                  throwAssertFailure(
-                    'FilterBehaviour and FilterType are not correct',
-                  );
+                  throwAssertFailure('FilterBehaviour and FilterType are not correct');
                 } else if (condition.type == FilterType.greaterThan ||
                     condition.type == FilterType.greaterThanOrEqual ||
                     condition.type == FilterType.lessThan ||
@@ -2529,9 +2314,7 @@ class DataGridFilterHelper {
                   condition.type == FilterType.greaterThanOrEqual ||
                   condition.type == FilterType.lessThan ||
                   condition.type == FilterType.lessThanOrEqual) {
-                throwAssertFailure(
-                  'FilterBehaviour and FilterType are not correct',
-                );
+                throwAssertFailure('FilterBehaviour and FilterType are not correct');
               }
             }
             return true;
@@ -2549,10 +2332,7 @@ class DataGridFilterHelper {
 
     if (dataGridConfiguration.source.filterConditions.isNotEmpty) {
       final DataGridSource source = dataGridConfiguration.source;
-      final List<DataGridRow> filteredRows = _getFilterRows(
-        source.rows,
-        source.filterConditions,
-      );
+      final List<DataGridRow> filteredRows = _getFilterRows(source.rows, source.filterConditions);
       refreshEffectiveRows(source, filteredRows);
     }
   }
@@ -2569,10 +2349,9 @@ class DataGridFilterHelper {
 
       List<DataGridRow> filteredRows = <DataGridRow>[];
       if (_previousDataRows.isNotEmpty) {
-        filteredRows = _getFilterRows(
-          _previousDataRows,
-          <String, List<FilterCondition>>{column.columnName: filterConditions},
-        );
+        filteredRows = _getFilterRows(_previousDataRows, <String, List<FilterCondition>>{
+          column.columnName: filterConditions,
+        });
       } else {
         filteredRows = _getFilterRows(source.rows, source.filterConditions);
       }
@@ -2620,10 +2399,7 @@ class DataGridFilterHelper {
     return items ?? source.effectiveRows;
   }
 
-  List<FilterElement> _getCellValues(
-    GridColumn column,
-    List<DataGridRow> items,
-  ) {
+  List<FilterElement> _getCellValues(GridColumn column, List<DataGridRow> items) {
     bool hasBlankValues = false;
     final DataGridSource source = _dataGridStateDetails().source;
     final List<FilterCondition> conditions =
@@ -2657,8 +2433,10 @@ class DataGridFilterHelper {
           /// added by raza to make sure unique values are passed
           if (cell.value is Map) {
             // For Map values, check uniqueness based on displayValue
-            final bool alreadyExists = cellValues.any((existing) =>
-                existing is Map && existing['displayValue'] == cell.value!['displayValue']);
+            final bool alreadyExists = cellValues.any(
+              (existing) =>
+                  existing is Map && existing['displayValue'] == cell.value!['displayValue'],
+            );
             if (!alreadyExists) {
               cellValues.add(cell.value!);
             }
@@ -2675,9 +2453,7 @@ class DataGridFilterHelper {
     }
 
     if (hasBlankValues) {
-      filterElements.add(
-        FilterElement(value: '(Blanks)', isSelected: isSelected(null)),
-      );
+      filterElements.add(FilterElement(value: '(Blanks)', isSelected: isSelected(null)));
     }
 
     if (cellValues.isNotEmpty) {
@@ -2703,9 +2479,7 @@ class DataGridFilterHelper {
       filterElements.addAll(
         cellValues
             .toSet()
-            .map<FilterElement>(
-              (Object e) => FilterElement(value: e, isSelected: isSelected(e)),
-            )
+            .map<FilterElement>((Object e) => FilterElement(value: e, isSelected: isSelected(e)))
             .toList(),
       );
     }
@@ -2717,10 +2491,7 @@ class DataGridFilterHelper {
   void endEdit() {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
     if (dataGridConfiguration.currentCell.isEditing) {
-      dataGridConfiguration.currentCell.onCellSubmit(
-        dataGridConfiguration,
-        canRefresh: false,
-      );
+      dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration, canRefresh: false);
     }
   }
 
@@ -2747,7 +2518,7 @@ class DataGridFilterHelper {
       onCompleted?.call();
       return;
     }
-
+    createFilterConditions(filterFrom == FilteredFrom.checkboxFilter, column);
     // Initialize paginated filtering
     checkboxFilterHelper.initializePaginatedFiltering(
       column.columnName,
@@ -2760,13 +2531,11 @@ class DataGridFilterHelper {
     // Load initial data
     _loadInitialPaginatedData(column, distinctCollection, onCompleted: onCompleted);
   }
+
   /// Sets up regular filtering (fallback method).
   void _setupRegularFiltering(GridColumn column, {VoidCallback? onCompleted}) {
-      final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
-    final List<FilterElement> distinctCollection = _getCellValues(
-      column,
-      items,
-    );
+    final List<DataGridRow> items = _getPreviousFilteredRows(column.columnName);
+    final List<FilterElement> distinctCollection = _getCellValues(column, items);
 
     checkboxFilterHelper._previousDataGridSource = <FilterElement>[];
 
@@ -2793,9 +2562,13 @@ class DataGridFilterHelper {
     checkboxFilterHelper.ensureSelectAllCheckboxState();
     onCompleted?.call();
   }
+
   /// Loads initial paginated data for a column.
-  Future<void> _loadInitialPaginatedData(GridColumn column, List<FilterElement> localItems,
-      {VoidCallback? onCompleted}) async {
+  Future<void> _loadInitialPaginatedData(
+    GridColumn column,
+    List<FilterElement> localItems, {
+    VoidCallback? onCompleted,
+  }) async {
     try {
       await checkboxFilterHelper.loadInitialPaginatedData(
         onCompleted: onCompleted,
@@ -2818,19 +2591,14 @@ class DataGridFilterHelper {
     List<DataGridRow> rows,
     Map<String, List<FilterCondition>> conditions,
   ) {
-    return rows
-        .where((DataGridRow row) => _filterRow(row, conditions))
-        .toList();
+    return rows.where((DataGridRow row) => _filterRow(row, conditions)).toList();
   }
 
   void setPreviousDataGridSource() {
     final bool useSelected =
-        !(_checkedItemsCount > _unCheckedItemsCount &&
-            _unCheckedItemsCount > 0);
+        !(_checkedItemsCount > _unCheckedItemsCount && _unCheckedItemsCount > 0);
     final List<FilterElement> items =
-        checkboxFilterHelper.filterCheckboxItems
-            .where((FilterElement i) => useSelected)
-            .toList();
+        checkboxFilterHelper.filterCheckboxItems.where((FilterElement i) => useSelected).toList();
     checkboxFilterHelper._previousDataGridSource.addAll(items);
   }
 
@@ -2859,17 +2627,11 @@ class DataGridFilterHelper {
     }
     updateDataSource(dataGridConfiguration.source);
     selection_manager.refreshSelectedRows(dataGridConfiguration);
-    notifyDataGridPropertyChangeListeners(
-      dataGridConfiguration.source,
-      propertyName: 'Filtering',
-    );
+    notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'Filtering');
     _invokeFilterChangedCallback(column, <FilterCondition>[]);
   }
 
-  bool _invokeFilterChangingCallback(
-    GridColumn column,
-    List<FilterCondition> filterConditions,
-  ) {
+  bool _invokeFilterChangingCallback(GridColumn column, List<FilterCondition> filterConditions) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
     if (dataGridConfiguration.onFilterChanging != null) {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
@@ -2881,10 +2643,7 @@ class DataGridFilterHelper {
     return true;
   }
 
-  void _invokeFilterChangedCallback(
-    GridColumn column,
-    List<FilterCondition> filterConditions,
-  ) {
+  void _invokeFilterChangedCallback(GridColumn column, List<FilterCondition> filterConditions) {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
     if (dataGridConfiguration.onFilterChanged != null) {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
@@ -2910,10 +2669,7 @@ class DataGridFilterHelper {
     return null;
   }
 
-  bool _filterRow(
-    DataGridRow row,
-    Map<String, List<FilterCondition>> filterConditions,
-  ) {
+  bool _filterRow(DataGridRow row, Map<String, List<FilterCondition>> filterConditions) {
     bool? isEqual;
     // Holds the previous column's comparer value of the current row to help to
     // perform multi-column filtering.
@@ -2957,37 +2713,22 @@ class DataGridFilterHelper {
             comparerValue = !grid_helper.compareEndsWith(condition, cellValue);
             break;
           case FilterType.greaterThan:
-            comparerValue = grid_helper.compareGreaterThan(
-              condition,
-              cellValue,
-            );
+            comparerValue = grid_helper.compareGreaterThan(condition, cellValue);
             break;
           case FilterType.greaterThanOrEqual:
-            comparerValue = grid_helper.compareGreaterThan(
-              condition,
-              cellValue,
-              true,
-            );
+            comparerValue = grid_helper.compareGreaterThan(condition, cellValue, true);
             break;
           case FilterType.lessThan:
             comparerValue = grid_helper.compareLessThan(condition, cellValue);
             break;
           case FilterType.lessThanOrEqual:
-            comparerValue = grid_helper.compareLessThan(
-              condition,
-              cellValue,
-              true,
-            );
+            comparerValue = grid_helper.compareLessThan(condition, cellValue, true);
             break;
         }
 
         isEqual =
             previousComparer &&
-            grid_helper.compare(
-              isEqual,
-              comparerValue,
-              condition.filterOperator,
-            );
+            grid_helper.compare(isEqual, comparerValue, condition.filterOperator);
       }
       previousComparer = isEqual != null && isEqual;
     }
@@ -2998,36 +2739,23 @@ class DataGridFilterHelper {
     final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails();
     final SfLocalizations localizations = dataGridConfiguration.localizations;
     final FilterOperator filterOperator =
-        advancedFilterHelper.isOrPredicate
-            ? FilterOperator.or
-            : FilterOperator.and;
+        advancedFilterHelper.isOrPredicate ? FilterOperator.or : FilterOperator.and;
 
     final List<FilterCondition> filterConditions =
-        dataGridConfiguration.source.filterConditions[column.columnName] ??
-        <FilterCondition>[];
+        dataGridConfiguration.source.filterConditions[column.columnName] ?? <FilterCondition>[];
 
     final Object? filterValue1 = advancedFilterHelper.filterValue1;
     final Object? filterValue2 = advancedFilterHelper.filterValue2;
     final String? filterType1 = advancedFilterHelper.filterType1;
     final String? filterType2 = advancedFilterHelper.filterType2;
-    final FilterType type1 = grid_helper.getFilterType(
-      dataGridConfiguration,
-      filterType1 ?? '',
-    );
-    final FilterType type2 = grid_helper.getFilterType(
-      dataGridConfiguration,
-      filterType2 ?? '',
-    );
+    final FilterType type1 = grid_helper.getFilterType(dataGridConfiguration, filterType1 ?? '');
+    final FilterType type2 = grid_helper.getFilterType(dataGridConfiguration, filterType2 ?? '');
 
     if (filterConditions.isNotEmpty) {
       filterConditions.clear();
     }
 
-    bool canCreateFilterCondition(
-      Object? filterValue,
-      String? filterType,
-      bool isFirstCondition,
-    ) {
+    bool canCreateFilterCondition(Object? filterValue, String? filterType, bool isFirstCondition) {
       void setFilterValue(String? value) {
         if (isFirstCondition) {
           advancedFilterHelper.filterValue1 = value;
@@ -3138,11 +2866,7 @@ class DataGridFilterHelper {
 
     if (filterConditions.isNotEmpty) {
       setFilterFrom(column, FilteredFrom.advancedFilter);
-      addFilterConditions(
-        dataGridConfiguration.source,
-        column.columnName,
-        filterConditions,
-      );
+      addFilterConditions(dataGridConfiguration.source, column.columnName, filterConditions);
       _applyViewFilter(column);
     }
   }
@@ -3216,13 +2940,12 @@ class DataGridCheckboxFilterHelper {
       _searchedItems = <FilterElement>[];
       if (_previousDataGridSource.isNotEmpty) {
         final int checkedCount =
-            _previousDataGridSource
-                .where((FilterElement element) => element.isSelected)
-                .length;
+            _previousDataGridSource.where((FilterElement element) => element.isSelected).length;
         final bool isSelected = checkedCount > 0;
         for (final FilterElement item in filterCheckboxItems) {
-          final FilterElement? filterElement =
-              _previousDataGridSource.firstWhereOrNull((FilterElement i) => item.value == i.value);
+          final FilterElement? filterElement = _previousDataGridSource.firstWhereOrNull(
+            (FilterElement i) => item.value == i.value,
+          );
           item.isSelected = filterElement != null ? filterElement.isSelected : !isSelected;
         }
       }
@@ -3235,10 +2958,8 @@ class DataGridCheckboxFilterHelper {
     _searchedItems =
         filterCheckboxItems
             .where(
-              (FilterElement element) => element.value
-                  .toString()
-                  .toLowerCase()
-                  .contains(searchText.toLowerCase()),
+              (FilterElement element) =>
+                  element.value.toString().toLowerCase().contains(searchText.toLowerCase()),
             )
             .toList();
 
@@ -3252,8 +2973,12 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Initializes paginated filtering for a column.
-  void initializePaginatedFiltering(String columnName, int columnIndex,
-      PaginatedFilterCallback callback, DataGridSource dataGridSource) {
+  void initializePaginatedFiltering(
+    String columnName,
+    int columnIndex,
+    PaginatedFilterCallback callback,
+    DataGridSource dataGridSource,
+  ) {
     _usePaginatedFiltering = true;
     paginatedFilterHelper = PaginatedFilterHelper(
       columnName: columnName,
@@ -3272,9 +2997,10 @@ class DataGridCheckboxFilterHelper {
     }
 
     try {
-      final selectedItems = searchText.trim().isEmpty
-          ? _searchedItems.where((FilterElement element) => element.isSelected).toList()
-          : [];
+      final selectedItems =
+          searchText.trim().isEmpty
+              ? _searchedItems.where((FilterElement element) => element.isSelected).toList()
+              : [];
       // Set loading state
       _usePaginatedFiltering = true;
       paginatedFilterHelper!.setCurrentSearchText(searchText);
@@ -3294,14 +3020,16 @@ class DataGridCheckboxFilterHelper {
         _searchedItems = <FilterElement>[];
         if (selectedItems.isNotEmpty) {
           for (final FilterElement item in filterCheckboxItems.toList()) {
-            final FilterElement? filterElement =
-                selectedItems.firstWhereOrNull((i) => item.value == i.value);
+            final FilterElement? filterElement = selectedItems.firstWhereOrNull(
+              (i) => item.value == i.value,
+            );
 
             item.isSelected = filterElement != null;
           }
           for (final FilterElement item in selectedItems) {
-            final FilterElement? filterElement =
-                filterCheckboxItems.firstWhereOrNull((i) => item.value == i.value);
+            final FilterElement? filterElement = filterCheckboxItems.firstWhereOrNull(
+              (i) => item.value == i.value,
+            );
             if (filterElement == null) {
               filterCheckboxItems.insert(0, item);
             }
@@ -3358,8 +3086,9 @@ class DataGridCheckboxFilterHelper {
         bool isNullOrEmpty(String value) => value == '(Blanks)' || value == '';
         // Remove null and empty values from the items collection since it's not
         // applicable for the AdvancedFilter.
-        advancedFilterHelper.items
-            .removeWhere((FilterElement element) => isNullOrEmpty(element.value.toString()));
+        advancedFilterHelper.items.removeWhere(
+          (FilterElement element) => isNullOrEmpty(element.value.toString()),
+        );
       }
       ensureSelectAllCheckboxState();
       onCompleted?.call();
@@ -3371,10 +3100,11 @@ class DataGridCheckboxFilterHelper {
   }
 
   /// Loads next page of paginated data.
-  Future<void> loadNextPage(
-      {required FilteredFrom filterFrom,
-      required VoidCallback onSetPreviousDataGridSource,
-      bool selectAll = false}) async {
+  Future<void> loadNextPage({
+    required FilteredFrom filterFrom,
+    required VoidCallback onSetPreviousDataGridSource,
+    bool selectAll = false,
+  }) async {
     if (!_usePaginatedFiltering || paginatedFilterHelper == null) {
       return;
     }
@@ -3547,10 +3277,7 @@ class DataGridAdvancedFilterHelper {
   }
 
   /// Sets the advanced filter type based on the column type.
-  void setAdvancedFilterType(
-    DataGridConfiguration dataGridConfiguration,
-    GridColumn column,
-  ) {
+  void setAdvancedFilterType(DataGridConfiguration dataGridConfiguration, GridColumn column) {
     Object? value;
     for (final DataGridRow row in dataGridConfiguration.source.rows) {
       final DataGridCell? cellValue = row.getCells().firstWhereOrNull(
@@ -3617,17 +3344,17 @@ class DataGridAdvancedFilterHelper {
       isOrPredicate = condition.filterOperator == FilterOperator.or;
     }
 
-    firstValueTextController.text =
-        dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(filterValue1);
-    secondValueTextController.text =
-        dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(filterValue2);
+    firstValueTextController.text = dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(
+      filterValue1,
+    );
+    secondValueTextController.text = dataGridConfiguration.dataGridFilterHelper!.getDisplayValue(
+      filterValue2,
+    );
   }
 
   /// Resets the advanced filter values.
   void resetAdvancedFilterValues(DataGridConfiguration dataGridConfiguration) {
-    filterType1 =
-        filterType2 =
-            dataGridConfiguration.localizations.equalsDataGridFilteringLabel;
+    filterType1 = filterType2 = dataGridConfiguration.localizations.equalsDataGridFilteringLabel;
     filterValue1 = filterValue2 = null;
     isCaseSensitive1 = isCaseSensitive2 = false;
     isOrPredicate = true;
@@ -3803,8 +3530,7 @@ class ColumnDragAndDropController {
             position.minScrollExtent,
             position.pixels - step * overDrag / overDragCoef,
           );
-        } else if (dragDelta < scrollStart &&
-            position.pixels < position.maxScrollExtent) {
+        } else if (dragDelta < scrollStart && position.pixels < position.maxScrollExtent) {
           final double overDrag = max(scrollStart - dragDelta, overDragMax);
           newOffset = min(
             position.maxScrollExtent,
@@ -3818,8 +3544,7 @@ class ColumnDragAndDropController {
             position.minScrollExtent,
             position.pixels - step * overDrag / overDragCoef,
           );
-        } else if (dragDelta > scrollEnd &&
-            position.pixels < position.maxScrollExtent) {
+        } else if (dragDelta > scrollEnd && position.pixels < position.maxScrollExtent) {
           final double overDrag = max(dragDelta - scrollEnd, overDragMax);
           newOffset = min(
             position.maxScrollExtent,
@@ -3830,20 +3555,12 @@ class ColumnDragAndDropController {
 
       if (newOffset != null && (newOffset - position.pixels).abs() >= 1.0) {
         autoScrolling = true;
-        await position.animateTo(
-          newOffset,
-          duration: duration,
-          curve: Curves.linear,
-        );
+        await position.animateTo(newOffset, duration: duration, curve: Curves.linear);
         dataGridConfiguration.container.scrollColumns
           ..markDirty()
           ..updateScrollbar();
         autoScrolling = false;
-        columnIndex =
-            getColumnLineInfo(
-              dataGridConfiguration,
-              details.position.dx,
-            )?.lineIndex;
+        columnIndex = getColumnLineInfo(dataGridConfiguration, details.position.dx)?.lineIndex;
 
         _autoScrollIfNecessary(dataGridConfiguration, details);
 
@@ -3863,10 +3580,7 @@ class ColumnDragAndDropController {
   /// The [getVisibleLineAtPoint] method of the [scrollColumns] object is called with the resolved [TextDirection] and the [position] to get the [VisibleLineInfo].
   ///
 
-  VisibleLineInfo? getColumnLineInfo(
-    DataGridConfiguration dataGridConfiguration,
-    double position,
-  ) {
+  VisibleLineInfo? getColumnLineInfo(DataGridConfiguration dataGridConfiguration, double position) {
     final bool isRTL = dataGridConfiguration.textDirection == TextDirection.rtl;
     if (isRTL) {
       dataGridConfiguration.container.scrollColumns.resetVisibleLines();
@@ -3887,13 +3601,8 @@ class ColumnDragAndDropController {
   /// The [getVisibleLineAtPoint] method of the [scrollRows] object of the [configuration] is used to obtain the [VisibleLineInfo].
   ///
 
-  VisibleLineInfo? getRowLineInfo(
-    DataGridConfiguration dataGridConfiguration,
-    double position,
-  ) {
-    return dataGridConfiguration.container.scrollRows.getVisibleLineAtPoint(
-      position,
-    );
+  VisibleLineInfo? getRowLineInfo(DataGridConfiguration dataGridConfiguration, double position) {
+    return dataGridConfiguration.container.scrollRows.getVisibleLineAtPoint(position);
   }
 
   /// Returns the start index adjusted for a checkbox column.
@@ -3941,9 +3650,7 @@ class ColumnDragAndDropController {
   /// The [RenderBox] of the datagrid is obtained from the [dataGridKey] of the [configuration].
   /// The [RenderBox.localToGlobal] method is then called on the [scrollRenderBox] to get its global position.
   ///
-  Offset getDataGridOriginPosition(
-    DataGridConfiguration dataGridConfiguration,
-  ) {
+  Offset getDataGridOriginPosition(DataGridConfiguration dataGridConfiguration) {
     final RenderBox scrollRenderBox =
         dataGridConfiguration.dataGridKey.currentContext!.findRenderObject()! as RenderBox;
 
@@ -3970,8 +3677,7 @@ class ColumnDragAndDropController {
         dataGridConfiguration,
       );
       dragColumnEndIndex =
-          dataCell.columnIndex -
-          dataGridConfiguration.source.groupedColumns.length;
+          dataCell.columnIndex - dataGridConfiguration.source.groupedColumns.length;
       canWrapDraggableView = dataGridConfiguration.onColumnDragging!(
         _invokeOnColumnDragging(action: DataGridColumnDragAction.starting),
       );
@@ -3991,7 +3697,6 @@ class ColumnDragAndDropController {
       }
     }
   }
-  
 
   /// Handles the pointer move event for the column dragging.
   void onPointerMove(PointerMoveEvent event) {
@@ -3999,22 +3704,15 @@ class ColumnDragAndDropController {
     if (canWrapDraggableView && dragColumnStartIndex != null) {
       offset = event.localPosition;
       dragDelta = dragDelta + event.delta.dx;
-      columnIndex =
-          getColumnLineInfo(
-            dataGridConfiguration,
-            event.position.dx,
-          )?.lineIndex;
+      columnIndex = getColumnLineInfo(dataGridConfiguration, event.position.dx)?.lineIndex;
       final int? rowIndex =
           getRowLineInfo(
             dataGridConfiguration,
-            event.position.dy -
-                getDataGridOriginPosition(dataGridConfiguration).dy,
+            event.position.dy - getDataGridOriginPosition(dataGridConfiguration).dy,
           )?.lineIndex;
 
       if (columnIndex != null && rowIndex != null) {
-        final int headerIndex = grid_helper.getHeaderIndex(
-          dataGridConfiguration,
-        );
+        final int headerIndex = grid_helper.getHeaderIndex(dataGridConfiguration);
 
         isHoverDisabled = true;
         scrollOrigin = getDataGridOriginPosition(dataGridConfiguration);
@@ -4049,9 +3747,10 @@ class ColumnDragAndDropController {
             }
           }
 
-          _isLeftToRightDrag = dataGridConfiguration.textDirection == TextDirection.ltr
-              ? event.delta.dx.sign >= 0
-              : event.delta.dx.sign <= 0;
+          _isLeftToRightDrag =
+              dataGridConfiguration.textDirection == TextDirection.ltr
+                  ? event.delta.dx.sign >= 0
+                  : event.delta.dx.sign <= 0;
 
           if (_dragDirectionChangedPosition == null) {
             canDrawRightIndicator = _isLeftToRightDrag;
@@ -4090,19 +3789,12 @@ class ColumnDragAndDropController {
       return;
     }
 
-    if (allowColumnDrag &&
-        scrollOrigin != null &&
-        event.position.dy >= scrollOrigin!.dy) {
-      columnIndex =
-          getColumnLineInfo(
-            dataGridConfiguration,
-            event.position.dx,
-          )?.lineIndex;
+    if (allowColumnDrag && scrollOrigin != null && event.position.dy >= scrollOrigin!.dy) {
+      columnIndex = getColumnLineInfo(dataGridConfiguration, event.position.dx)?.lineIndex;
       final int? rowIndex =
           getRowLineInfo(
             dataGridConfiguration,
-            event.position.dy -
-                getDataGridOriginPosition(dataGridConfiguration).dy,
+            event.position.dy - getDataGridOriginPosition(dataGridConfiguration).dy,
           )?.lineIndex;
 
       final int headerIndex = grid_helper.getHeaderIndex(dataGridConfiguration);
@@ -4116,8 +3808,7 @@ class ColumnDragAndDropController {
           dataGridConfiguration.showCheckboxColumn,
           dataGridConfiguration,
         );
-        columnIndex =
-            columnIndex! - dataGridConfiguration.source.groupedColumns.length;
+        columnIndex = columnIndex! - dataGridConfiguration.source.groupedColumns.length;
         offset = event.localPosition;
 
         allowColumnDrag = dataGridConfiguration.onColumnDragging!(
@@ -4145,7 +3836,6 @@ class ColumnDragAndDropController {
     _isLeftToRightDrag = null;
     _rebuild(dataGridConfiguration);
   }
-
 
   DataGridColumnDragDetails _invokeOnColumnDragging({
     required DataGridColumnDragAction action,
@@ -4181,6 +3871,7 @@ class ColumnDragAndDropController {
     );
   }
 }
+
 /// Details about the paginated filter request.
 class PaginatedFilterRequest {
   /// Creates the [PaginatedFilterRequest].
@@ -4228,8 +3919,8 @@ class PaginatedFilterResponse {
 }
 
 /// Callback signature for fetching paginated filter values.
-typedef PaginatedFilterCallback = Future<PaginatedFilterResponse> Function(
-    PaginatedFilterRequest request);
+typedef PaginatedFilterCallback =
+    Future<PaginatedFilterResponse> Function(PaginatedFilterRequest request);
 
 /// Helper class to manage paginated filter data.
 class PaginatedFilterHelper {
@@ -4309,10 +4000,7 @@ class PaginatedFilterHelper {
   }
 
   /// Internal method to load a page of data.
-  Future<void> _loadPage({
-    bool selectAll = true,
-    DataGridSource? dataGridSource,
-  }) async {
+  Future<void> _loadPage({bool selectAll = true, DataGridSource? dataGridSource}) async {
     _isLoading.value = true;
 
     try {
@@ -4347,12 +4035,13 @@ class PaginatedFilterHelper {
       }
 
       // Convert response values to FilterElements
-      final List<FilterElement> newItems = response.values
-          .map((Object? value) => FilterElement(
-                value: value ?? '(Blanks)',
-                isSelected: isSelected(value),
-              ))
-          .toList();
+      final List<FilterElement> newItems =
+          response.values
+              .map(
+                (Object? value) =>
+                    FilterElement(value: value ?? '(Blanks)', isSelected: isSelected(value)),
+              )
+              .toList();
       _items.clear();
       _items.addAll(newItems);
       _hasMoreData = response.hasMoreData;
