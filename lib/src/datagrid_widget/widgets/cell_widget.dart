@@ -1425,6 +1425,19 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
+                       SizedBox(
+                        width: 120.0,
+                        height: filterHelper.tileHeight - 8,
+                        child: OutlinedButton(
+                            onPressed: closePage,
+                            child: Text(
+                              localizations.cancelDataGridFilteringLabel,
+                              style: TextStyle(
+                                  color: filterHelper.primaryColor,
+                                  fontSize: filterHelper.textStyle.fontSize,
+                                  fontFamily: filterHelper.textStyle.fontFamily),
+                            )),
+                      ),
                       SizedBox(
                         width: 120.0,
                         height: filterHelper.tileHeight - 8,
@@ -1456,19 +1469,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                                     fontSize: filterHelper.textStyle.fontSize,
                                     fontFamily: filterHelper.textStyle.fontFamily))),
                       ),
-                      SizedBox(
-                        width: 120.0,
-                        height: filterHelper.tileHeight - 8,
-                        child: OutlinedButton(
-                            onPressed: closePage,
-                            child: Text(
-                              localizations.cancelDataGridFilteringLabel,
-                              style: TextStyle(
-                                  color: filterHelper.primaryColor,
-                                  fontSize: filterHelper.textStyle.fontSize,
-                                  fontFamily: filterHelper.textStyle.fontFamily),
-                            )),
-                      ),
+                   
                     ],
                   ),
                 )
