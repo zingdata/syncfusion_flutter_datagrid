@@ -68,7 +68,6 @@ class _TimezoneHelper {
           final String offsetStr = '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
           
           // Create display name: "Region/City (UTC+/-HH:mm)"
-          // ignore: lines_longer_than_80_chars
           final String displayName = '${locationName.replaceAll('_', ' ')} (UTC$offsetStr)';
           
           return <String, String>{
@@ -1181,6 +1180,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   // Animation controller for hiding/showing top section
   late AnimationController _topSectionAnimationController;
   late Animation<double> _topSectionAnimation;
+  late ScrollController _scrollController;
 
   // State to track if search is active
   bool _isSearchActive = false;
@@ -1190,6 +1190,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     super.initState();
     _initializeFilterProperties();
     _initializeAnimations();
+    _scrollController = ScrollController();
     filterHelper.isFilterPopupMenuShowing = true;
   }
 
@@ -1540,6 +1541,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     Widget buildPopup({Size? viewSize}) {
       return SingleChildScrollView(
         key: const ValueKey<String>('datagrid_filtering_scrollView'),
+        controller: _scrollController,
         child: Container(
           width: isMobile ? null : 274.0,
           color: dataGridThemeHelper.filterPopupBackgroundColor,
@@ -1612,6 +1614,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                 _TimezoneSelectionWidget(
                   column: widget.column,
                   dataGridConfiguration: widget.dataGridConfiguration,
+                  scrollController: _scrollController,
                 ),
               if (!isMobile) const Divider(height: 10),
               if (!isMobile)
@@ -3422,11 +3425,11 @@ class _PaginatedValuePickerDialog extends StatelessWidget {
 
 /// Widget for timezone selection in DateTime columns
 class _TimezoneSelectionWidget extends StatefulWidget {
-  const _TimezoneSelectionWidget({required this.column, required this.dataGridConfiguration});
+  const _TimezoneSelectionWidget({required this.column, required this.dataGridConfiguration, required this.scrollController});
 
   final GridColumn column;
   final DataGridConfiguration dataGridConfiguration;
-
+  final ScrollController scrollController;
   @override
   _TimezoneSelectionWidgetState createState() => _TimezoneSelectionWidgetState();
 }
@@ -3436,7 +3439,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   bool _isExpanded = false;
   bool _isDropdownOpen = false;
   final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+ 
   List<Map<String, String>> _filteredTimezones = <Map<String, String>>[];
 
   @override
@@ -3449,7 +3452,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   @override
   void dispose() {
     _searchController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -3552,7 +3554,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
         if (_isExpanded) ...<Widget>[
           const Divider(height: 1),
           SingleChildScrollView(
-            controller: _scrollController,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -3573,15 +3574,15 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       setState(() => _isDropdownOpen = !_isDropdownOpen);
                       // Auto-scroll to show dropdown content when opened
                       if (_isDropdownOpen) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (_scrollController.hasClients) {
-                            _scrollController.animateTo(
-                              _scrollController.position.maxScrollExtent,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        });
+                       Future.delayed(const Duration(milliseconds: 300), () {
+                        if (widget.scrollController.hasClients) {
+                          widget.scrollController.animateTo(
+                            widget.scrollController.position.maxScrollExtent,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                       });
                       }
                     },
                     child: Container(
@@ -3589,7 +3590,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                         color: theme.filterPopupOuterColor,
                         border: Border.all(
                           color: theme.filterPopupBorderColor!.withOpacity(0.5),
-                          width: 1.0,
                         ),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
@@ -3656,7 +3656,8 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                 )
                                 : null,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
                       ),
                     ),
                   ),
