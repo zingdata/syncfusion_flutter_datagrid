@@ -55,7 +55,8 @@
         "collection",
         "flutter",
         "flutter_hooks",
-        "syncfusion_flutter_core"
+        "syncfusion_flutter_core",
+        "timezone"
       ]
     },
     {
@@ -226,6 +227,13 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "timezone",
+      "version": "0.9.4",
+      "dependencies": [
+        "path"
       ]
     },
     {

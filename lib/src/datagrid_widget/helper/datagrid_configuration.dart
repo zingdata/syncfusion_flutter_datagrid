@@ -370,6 +370,17 @@ class DataGridConfiguration {
   /// at once from the local data source.
   PaginatedFilterCallback? paginatedFilterCallback;
 
+  /// Called to fetch the timezone for a column.
+  TimezoneCallback? timezoneCallback;
+
+  /// The timezone to use for DateTime column formatting and filtering.
+  ///
+  /// This parameter is only relevant when [columnType] is [GridColumnType.dateTime].
+  /// When null, the local timezone is used.
+  ///
+  /// Example: 'America/New_York', 'Europe/London', 'UTC'
+  String? timezone;
+
   /// The widget to show over the bottom of the [SfDataGrid].
   Widget? footer;
 

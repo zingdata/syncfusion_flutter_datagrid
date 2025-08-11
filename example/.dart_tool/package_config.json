@@ -158,6 +158,12 @@
       "languageVersion": "3.5"
     },
     {
+      "name": "timezone",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/timezone-0.9.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
       "name": "vector_math",
       "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/vector_math-2.1.4",
       "packageUri": "lib/",

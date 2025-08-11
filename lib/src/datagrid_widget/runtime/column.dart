@@ -20,6 +20,21 @@ import '../selection/selection_manager.dart' as selection_manager;
 import '../sfdatagrid.dart';
 import 'generator.dart';
 
+/// Specifies the type of data a column contains.
+enum GridColumnType {
+  /// Column contains string data.
+  string,
+  
+  /// Column contains numeric data.
+  number,
+  
+  /// Column contains DateTime data with timezone support.
+  dateTime,
+  
+  /// Column contains boolean data.
+  boolean,
+}
+
 /// Provides the base functionalities for all the column types in [SfDataGrid].
 class GridColumn {
   /// Creates the [GridColumn] for [SfDataGrid] widget.
@@ -41,6 +56,7 @@ class GridColumn {
     this.filterIconPadding = const EdgeInsets.symmetric(horizontal: 8.0),
     this.usePaginatedFiltering = false,
     this.columnIndex = -1,
+    this.columnType = GridColumnType.string,
   }) {
     _actualWidth = double.nan;
     _autoWidth = double.nan;
@@ -196,13 +212,23 @@ class GridColumn {
 
   /// The index of the column in the [SfDataGrid.columns] collection.
   final int columnIndex;
+
+  /// The type of data this column represents.
+  ///
+  /// This is used to determine appropriate filtering and display behavior.
+  /// For DateTime columns, timezone handling can be applied.
+  ///
+  /// Defaults to [GridColumnType.string].
+  final GridColumnType columnType;
+
+ 
 }
 
 /// A column which displays the checkbox column in its cells.
 class GridCheckboxColumn extends GridColumn {
   /// Creates the [GridCheckboxColumn] for [SfDataGrid] widget.
   GridCheckboxColumn({required String columnName, required Widget label, double width = double.nan})
-    : super(columnName: columnName, label: label, width: width);
+    : super(columnName: columnName, label: label, width: width, columnType: GridColumnType.boolean);
 }
 
 /// Contains all the properties of the checkbox column.

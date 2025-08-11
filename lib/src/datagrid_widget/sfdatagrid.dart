@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
-
 import '../../datagrid.dart';
 import '../grid_common/enums.dart';
 import '../grid_common/line_size_host.dart';
@@ -38,97 +37,70 @@ typedef DataGridCheckboxValueChangedCallback =
 
 /// Signature for [SfDataGrid.onColumnSortChanging] callback.
 typedef DataGridColumnSortChangingCallback =
-    bool Function(
-      SortColumnDetails? newSortedColumn,
-      SortColumnDetails? oldSortedColumn,
-    );
+    bool Function(SortColumnDetails? newSortedColumn, SortColumnDetails? oldSortedColumn);
 
 /// Signature for [SfDataGrid.onColumnSortChanged] callback.
 typedef DataGridColumnSortChangedCallback =
-    void Function(
-      SortColumnDetails? newSortedColumn,
-      SortColumnDetails? oldSortedColumn,
-    );
+    void Function(SortColumnDetails? newSortedColumn, SortColumnDetails? oldSortedColumn);
 
 /// Signature for [SfDataGrid.onCurrentCellActivating] callback.
 typedef CurrentCellActivatingCallback =
-    bool Function(
-      RowColumnIndex newRowColumnIndex,
-      RowColumnIndex oldRowColumnIndex,
-    );
+    bool Function(RowColumnIndex newRowColumnIndex, RowColumnIndex oldRowColumnIndex);
 
 /// Signature for [SfDataGrid.onCurrentCellActivated] callback.
 typedef CurrentCellActivatedCallback =
-    void Function(
-      RowColumnIndex newRowColumnIndex,
-      RowColumnIndex oldRowColumnIndex,
-    );
+    void Function(RowColumnIndex newRowColumnIndex, RowColumnIndex oldRowColumnIndex);
 
 /// Signature for [SfDataGrid.onCellTap] and [SfDataGrid.onCellSecondaryTap]
 /// callbacks.
 typedef DataGridCellTapCallback = void Function(DataGridCellTapDetails details);
 
 /// Signature for [SfDataGrid.onCellDoubleTap] callback.
-typedef DataGridCellDoubleTapCallback =
-    void Function(DataGridCellDoubleTapDetails details);
+typedef DataGridCellDoubleTapCallback = void Function(DataGridCellDoubleTapDetails details);
 
 /// Signature for [SfDataGrid.onCellLongPress] callback.
-typedef DataGridCellLongPressCallback =
-    void Function(DataGridCellLongPressDetails details);
+typedef DataGridCellLongPressCallback = void Function(DataGridCellLongPressDetails details);
 
 /// The signature of [DataGridSource.handleLoadMoreRows] function.
 typedef LoadMoreRows = Future<void> Function();
 
 /// Signature for the [SfDataGrid.loadMoreViewBuilder] function.
-typedef LoadMoreViewBuilder =
-    Widget? Function(BuildContext context, LoadMoreRows loadMoreRows);
+typedef LoadMoreViewBuilder = Widget? Function(BuildContext context, LoadMoreRows loadMoreRows);
 
 /// Signature for the [SfDataGrid.onSwipeStart] callback.
-typedef DataGridSwipeStartCallback =
-    bool Function(DataGridSwipeStartDetails swipeStartDetails);
+typedef DataGridSwipeStartCallback = bool Function(DataGridSwipeStartDetails swipeStartDetails);
 
 /// Signature for the [SfDataGrid.onSwipeUpdate] callback.
-typedef DataGridSwipeUpdateCallback =
-    bool Function(DataGridSwipeUpdateDetails swipeUpdateDetails);
+typedef DataGridSwipeUpdateCallback = bool Function(DataGridSwipeUpdateDetails swipeUpdateDetails);
 
 /// Signature for the [SfDataGrid.onSwipeEnd] callback.
-typedef DataGridSwipeEndCallback =
-    void Function(DataGridSwipeEndDetails swipeEndDetails);
+typedef DataGridSwipeEndCallback = void Function(DataGridSwipeEndDetails swipeEndDetails);
 
 /// Holds the arguments for the [SfDataGrid.startSwipeActionsBuilder] callback.
 typedef DataGridSwipeActionsBuilder =
-    Widget? Function(
-      BuildContext context,
-      DataGridRow dataGridRow,
-      int rowIndex,
-    );
+    Widget? Function(BuildContext context, DataGridRow dataGridRow, int rowIndex);
 
 /// The signature of [DataGridSource.canSubmitCell] and
 /// [DataGridSource.onCellSubmit] methods.
 typedef CellSubmit = void Function();
 
 /// Signature for the [SfDataGrid.onColumnResizeStart] callback.
-typedef ColumnResizeStartCallback =
-    bool Function(ColumnResizeStartDetails details);
+typedef ColumnResizeStartCallback = bool Function(ColumnResizeStartDetails details);
 
 /// Signature for the [SfDataGrid.onColumnResizeUpdate] callback.
-typedef ColumnResizeUpdateCallback =
-    bool Function(ColumnResizeUpdateDetails details);
+typedef ColumnResizeUpdateCallback = bool Function(ColumnResizeUpdateDetails details);
 
 /// Signature for the [SfDataGrid.onColumnResizeEnd] callback.
 typedef ColumnResizeEndCallback = void Function(ColumnResizeEndDetails details);
 
 /// Signature for the [SfDataGrid.onFilterChanging] callback.
-typedef DataGridFilterChangingCallback =
-    bool Function(DataGridFilterChangeDetails details);
+typedef DataGridFilterChangingCallback = bool Function(DataGridFilterChangeDetails details);
 
 /// Signature for the [SfDataGrid.onFilterChanged] callback.
-typedef DataGridFilterChangedCallback =
-    void Function(DataGridFilterChangeDetails details);
+typedef DataGridFilterChangedCallback = void Function(DataGridFilterChangeDetails details);
 
 /// Signature for the [DataGridSourceChangeNotifier] listener.
-typedef _DataGridSourceListener =
-    void Function({RowColumnIndex? rowColumnIndex});
+typedef _DataGridSourceListener = void Function({RowColumnIndex? rowColumnIndex});
 
 /// Signature for the [DataGridSourceChangeNotifier] listener.
 typedef _DataGridPropertyChangeListener =
@@ -139,16 +111,17 @@ typedef _DataGridPropertyChangeListener =
     });
 
 /// Signature for [SfDataGrid.onColumnDragging] callback.
-typedef DataGridColumnDraggingCallback =
-    bool Function(DataGridColumnDragDetails details);
+typedef DataGridColumnDraggingCallback = bool Function(DataGridColumnDragDetails details);
+
+/// Signature for [SfDataGrid.timezone] callback.
+typedef TimezoneCallback = String? Function(String timezone);
 
 /// Signature for [SfDataGrid. columnDragFeedbackBuilder] callback.
 typedef ColumnDragFeedbackBuilderCallback =
     Widget Function(BuildContext context, GridColumn column);
 
 /// Signature for [SfDataGrid.groupExpanding], [SfDataGrid.groupCollapsing], callbacks.
-typedef GroupChangingCallback =
-    bool Function(DataGridGroupChangingDetails group);
+typedef GroupChangingCallback = bool Function(DataGridGroupChangingDetails group);
 
 /// Signature for [SfDataGrid.groupExpanded], [SfDataGrid.groupCollapsed] callbacks.
 typedef GroupChangedCallback = void Function(DataGridGroupChangedDetails group);
@@ -241,11 +214,7 @@ class StackedHeaderRow {
 /// [StackedHeaderRow] – which provides configuration for stacked header row.
 class StackedHeaderCell {
   /// Creates the [StackedHeaderCell] for [StackedHeaderRow].
-  StackedHeaderCell({
-    this.text,
-    required this.columnNames,
-    required this.child,
-  }) {
+  StackedHeaderCell({this.text, required this.columnNames, required this.child}) {
     _childColumnIndexes = <int>[];
   }
 
@@ -521,6 +490,8 @@ class SfDataGrid extends StatefulWidget {
     this.onFilterChanging,
     this.onFilterChanged,
     this.paginatedFilterCallback,
+    this.timezoneCallback,
+    this.timezone,
     this.checkboxShape,
     this.showHorizontalScrollbar = true,
     this.showVerticalScrollbar = true,
@@ -1696,8 +1667,7 @@ class SfDataGrid extends StatefulWidget {
   /// programmatically.
   final DataGridFilterChangedCallback? onFilterChanged;
 
-
-   /// Called to fetch paginated filter values for columns that have
+  /// Called to fetch paginated filter values for columns that have
   /// [GridColumn.usePaginatedFiltering] set to true.
   ///
   /// This callback is invoked when the filter popup is opened for such columns
@@ -1737,6 +1707,17 @@ class SfDataGrid extends StatefulWidget {
   /// )
   /// ```
   final PaginatedFilterCallback? paginatedFilterCallback;
+
+  /// Called to fetch the timezone for a column.
+  final TimezoneCallback? timezoneCallback;
+
+  /// The timezone to use for DateTime column formatting and filtering.
+  ///
+  /// This parameter is only relevant when [columnType] is [GridColumnType.dateTime].
+  /// When null, the local timezone is used.
+  ///
+  /// Example: 'America/New_York', 'Europe/London', 'UTC'
+  final String? timezone;
 
   /// The shape of the checkbox.
   ///
@@ -1843,8 +1824,7 @@ class SfDataGrid extends StatefulWidget {
 /// Contains the state for a [SfDataGrid]. This class can be used to
 /// programmatically show the refresh indicator, see the [refresh]
 /// method.
-class SfDataGridState extends State<SfDataGrid>
-    with SingleTickerProviderStateMixin {
+class SfDataGridState extends State<SfDataGrid> with SingleTickerProviderStateMixin {
   static const double _minWidth = 300.0;
   static const double _minHeight = 300.0;
   static const double _rowHeight = 49.0;
@@ -1924,8 +1904,7 @@ class SfDataGridState extends State<SfDataGrid>
       canRefreshView = true;
     }
 
-    if (newColorScheme != null &&
-        _dataGridConfiguration.colorScheme != newColorScheme) {
+    if (newColorScheme != null && _dataGridConfiguration.colorScheme != newColorScheme) {
       _dataGridConfiguration.colorScheme = newColorScheme;
       canRefreshView = true;
     }
@@ -1990,8 +1969,7 @@ class SfDataGridState extends State<SfDataGrid>
   }
 
   void _updateHeaderRowHeight() {
-    final LineSizeCollection lineSizeCollection =
-        _container.columnWidths as LineSizeCollection;
+    final LineSizeCollection lineSizeCollection = _container.columnWidths as LineSizeCollection;
     lineSizeCollection.suspendUpdates();
     final int headerIndex = grid_helper.getHeaderIndex(_dataGridConfiguration);
     if (_container.rowCount > 0) {
@@ -2016,9 +1994,7 @@ class SfDataGridState extends State<SfDataGrid>
             widget.controller ?? DataGridController()
               .._dataGridStateDetails = _dataGridStateDetails;
 
-    _controller!._addDataGridPropertyChangeListener(
-      _handleDataGridPropertyChangeListeners,
-    );
+    _controller!._addDataGridPropertyChangeListener(_handleDataGridPropertyChangeListeners);
     if (widget.verticalScrollController != null) {
       _dataGridConfiguration.disposeVerticalScrollController = false;
     }
@@ -2033,18 +2009,11 @@ class SfDataGridState extends State<SfDataGrid>
 
     //AutoFit controller initializing
     _dataGridConfiguration.columnSizer = widget.columnSizer ?? ColumnSizer();
-    setStateDetailsInColumnSizer(
-      _dataGridConfiguration.columnSizer,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInColumnSizer(_dataGridConfiguration.columnSizer, _dataGridStateDetails!);
 
     //CurrentCell Manager initializing
-    _dataGridConfiguration.currentCell = CurrentCellManager(
-      _dataGridStateDetails!,
-    );
-    _dataGridConfiguration.dataGridFilterHelper = DataGridFilterHelper(
-      _dataGridStateDetails!,
-    );
+    _dataGridConfiguration.currentCell = CurrentCellManager(_dataGridStateDetails!);
+    _dataGridConfiguration.dataGridFilterHelper = DataGridFilterHelper(_dataGridStateDetails!);
 
     //Selection Manager initializing
     _rowSelectionManager =
@@ -2055,15 +2024,12 @@ class SfDataGridState extends State<SfDataGrid>
       _dataGridStateDetails!,
     );
 
-    _controller!._addDataGridPropertyChangeListener(
-      _handleSelectionPropertyChanged,
-    );
+    _controller!._addDataGridPropertyChangeListener(_handleSelectionPropertyChanged);
 
     _dataGridConfiguration.columnResizeController = ColumnResizeController(
       dataGridStateDetails: _dataGridStateDetails!,
     );
-    _dataGridConfiguration
-        .columnDragAndDropController = ColumnDragAndDropController(
+    _dataGridConfiguration.columnDragAndDropController = ColumnDragAndDropController(
       dataGridStateDetails: _dataGridStateDetails!,
     );
 
@@ -2173,49 +2139,24 @@ class SfDataGridState extends State<SfDataGrid>
   void _initializeCellRendererCollection() {
     _cellRenderers = <String, GridCellRendererBase>{};
     _cellRenderers['TextField'] = GridCellTextFieldRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['TextField']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['TextField']!, _dataGridStateDetails!);
     _cellRenderers['ColumnHeader'] = GridHeaderCellRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['ColumnHeader']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['ColumnHeader']!, _dataGridStateDetails!);
     _cellRenderers['StackedHeader'] = GridStackedHeaderCellRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['StackedHeader']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['StackedHeader']!, _dataGridStateDetails!);
     _cellRenderers['Checkbox'] = GridCheckboxRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['Checkbox']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['Checkbox']!, _dataGridStateDetails!);
     _cellRenderers['TableSummary'] = GridTableSummaryCellRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['TableSummary']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['TableSummary']!, _dataGridStateDetails!);
     _cellRenderers['CaptionSummary'] = GridCaptionSummaryCellRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['CaptionSummary']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['CaptionSummary']!, _dataGridStateDetails!);
     _cellRenderers['IndentCell'] = GridIndentCellRenderer();
-    setStateDetailsInCellRendererBase(
-      _cellRenderers['IndentCell']!,
-      _dataGridStateDetails!,
-    );
+    setStateDetailsInCellRendererBase(_cellRenderers['IndentCell']!, _dataGridStateDetails!);
   }
 
-  void _processCellUpdate(
-    RowColumnIndex rowColumnIndex, {
-    bool canRefreshGrouping = false,
-  }) {
+  void _processCellUpdate(RowColumnIndex rowColumnIndex, {bool canRefreshGrouping = false}) {
     if (rowColumnIndex != RowColumnIndex(-1, -1)) {
-      final bool isGrouping =
-          _dataGridConfiguration.source.groupedColumns.isNotEmpty;
+      final bool isGrouping = _dataGridConfiguration.source.groupedColumns.isNotEmpty;
       int rowIndex = 0;
       final int columnIndex = grid_helper.resolveToScrollColumnIndex(
         _dataGridConfiguration,
@@ -2223,23 +2164,15 @@ class SfDataGridState extends State<SfDataGrid>
       );
       if (isGrouping && canRefreshGrouping) {
         final DataGridRow row =
-            _dataGridConfiguration.source.effectiveRows[rowColumnIndex
-                .rowIndex];
-        rowColumnIndex.rowIndex = _dataGridConfiguration
-            .group!
-            .displayElements!
-            .grouped
-            .indexOf(row);
+            _dataGridConfiguration.source.effectiveRows[rowColumnIndex.rowIndex];
+        rowColumnIndex.rowIndex = _dataGridConfiguration.group!.displayElements!.grouped.indexOf(
+          row,
+        );
         rowIndex =
             rowColumnIndex.rowIndex +
-            grid_helper.resolveStartIndexBasedOnPosition(
-              _dataGridConfiguration,
-            );
+            grid_helper.resolveStartIndexBasedOnPosition(_dataGridConfiguration);
       } else {
-        rowIndex = grid_helper.resolveToRowIndex(
-          _dataGridConfiguration,
-          rowColumnIndex.rowIndex,
-        );
+        rowIndex = grid_helper.resolveToRowIndex(_dataGridConfiguration, rowColumnIndex.rowIndex);
       }
 
       // Issue:
@@ -2305,8 +2238,7 @@ class SfDataGridState extends State<SfDataGrid>
         });
       }
 
-      if (canRefreshGrouping &&
-          _dataGridConfiguration.source.groupedColumns.isNotEmpty) {
+      if (canRefreshGrouping && _dataGridConfiguration.source.groupedColumns.isNotEmpty) {
         updateDataSource(_dataGridConfiguration.source, true);
         notifyDataGridPropertyChangeListeners(
           _dataGridStateDetails!().source,
@@ -2323,28 +2255,22 @@ class SfDataGridState extends State<SfDataGrid>
   }
 
   void _updateSummaryColumns(int columnIndex) {
-    final int curretColumnIndex =
-        columnIndex - _dataGridConfiguration.source.groupedColumns.length;
-    if (curretColumnIndex >= 0 &&
-        curretColumnIndex < _dataGridConfiguration.columns.length) {
-      final String columnName =
-          _dataGridConfiguration.columns[curretColumnIndex].columnName;
+    final int curretColumnIndex = columnIndex - _dataGridConfiguration.source.groupedColumns.length;
+    if (curretColumnIndex >= 0 && curretColumnIndex < _dataGridConfiguration.columns.length) {
+      final String columnName = _dataGridConfiguration.columns[curretColumnIndex].columnName;
       if (_dataGridConfiguration.tableSummaryRows.isNotEmpty) {
-        for (final GridTableSummaryRow tableSummaryRow
-            in _dataGridConfiguration.tableSummaryRows) {
-          final GridSummaryColumn? summaryColumn = tableSummaryRow.columns
-              .firstWhereOrNull(
-                (GridSummaryColumn column) => column.columnName == columnName,
-              );
+        for (final GridTableSummaryRow tableSummaryRow in _dataGridConfiguration.tableSummaryRows) {
+          final GridSummaryColumn? summaryColumn = tableSummaryRow.columns.firstWhereOrNull(
+            (GridSummaryColumn column) => column.columnName == columnName,
+          );
           // Returns if the updated cell doesn't exist in the table summary row.
           if (summaryColumn == null) {
             return;
           }
 
-          final DataRowBase? summaryDataRow = _rowGenerator.items
-              .firstWhereOrNull(
-                (DataRowBase row) => row.tableSummaryRow == tableSummaryRow,
-              );
+          final DataRowBase? summaryDataRow = _rowGenerator.items.firstWhereOrNull(
+            (DataRowBase row) => row.tableSummaryRow == tableSummaryRow,
+          );
           if (summaryDataRow != null) {
             for (final DataCellBase column in summaryDataRow.visibleColumns) {
               final int titleColumnSpan = grid_helper.getSummaryTitleColumnSpan(
@@ -2352,8 +2278,7 @@ class SfDataGridState extends State<SfDataGrid>
                 tableSummaryRow,
               );
               if (tableSummaryRow.showSummaryInRow ||
-                  (titleColumnSpan > 0 &&
-                      column.columnIndex < titleColumnSpan)) {
+                  (titleColumnSpan > 0 && column.columnIndex < titleColumnSpan)) {
                 if (tableSummaryRow.title != null) {
                   if (tableSummaryRow.title!.contains(summaryColumn.name)) {
                     _refreshCell(column);
@@ -2417,11 +2342,7 @@ class SfDataGridState extends State<SfDataGrid>
       if (widget.selectionMode != SelectionMode.none &&
           widget.navigationMode == GridNavigationMode.cell &&
           _rowSelectionManager != null) {
-        selection_manager.onRowColumnChanged(
-          _dataGridConfiguration,
-          -1,
-          widget.columns.length,
-        );
+        selection_manager.onRowColumnChanged(_dataGridConfiguration, -1, widget.columns.length);
       }
       if (_dataGridConfiguration.showCheckboxColumn &&
           _dataGridConfiguration.checkboxColumnSettings.showCheckboxOnHeader &&
@@ -2445,13 +2366,11 @@ class SfDataGridState extends State<SfDataGrid>
 
     if (widget.footer != null) {
       final DataRowBase? footerRow = _rowGenerator.items.firstWhereOrNull(
-        (DataRowBase row) =>
-            row.rowType == RowType.footerRow && row.rowIndex >= 0,
+        (DataRowBase row) => row.rowType == RowType.footerRow && row.rowIndex >= 0,
       );
       if (footerRow != null) {
         // Need to reset the old footer row height in rowHeights collection.
-        _container.rowHeights[footerRow.rowIndex] =
-            _dataGridConfiguration.rowHeight;
+        _container.rowHeights[footerRow.rowIndex] = _dataGridConfiguration.rowHeight;
       }
     }
 
@@ -2497,18 +2416,14 @@ class SfDataGridState extends State<SfDataGrid>
           _dataGridConfiguration.horizontalScrollController!.hasClients &&
           _dataGridConfiguration.horizontalScrollController!.offset == 0) {
         final double maxScrollExtent =
-            _dataGridConfiguration
-                .horizontalScrollController!
-                .position
-                .maxScrollExtent;
+            _dataGridConfiguration.horizontalScrollController!.position.maxScrollExtent;
         if (_dataGridConfiguration.textDirection == TextDirection.ltr &&
             _dataGridConfiguration.container.horizontalOffset > 0.0) {
           _dataGridConfiguration.container
             ..horizontalOffset = 0
             ..horizontalScrollBar.value = 0;
         } else if (_dataGridConfiguration.textDirection == TextDirection.rtl &&
-            _dataGridConfiguration.container.horizontalOffset <
-                maxScrollExtent) {
+            _dataGridConfiguration.container.horizontalOffset < maxScrollExtent) {
           _dataGridConfiguration.container
             ..horizontalOffset = maxScrollExtent
             ..horizontalScrollBar.value = maxScrollExtent;
@@ -2533,8 +2448,9 @@ class SfDataGridState extends State<SfDataGrid>
       return;
     }
 
-    final DataRowBase? dataRow = _dataGridConfiguration.rowGenerator.items
-        .firstWhereOrNull((DataRowBase dataRow) => dataRow.isEditing);
+    final DataRowBase? dataRow = _dataGridConfiguration.rowGenerator.items.firstWhereOrNull(
+      (DataRowBase dataRow) => dataRow.isEditing,
+    );
 
     if (dataRow == null) {
       return;
@@ -2548,11 +2464,10 @@ class SfDataGridState extends State<SfDataGrid>
       return;
     }
 
-    final RowColumnIndex rowColumnIndex = grid_helper
-        .resolveToRecordRowColumnIndex(
-          _dataGridConfiguration,
-          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-        );
+    final RowColumnIndex rowColumnIndex = grid_helper.resolveToRecordRowColumnIndex(
+      _dataGridConfiguration,
+      RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+    );
 
     /// Issue:
     /// FLUT-6409 - Other cells are not moving into edit mode when removing
@@ -2563,8 +2478,7 @@ class SfDataGridState extends State<SfDataGrid>
     /// removing a row or column from the collection. If a row or column has
     /// a negative index, that row or column currently does not exist in the
     /// data grid. We have fixed the issue by resetting the editing properties.
-    if (rowColumnIndex.rowIndex.isNegative ||
-        rowColumnIndex.columnIndex.isNegative) {
+    if (rowColumnIndex.rowIndex.isNegative || rowColumnIndex.columnIndex.isNegative) {
       dataCell.editingWidget = null;
       dataCell.isDirty = true;
       dataCell.isEditing = dataRow.isEditing = false;
@@ -2613,9 +2527,7 @@ class SfDataGridState extends State<SfDataGrid>
   void _handleListeners() {
     // We have cleared the display elements to reinitialize the grouping and update the rows in the UI.
     if (_dataGridConfiguration.source.groupedColumns.isNotEmpty) {
-      _dataGridConfiguration.group!.clearDisplayElements(
-        _dataGridConfiguration,
-      );
+      _dataGridConfiguration.group!.clearDisplayElements(_dataGridConfiguration);
     }
     _processUpdateDataSource();
   }
@@ -2659,9 +2571,7 @@ class SfDataGridState extends State<SfDataGrid>
               ..isDirty = true
               ..rowIndexChanged();
             if (recalculateRowHeight) {
-              _dataGridConfiguration.container.rowHeightManager.setDirty(
-                rowIndex,
-              );
+              _dataGridConfiguration.container.rowHeightManager.setDirty(rowIndex);
               _dataGridConfiguration.container
                 ..needToRefreshColumn = true
                 ..setRowHeights();
@@ -2732,14 +2642,10 @@ class SfDataGridState extends State<SfDataGrid>
         return;
       }
 
-      if (_dataGridConfiguration
-          .columnDragAndDropController
-          .canResetColumnWidthCalculation) {
-        if (_dataGridConfiguration.columnWidthMode ==
-                ColumnWidthMode.lastColumnFill ||
+      if (_dataGridConfiguration.columnDragAndDropController.canResetColumnWidthCalculation) {
+        if (_dataGridConfiguration.columnWidthMode == ColumnWidthMode.lastColumnFill ||
             _dataGridConfiguration.columns.firstWhereOrNull(
-                  (GridColumn element) =>
-                      element.columnWidthMode == ColumnWidthMode.lastColumnFill,
+                  (GridColumn element) => element.columnWidthMode == ColumnWidthMode.lastColumnFill,
                 ) !=
                 null) {
           resetAutoCalculation(_dataGridConfiguration.columnSizer);
@@ -2874,23 +2780,22 @@ class SfDataGridState extends State<SfDataGrid>
       ..groupCollapsing = widget.groupCollapsing
       ..groupCollapsed = widget.groupCollapsed
       ..groupCaptionTitleFormat = widget.groupCaptionTitleFormat
-      ..paginatedFilterCallback = widget.paginatedFilterCallback;
+      ..paginatedFilterCallback = widget.paginatedFilterCallback
+      ..timezone = widget.timezone
+      ..timezoneCallback = widget.timezoneCallback;
 
     if (widget.allowPullToRefresh) {
-      _dataGridConfiguration.refreshIndicatorKey ??=
-          GlobalKey<RefreshIndicatorState>();
+      _dataGridConfiguration.refreshIndicatorKey ??= GlobalKey<RefreshIndicatorState>();
     }
   }
 
-  DataGridConfiguration _onDataGridStateDetailsChanged() =>
-      _dataGridConfiguration;
+  DataGridConfiguration _onDataGridStateDetailsChanged() => _dataGridConfiguration;
 
   Future<void> _updateProperties(SfDataGrid oldWidget) async {
     final bool isSourceChanged = widget.source != oldWidget.source;
     final bool isDataSourceChanged =
         !listEquals<DataGridRow>(oldWidget.source.rows, widget.source.rows);
-    final bool isColumnsChanged =
-        !listEquals<GridColumn>(_actualColumns, widget.columns);
+    final bool isColumnsChanged = !listEquals<GridColumn>(_actualColumns, widget.columns);
     // Issue:
     // FLUT-5815 - Range error occurs while doing column manipulations at
     // runtime and calling setstate to refresh the changes.
@@ -2909,21 +2814,16 @@ class SfDataGridState extends State<SfDataGrid>
     // we've taken out the count of checkboxes from the collection of internal columns.
     // This is done to prevent updating paginated rows before initializing the number of rows per page.
     final int columnLength =
-        _dataGridConfiguration.showCheckboxColumn
-            ? _columns!.length - 1
-            : _columns!.length;
-    final bool isColumnsCollectionChanged =
-        columnLength != widget.columns.length;
+        _dataGridConfiguration.showCheckboxColumn ? _columns!.length - 1 : _columns!.length;
+    final bool isColumnsCollectionChanged = columnLength != widget.columns.length;
     final bool isSelectionManagerChanged =
         oldWidget.selectionManager != widget.selectionManager ||
         oldWidget.selectionMode != widget.selectionMode;
     final bool isColumnSizerChanged =
         oldWidget.columnSizer != widget.columnSizer ||
         oldWidget.columnWidthMode != widget.columnWidthMode ||
-        oldWidget.columnWidthCalculationRange !=
-            widget.columnWidthCalculationRange;
-    final bool isDataGridControllerChanged =
-        oldWidget.controller != widget.controller;
+        oldWidget.columnWidthCalculationRange != widget.columnWidthCalculationRange;
+    final bool isDataGridControllerChanged = oldWidget.controller != widget.controller;
     final bool isFrozenColumnPaneChanged =
         oldWidget.frozenColumnsCount != widget.frozenColumnsCount ||
         oldWidget.footerFrozenColumnsCount != widget.footerFrozenColumnsCount;
@@ -2933,34 +2833,22 @@ class SfDataGridState extends State<SfDataGrid>
     final bool isSortingChanged = oldWidget.allowSorting != widget.allowSorting;
     final bool isMultiColumnSortingChanged =
         oldWidget.allowMultiColumnSorting != widget.allowMultiColumnSorting;
-    final bool isShowSortNumbersChanged =
-        oldWidget.showSortNumbers != widget.showSortNumbers;
+    final bool isShowSortNumbersChanged = oldWidget.showSortNumbers != widget.showSortNumbers;
     final bool isStackedHeaderRowsChanged =
-        !listEquals<StackedHeaderRow>(
-          oldWidget.stackedHeaderRows,
-          widget.stackedHeaderRows,
-        );
+        !listEquals<StackedHeaderRow>(oldWidget.stackedHeaderRows, widget.stackedHeaderRows);
     final bool isPullToRefreshPropertiesChanged =
         oldWidget.allowPullToRefresh != widget.allowPullToRefresh ||
-        oldWidget.refreshIndicatorDisplacement !=
-            widget.refreshIndicatorDisplacement ||
-        oldWidget.refreshIndicatorStrokeWidth !=
-            widget.refreshIndicatorStrokeWidth;
+        oldWidget.refreshIndicatorDisplacement != widget.refreshIndicatorDisplacement ||
+        oldWidget.refreshIndicatorStrokeWidth != widget.refreshIndicatorStrokeWidth;
     final bool isSwipingChanged = widget.allowSwiping != oldWidget.allowSwiping;
-    final bool isMaxSwipeOffsetChanged =
-        widget.swipeMaxOffset != oldWidget.swipeMaxOffset;
+    final bool isMaxSwipeOffsetChanged = widget.swipeMaxOffset != oldWidget.swipeMaxOffset;
     final bool isFooterRowChanged =
-        widget.footer != oldWidget.footer ||
-        widget.footerHeight != oldWidget.footerHeight;
-    final bool isTableSummaryRowsChanged =
-        widget.tableSummaryRows != oldWidget.tableSummaryRows;
-    final bool isRowsPerPageChanged =
-        widget.rowsPerPage != oldWidget.rowsPerPage;
+        widget.footer != oldWidget.footer || widget.footerHeight != oldWidget.footerHeight;
+    final bool isTableSummaryRowsChanged = widget.tableSummaryRows != oldWidget.tableSummaryRows;
+    final bool isRowsPerPageChanged = widget.rowsPerPage != oldWidget.rowsPerPage;
     // To apply filtering to the runtime changes of columns.
-    final bool canApplyFiltering =
-        isColumnsChanged && isColumnsCollectionChanged;
-    final bool isFilteringChanged =
-        oldWidget.allowFiltering != widget.allowFiltering;
+    final bool canApplyFiltering = isColumnsChanged && isColumnsCollectionChanged;
+    final bool isFilteringChanged = oldWidget.allowFiltering != widget.allowFiltering;
 
     if (oldWidget.verticalScrollController != widget.verticalScrollController) {
       if (widget.verticalScrollController != null) {
@@ -2970,8 +2858,7 @@ class SfDataGridState extends State<SfDataGrid>
           widget.verticalScrollController ?? ScrollController();
     }
 
-    if (oldWidget.horizontalScrollController !=
-        widget.horizontalScrollController) {
+    if (oldWidget.horizontalScrollController != widget.horizontalScrollController) {
       if (widget.horizontalScrollController != null) {
         _dataGridConfiguration.disposeHorizontalScrollController = false;
       }
@@ -2999,17 +2886,14 @@ class SfDataGridState extends State<SfDataGrid>
           (isSortingChanged || isMultiColumnSortingChanged) &&
           (oldWidget.source.sortedColumns.isNotEmpty ||
               widget.source.sortedColumns.isNotEmpty ||
-              oldWidget.source.sortedColumns.length !=
-                  widget.source.sortedColumns.length);
+              oldWidget.source.sortedColumns.length != widget.source.sortedColumns.length);
 
       if (isEditingChanged ||
           isEditingImpactAPIsChanged ||
           isSelectionManagerChanged ||
           oldWidget.navigationMode != widget.navigationMode) {
         isEditingImpactAPIsChanged =
-            isEditingImpactAPIsChanged ||
-            isColumnsChanged ||
-            isStackedHeaderRowsChanged;
+            isEditingImpactAPIsChanged || isColumnsChanged || isStackedHeaderRowsChanged;
 
         if (_dataGridConfiguration.currentCell.isEditing) {
           await _dataGridConfiguration.currentCell.onCellSubmit(
@@ -3023,23 +2907,18 @@ class SfDataGridState extends State<SfDataGrid>
     void refreshFooterView() {
       if (oldWidget.footer != null) {
         final DataRowBase? footerRow = _rowGenerator.items.firstWhereOrNull(
-          (DataRowBase row) =>
-              row.rowType == RowType.footerRow && row.rowIndex >= 0,
+          (DataRowBase row) => row.rowType == RowType.footerRow && row.rowIndex >= 0,
         );
         if (footerRow != null) {
           if (isFooterRowChanged) {
             // Need to reset the old footer row height in rowHeights collection.
-            _container.rowHeights[footerRow.rowIndex] =
-                _dataGridConfiguration.rowHeight;
+            _container.rowHeights[footerRow.rowIndex] = _dataGridConfiguration.rowHeight;
             // We remove the old footer view widget and recreate it in
             // `ScrollViewWidget` when the footer property is changed. Thus updates
             // the runtime changes of the footer view widget.
             _rowGenerator.items.remove(footerRow);
-          } else if (isSourceChanged ||
-              isDataSourceChanged ||
-              isStackedHeaderRowsChanged) {
-            _container.rowHeights[footerRow.rowIndex] =
-                _dataGridConfiguration.rowHeight;
+          } else if (isSourceChanged || isDataSourceChanged || isStackedHeaderRowsChanged) {
+            _container.rowHeights[footerRow.rowIndex] = _dataGridConfiguration.rowHeight;
           }
         }
       }
@@ -3058,12 +2937,10 @@ class SfDataGridState extends State<SfDataGrid>
       }
     }
 
-    if (!_dataGridConfiguration.isDesktop &&
-        _dataGridConfiguration.allowColumnsResizing) {
+    if (!_dataGridConfiguration.isDesktop && _dataGridConfiguration.allowColumnsResizing) {
       final ColumnResizeController columnResizeController =
           _dataGridConfiguration.columnResizeController;
-      if (!columnResizeController.isResizing &&
-          columnResizeController.isResizeIndicatorVisible) {
+      if (!columnResizeController.isResizing && columnResizeController.isResizeIndicatorVisible) {
         columnResizeController.isResizeIndicatorVisible = false;
       }
     }
@@ -3119,23 +2996,15 @@ class SfDataGridState extends State<SfDataGrid>
           _handleDataGridPropertyChangeListeners,
         );
 
-        _controller =
-            _dataGridConfiguration.controller =
-                widget.controller ?? _controller!;
+        _controller = _dataGridConfiguration.controller = widget.controller ?? _controller!;
         _controller!._dataGridStateDetails = _dataGridStateDetails;
 
-        _controller?._addDataGridPropertyChangeListener(
-          _handleDataGridPropertyChangeListeners,
-        );
+        _controller?._addDataGridPropertyChangeListener(_handleDataGridPropertyChangeListeners);
       }
 
       if (oldWidget.columnSizer != widget.columnSizer) {
-        _dataGridConfiguration.columnSizer =
-            widget.columnSizer ?? ColumnSizer();
-        setStateDetailsInColumnSizer(
-          _dataGridConfiguration.columnSizer,
-          _dataGridStateDetails!,
-        );
+        _dataGridConfiguration.columnSizer = widget.columnSizer ?? ColumnSizer();
+        setStateDetailsInColumnSizer(_dataGridConfiguration.columnSizer, _dataGridStateDetails!);
       }
 
       _initializeProperties();
@@ -3184,9 +3053,7 @@ class SfDataGridState extends State<SfDataGrid>
       if (isSortingChanged ||
           isFilteringChanged ||
           widget.allowSorting && isMultiColumnSortingChanged ||
-          widget.allowSorting &&
-              widget.allowMultiColumnSorting &&
-              isShowSortNumbersChanged) {
+          widget.allowSorting && widget.allowMultiColumnSorting && isShowSortNumbersChanged) {
         // To reset the auto width calculation.
         resetAutoCalculation(_dataGridConfiguration.columnSizer);
 
@@ -3215,16 +3082,14 @@ class SfDataGridState extends State<SfDataGrid>
         _container.refreshView(clearEditing: false);
       }
 
-      if (widget.allowSwiping ||
-          (oldWidget.allowSwiping && !widget.allowSwiping)) {
+      if (widget.allowSwiping || (oldWidget.allowSwiping && !widget.allowSwiping)) {
         if (isDataSourceChanged ||
             isColumnSizerChanged ||
             isMaxSwipeOffsetChanged ||
             isFrozenRowPaneChanged ||
             isFrozenColumnPaneChanged ||
             canApplyFiltering ||
-            (oldWidget.allowSwiping && !widget.allowSwiping ||
-                isRowsPerPageChanged)) {
+            (oldWidget.allowSwiping && !widget.allowSwiping || isRowsPerPageChanged)) {
           _container.resetSwipeOffset();
         }
       }
@@ -3246,13 +3111,11 @@ class SfDataGridState extends State<SfDataGrid>
     } else {
       if (oldWidget.gridLinesVisibility != widget.gridLinesVisibility ||
           oldWidget.allowTriStateSorting != widget.allowTriStateSorting ||
-          oldWidget.headerGridLinesVisibility !=
-              widget.headerGridLinesVisibility ||
+          oldWidget.headerGridLinesVisibility != widget.headerGridLinesVisibility ||
           oldWidget.sortingGestureType != widget.sortingGestureType ||
           (oldWidget.allowColumnsDragging != widget.allowColumnsDragging) ||
           (oldWidget.onColumnDragging != widget.onColumnDragging) ||
-          (oldWidget.columnDragFeedbackBuilder !=
-              widget.columnDragFeedbackBuilder) ||
+          (oldWidget.columnDragFeedbackBuilder != widget.columnDragFeedbackBuilder) ||
           isEditingChanged) {
         // Need to endEdit before refreshing
         if (isEditingChanged && _dataGridConfiguration.currentCell.isEditing) {
@@ -3289,8 +3152,7 @@ class SfDataGridState extends State<SfDataGrid>
         _dataGridConfiguration.source.sortedColumns.removeWhere(
           (SortColumnDetails sortColumn) =>
               !_dataGridConfiguration.columns.any(
-                (GridColumn dataGridColumn) =>
-                    dataGridColumn.columnName == sortColumn.name,
+                (GridColumn dataGridColumn) => dataGridColumn.columnName == sortColumn.name,
               ),
         );
       }
@@ -3323,12 +3185,8 @@ class SfDataGridState extends State<SfDataGrid>
     bool isDataSourceChanged = false,
   }) {
     if (isSourceChanged) {
-      oldWidget.controller?._removeDataGridPropertyChangeListener(
-        _handleSelectionPropertyChanged,
-      );
-      widget.controller?._addDataGridPropertyChangeListener(
-        _handleSelectionPropertyChanged,
-      );
+      oldWidget.controller?._removeDataGridPropertyChangeListener(_handleSelectionPropertyChanged);
+      widget.controller?._addDataGridPropertyChangeListener(_handleSelectionPropertyChanged);
     }
 
     if (isSelectionManagerChanged) {
@@ -3348,8 +3206,7 @@ class SfDataGridState extends State<SfDataGrid>
     selection_manager.updateSelectionController(
       dataGridConfiguration: _dataGridConfiguration,
       isSelectionModeChanged: oldWidget.selectionMode != widget.selectionMode,
-      isNavigationModeChanged:
-          oldWidget.navigationMode != widget.navigationMode,
+      isNavigationModeChanged: oldWidget.navigationMode != widget.navigationMode,
       isDataSourceChanged: isDataSourceChanged,
     );
 
@@ -3358,15 +3215,10 @@ class SfDataGridState extends State<SfDataGrid>
     }
   }
 
-  void _onStackedHeaderRowsPropertyChanged(
-    SfDataGrid oldWidget,
-    SfDataGrid widget,
-  ) {
+  void _onStackedHeaderRowsPropertyChanged(SfDataGrid oldWidget, SfDataGrid widget) {
     _container.refreshHeaderLineCount();
     if (oldWidget.stackedHeaderRows.isNotEmpty) {
-      _rowGenerator.items.removeWhere(
-        (DataRowBase row) => row.rowType == RowType.stackedHeaderRow,
-      );
+      _rowGenerator.items.removeWhere((DataRowBase row) => row.rowType == RowType.stackedHeaderRow);
     }
     if (widget.onQueryRowHeight != null) {
       _container.rowHeightManager.reset();
@@ -3374,10 +3226,8 @@ class SfDataGridState extends State<SfDataGrid>
 
     // FlUT-3851 Needs to reset the vertical and horizontal offset when both the
     // controller's offset and scrollbar's offset are not identical.
-    if ((oldWidget.stackedHeaderRows.isNotEmpty &&
-            widget.stackedHeaderRows.isEmpty) ||
-        (oldWidget.stackedHeaderRows.isEmpty &&
-            widget.stackedHeaderRows.isNotEmpty)) {
+    if ((oldWidget.stackedHeaderRows.isNotEmpty && widget.stackedHeaderRows.isEmpty) ||
+        (oldWidget.stackedHeaderRows.isEmpty && widget.stackedHeaderRows.isNotEmpty)) {
       if (_dataGridConfiguration.verticalScrollController!.hasClients &&
           _dataGridConfiguration.container.verticalOffset > 0) {
         _dataGridConfiguration.container.verticalOffset = 0;
@@ -3410,9 +3260,7 @@ class SfDataGridState extends State<SfDataGrid>
             (widget.navigationMode == GridNavigationMode.row) ||
         (_dataGridConfiguration.source.groupedColumns.isNotEmpty &&
             widget.navigationMode == GridNavigationMode.cell)) {
-      _dataGridConfiguration.configuration ??= createLocalImageConfiguration(
-        context,
-      );
+      _dataGridConfiguration.configuration ??= createLocalImageConfiguration(context);
       if (_dataGridConfiguration.boxPainter == null) {
         _updateDecoration();
       }
@@ -3421,36 +3269,23 @@ class SfDataGridState extends State<SfDataGrid>
 
   void _updateDecoration() {
     final BorderSide borderSide = BorderSide(
-      color:
-          _dataGridConfiguration
-              .dataGridThemeHelper!
-              .currentCellStyle!
-              .borderColor,
+      color: _dataGridConfiguration.dataGridThemeHelper!.currentCellStyle!.borderColor,
     );
     final BoxDecoration decoration = BoxDecoration(
-      border: Border(
-        bottom: borderSide,
-        top: borderSide,
-        left: borderSide,
-        right: borderSide,
-      ),
+      border: Border(bottom: borderSide, top: borderSide, left: borderSide, right: borderSide),
     );
 
     _dataGridConfiguration.boxPainter = decoration.createBoxPainter();
   }
 
   void _addDataGridSourceListeners() {
-    _source?._addDataGridPropertyChangeListener(
-      _handleDataGridPropertyChangeListeners,
-    );
+    _source?._addDataGridPropertyChangeListener(_handleDataGridPropertyChangeListeners);
     _source?._addDataGridSourceListener(_handleNotifyListeners);
     _source?.addListener(_handleListeners);
   }
 
   void _removeDataGridSourceListeners() {
-    _source?._removeDataGridPropertyChangeListener(
-      _handleDataGridPropertyChangeListeners,
-    );
+    _source?._removeDataGridPropertyChangeListener(_handleDataGridPropertyChangeListeners);
     _source?._removeDataGridSourceListener(_handleNotifyListeners);
     _source?.removeListener(_handleListeners);
   }
@@ -3504,8 +3339,7 @@ class SfDataGridState extends State<SfDataGrid>
         themeData.platform == TargetPlatform.windows ||
         themeData.platform == TargetPlatform.linux;
 
-    _dataGridConfiguration.isMacPlatform =
-        themeData.platform == TargetPlatform.macOS;
+    _dataGridConfiguration.isMacPlatform = themeData.platform == TargetPlatform.macOS;
     _dataGridConfiguration.columnDragAndDropController.isWindowsPlatform =
         themeData.platform == TargetPlatform.windows && !kIsWeb;
     // Sets column resizing hitTestPrecision based on the platform.
@@ -3517,9 +3351,7 @@ class SfDataGridState extends State<SfDataGrid>
     _onDataGridTextDirectionChanged(Directionality.of(context));
 
     _onDataGridThemeDataChanged(SfDataGridTheme.of(context), colorScheme);
-    _onDataGridTextScaleFactorChanged(
-      MediaQuery.textScalerOf(context).scale(1),
-    );
+    _onDataGridTextScaleFactorChanged(MediaQuery.textScalerOf(context).scale(1));
     _updateVisualDensity(themeData.visualDensity);
     _dataGridConfiguration.defaultColumnWidth =
         widget.defaultColumnWidth.isNaN
@@ -3537,12 +3369,9 @@ class SfDataGridState extends State<SfDataGrid>
       final Size currentScreenSize = MediaQuery.of(context).size;
       _screenSize ??= currentScreenSize;
       if (_screenSize != currentScreenSize &&
-          _dataGridConfiguration
-              .dataGridFilterHelper!
-              .isFilterPopupMenuShowing) {
+          _dataGridConfiguration.dataGridFilterHelper!.isFilterPopupMenuShowing) {
         Navigator.pop(context);
-        _dataGridConfiguration.dataGridFilterHelper!.isFilterPopupMenuShowing =
-            false;
+        _dataGridConfiguration.dataGridFilterHelper!.isFilterPopupMenuShowing = false;
       }
       _screenSize = currentScreenSize;
     }
@@ -3566,21 +3395,16 @@ class SfDataGridState extends State<SfDataGrid>
       builder: (BuildContext context, BoxConstraints constraints) {
         final double measuredHeight =
             _dataGridConfiguration.viewHeight =
-                constraints.maxHeight.isInfinite
-                    ? _minHeight
-                    : constraints.maxHeight;
+                constraints.maxHeight.isInfinite ? _minHeight : constraints.maxHeight;
         double measuredWidth =
             _dataGridConfiguration.viewWidth =
-                constraints.maxWidth.isInfinite
-                    ? _minWidth
-                    : constraints.maxWidth;
+                constraints.maxWidth.isInfinite ? _minWidth : constraints.maxWidth;
 
         // FLUT-6545 if shrinkWrapColumns is true, we need to set the container extended width value to the viewWidth
         // because the row selection colors are applied based on this size while cell is in editing
         if (_dataGridConfiguration.shrinkWrapColumns) {
           measuredWidth =
-              _dataGridConfiguration.viewWidth =
-                  _dataGridConfiguration.container.extentWidth;
+              _dataGridConfiguration.viewWidth = _dataGridConfiguration.container.extentWidth;
         }
         if (!_container.isGridLoaded) {
           _gridLoaded();
@@ -3588,10 +3412,7 @@ class SfDataGridState extends State<SfDataGrid>
             _container.needToSetHorizontalOffset = true;
           }
           _container.isDirty = true;
-          updateColumnSizerLoadedInitiallyFlag(
-            _dataGridConfiguration.columnSizer,
-            true,
-          );
+          updateColumnSizerLoadedInitiallyFlag(_dataGridConfiguration.columnSizer, true);
         }
 
         return ScrollViewWidget(
@@ -3616,12 +3437,8 @@ class SfDataGridState extends State<SfDataGrid>
     // It's added to `_dataGridPropertyChangeListeners` but we didn't remove it from the _dataGridPropertyChangeListeners.
     // We have fixed the issue by removing the respective listener from the_dataGridPropertyChangeListeners
     // through the _removeDataGridPropertyChangeListener method.
-    _controller?._removeDataGridPropertyChangeListener(
-      _handleDataGridPropertyChangeListeners,
-    );
-    _controller?._removeDataGridPropertyChangeListener(
-      _handleSelectionPropertyChanged,
-    );
+    _controller?._removeDataGridPropertyChangeListener(_handleDataGridPropertyChangeListeners);
+    _controller?._removeDataGridPropertyChangeListener(_handleSelectionPropertyChanged);
     _dataGridConfiguration
       ..gridPaint = null
       ..boxPainter = null
@@ -3647,9 +3464,7 @@ class SfDataGridState extends State<SfDataGrid>
     // Therefore, it does not reset to "FilteredFrom.none" when the DataGrid is dispose.
     // We have now implemented a reset of the "filterFrom" property
     // when the DataGrid is dispose
-    _dataGridConfiguration.dataGridFilterHelper!.resetColumnProperties(
-      _dataGridConfiguration,
-    );
+    _dataGridConfiguration.dataGridFilterHelper!.resetColumnProperties(_dataGridConfiguration);
     super.dispose();
   }
 }
@@ -3693,8 +3508,7 @@ class SfDataGridState extends State<SfDataGrid>
 /// }
 /// ```
 
-abstract class DataGridSource extends DataGridSourceChangeNotifier
-    with DataPagerDelegate {
+abstract class DataGridSource extends DataGridSourceChangeNotifier with DataPagerDelegate {
   /// The collection of rows to display in [SfDataGrid].
   ///
   /// This must be non-null, but may be empty.
@@ -3740,8 +3554,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
   DataGridStateDetails? _dataGridStateDetails;
 
-  final Map<String, List<FilterCondition>> _filterConditions =
-      <String, List<FilterCondition>>{};
+  final Map<String, List<FilterCondition>> _filterConditions = <String, List<FilterCondition>>{};
 
   /// Holds the collection of [FilterCondition] based on the columns.
   ///
@@ -3757,8 +3570,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   final List<ColumnGroup> _groupedColumns = <ColumnGroup>[];
 
   /// The collection of [ColumnGroup] to be grouped in the [SfDataGrid].
-  List<ColumnGroup> get groupedColumns =>
-      List<ColumnGroup>.unmodifiable(_groupedColumns);
+  List<ColumnGroup> get groupedColumns => List<ColumnGroup>.unmodifiable(_groupedColumns);
 
   /// Called whenever you call [notifyListeners] or [notifyDataSourceListeners]
   /// in the DataGridSource class. If you want to recalculate all columns
@@ -3894,10 +3706,11 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// added by raza to handle the map values
   @protected
   String performGrouping(String columnName, DataGridRow row) {
-    final dynamic value = row
-        .getCells()
-        .firstWhereOrNull((DataGridCell cell) => cell.columnName == columnName)
-        ?.value;
+    final dynamic value =
+        row
+            .getCells()
+            .firstWhereOrNull((DataGridCell cell) => cell.columnName == columnName)
+            ?.value;
 
     if (value == null) {
       return '';
@@ -3922,20 +3735,14 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     if (_dataGridStateDetails != null) {
       _rowsPerPage = _dataGridStateDetails!().rowsPerPage;
     }
-    if (_pageCount > 0 &&
-        _paginatedRows.isNotEmpty &&
-        !_suspendDataPagerUpdate) {
+    if (_pageCount > 0 && _paginatedRows.isNotEmpty && !_suspendDataPagerUpdate) {
       _suspendDataPagerUpdate = true;
       notifyListeners();
       _suspendDataPagerUpdate = false;
     }
   }
 
-  int _compareValues(
-    List<SortColumnDetails> sortedColumns,
-    DataGridRow a,
-    DataGridRow b,
-  ) {
+  int _compareValues(List<SortColumnDetails> sortedColumns, DataGridRow a, DataGridRow b) {
     if (sortedColumns.length > 1) {
       for (final int i = 0; i < sortedColumns.length;) {
         final SortColumnDetails sortColumn = sortedColumns[i];
@@ -4024,9 +3831,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   int compare(DataGridRow? a, DataGridRow? b, SortColumnDetails sortColumn) {
     Object? getCellValue(List<DataGridCell>? cells, String columnName) {
       return cells
-          ?.firstWhereOrNull(
-            (DataGridCell element) => element.columnName == columnName,
-          )
+          ?.firstWhereOrNull((DataGridCell element) => element.columnName == columnName)
           ?.value;
     }
 
@@ -4035,11 +3840,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     return _compareTo(valueA, valueB, sortColumn.sortDirection);
   }
 
-  int _compareTo(
-    dynamic value1,
-    dynamic value2,
-    DataGridSortDirection sortDirection,
-  ) {
+  int _compareTo(dynamic value1, dynamic value2, DataGridSortDirection sortDirection) {
     if (sortDirection == DataGridSortDirection.ascending) {
       if (value1 == null) {
         return -1;
@@ -4060,8 +3861,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   Future<void> _updateDataSource([bool isClearGrouping = false]) async {
     // Clear grouped display elements during CRUD operations.
     if (isClearGrouping && _dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridStateDetails =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridStateDetails = _dataGridStateDetails!();
       if (dataGridStateDetails.source.groupedColumns.isNotEmpty) {
         dataGridStateDetails.group?.clearDisplayElements(dataGridStateDetails);
       }
@@ -4085,8 +3885,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
     // Should refresh grouping when data grid source is updated
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridStateDetails =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridStateDetails = _dataGridStateDetails!();
       if (dataGridStateDetails.source.groupedColumns.isNotEmpty &&
           dataGridStateDetails.group!.displayElements == null) {
         dataGridStateDetails.group?.initializeTopLevelGroup(
@@ -4196,8 +3995,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// ```
   void addFilter(String columnName, FilterCondition filterCondition) {
     final List<FilterCondition> conditions = <FilterCondition>[
-      if (_filterConditions.containsKey(columnName))
-        ..._filterConditions[columnName]!,
+      if (_filterConditions.containsKey(columnName)) ..._filterConditions[columnName]!,
       filterCondition,
     ];
 
@@ -4299,25 +4097,16 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
   void _refreshFilter(DataGridConfiguration dataGridConfiguration) {
     if (dataGridConfiguration.currentCell.isEditing) {
-      dataGridConfiguration.currentCell.onCellSubmit(
-        dataGridConfiguration,
-        canRefresh: false,
-      );
+      dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration, canRefresh: false);
     }
     if (dataGridConfiguration.source.groupedColumns.isNotEmpty) {
       dataGridConfiguration.group!.clearDisplayElements(dataGridConfiguration);
-      notifyDataGridPropertyChangeListeners(
-        dataGridConfiguration.source,
-        propertyName: 'grouping',
-      );
+      notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'grouping');
     }
 
     _updateDataSource();
     selection_manager.refreshSelectedRows(dataGridConfiguration);
-    notifyDataGridPropertyChangeListeners(
-      dataGridConfiguration.source,
-      propertyName: 'Filtering',
-    );
+    notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'Filtering');
   }
 
   /// Called to obtain the widget when a cell is moved into edit mode.
@@ -4400,11 +4189,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
   /// actual row index even after sorting is applied, you can use
   /// `DataGridSource.rows.indexOf` method and pass the [dataGridRow]. It will
   /// provide the actual row index from unsorted [DataGridRow] collection.
-  bool onCellBeginEdit(
-    DataGridRow dataGridRow,
-    RowColumnIndex rowColumnIndex,
-    GridColumn column,
-  ) {
+  bool onCellBeginEdit(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) {
     return true;
   }
 
@@ -4484,12 +4269,10 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
       return Future<bool>.value(true);
     }
 
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
 
     final int rowsPerPage =
-        dataGridConfiguration.rowsPerPage ??
-        (effectiveRows.length / _pageCount).ceil();
+        dataGridConfiguration.rowsPerPage ?? (effectiveRows.length / _pageCount).ceil();
     final int startIndex = newPageIndex * rowsPerPage;
     int endIndex = startIndex + rowsPerPage;
 
@@ -4536,10 +4319,7 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
       if (summaryRow.title != null) {
         for (final GridSummaryColumn cell in summaryRow.columns) {
           if (title.contains(cell.name)) {
-            final String summaryValue = grid_helper.getSummaryValue(
-              cell,
-              _effectiveRows,
-            );
+            final String summaryValue = grid_helper.getSummaryValue(cell, _effectiveRows);
             title = title.replaceAll('{${cell.name}}', summaryValue);
           }
         }
@@ -4573,14 +4353,9 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     _groupedColumns.add(columnGroup);
 
     if (columnGroup.sortGroupRows) {
-      if (!sortedColumns.any(
-        (SortColumnDetails element) => element.name == columnGroup.name,
-      )) {
+      if (!sortedColumns.any((SortColumnDetails element) => element.name == columnGroup.name)) {
         sortedColumns.add(
-          SortColumnDetails(
-            name: columnGroup.name,
-            sortDirection: DataGridSortDirection.ascending,
-          ),
+          SortColumnDetails(name: columnGroup.name, sortDirection: DataGridSortDirection.ascending),
         );
       }
     }
@@ -4592,14 +4367,10 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
   /// Call this method to remove a specified [ColumnGroup] from the column grouping.
   void removeColumnGroup(ColumnGroup columnGroup) {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     if (_groupedColumns.isNotEmpty && _groupedColumns.contains(columnGroup)) {
       if (dataGridConfiguration.currentCell.isEditing) {
-        dataGridConfiguration.currentCell.onCellSubmit(
-          dataGridConfiguration,
-          canRefresh: false,
-        );
+        dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration, canRefresh: false);
       }
       if (columnGroup.sortGroupRows) {
         final SortColumnDetails? sortedColumn = sortedColumns.firstWhereOrNull(
@@ -4619,22 +4390,14 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
 
   /// Clear all the [ColumnGroup] from the column grouping.
   void clearColumnGroups() {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     if (dataGridConfiguration.currentCell.isEditing) {
-      dataGridConfiguration.currentCell.onCellSubmit(
-        dataGridConfiguration,
-        canRefresh: false,
-      );
+      dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration, canRefresh: false);
     }
     for (final ColumnGroup column in _groupedColumns) {
       if (column.sortGroupRows) {
-        final SortColumnDetails? sortedColumn = dataGridConfiguration
-            .source
-            .sortedColumns
-            .firstWhereOrNull(
-              (SortColumnDetails element) => element.name == column.name,
-            );
+        final SortColumnDetails? sortedColumn = dataGridConfiguration.source.sortedColumns
+            .firstWhereOrNull((SortColumnDetails element) => element.name == column.name);
         if (sortedColumn != null) {
           sortedColumns.remove(sortedColumn);
         }
@@ -4730,8 +4493,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
 
   bool _isCurrentCellInEditing() {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       return dataGridConfiguration.currentCell.isEditing;
     } else {
       return false;
@@ -4799,8 +4561,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// This is used to identify the currently active cell to process the
   /// key navigation.
   RowColumnIndex get currentCell {
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final CurrentCellManager currentCell = dataGridConfiguration.currentCell;
     if (dataGridConfiguration.navigationMode == GridNavigationMode.row) {
       return grid_helper.resolveToRecordRowColumnIndex(
@@ -4818,8 +4579,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Moves the current-cell to the specified cell coordinates.
   void moveCurrentCellTo(RowColumnIndex rowColumnIndex) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       if (rowColumnIndex != RowColumnIndex(-1, -1) &&
           dataGridConfiguration.selectionMode != SelectionMode.none &&
           dataGridConfiguration.navigationMode != GridNavigationMode.row) {
@@ -4871,12 +4631,9 @@ class DataGridController extends DataGridSourceChangeNotifier {
     DataGridScrollPosition columnPosition = DataGridScrollPosition.start,
   }) async {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
-      final ScrollAxisBase scrollRows =
-          dataGridConfiguration.container.scrollRows;
-      final ScrollAxisBase scrollColumns =
-          dataGridConfiguration.container.scrollColumns;
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
+      final ScrollAxisBase scrollRows = dataGridConfiguration.container.scrollRows;
+      final ScrollAxisBase scrollColumns = dataGridConfiguration.container.scrollColumns;
 
       if (rowIndex > dataGridConfiguration.container.rowCount ||
           columnIndex > scrollColumns.lineCount ||
@@ -4892,17 +4649,13 @@ class DataGridController extends DataGridSourceChangeNotifier {
         dataGridConfiguration,
         columnIndex.toInt(),
       );
-      double verticalOffset = grid_helper.getVerticalOffset(
-        dataGridConfiguration,
-        getRowIndex,
-      );
+      double verticalOffset = grid_helper.getVerticalOffset(dataGridConfiguration, getRowIndex);
       double horizontalOffset = grid_helper.getHorizontalOffset(
         dataGridConfiguration,
         getColumnIndex,
       );
 
-      if (dataGridConfiguration.textDirection == TextDirection.rtl &&
-          columnIndex == -1) {
+      if (dataGridConfiguration.textDirection == TextDirection.rtl && columnIndex == -1) {
         horizontalOffset =
             dataGridConfiguration.container.extentWidth -
                         dataGridConfiguration.viewWidth -
@@ -4938,17 +4691,9 @@ class DataGridController extends DataGridSourceChangeNotifier {
         getColumnIndex,
       );
 
-      grid_helper.scrollVertical(
-        dataGridConfiguration,
-        verticalOffset,
-        canAnimate,
-      );
+      grid_helper.scrollVertical(dataGridConfiguration, verticalOffset, canAnimate);
       // Need to add await for the horizontal scrolling alone, to avoid the delay time between vertical and horizontal scrolling.
-      await grid_helper.scrollHorizontal(
-        dataGridConfiguration,
-        horizontalOffset,
-        canAnimate,
-      );
+      await grid_helper.scrollHorizontal(dataGridConfiguration, horizontalOffset, canAnimate);
     }
   }
 
@@ -4963,12 +4708,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
     bool canAnimate = false,
     DataGridScrollPosition position = DataGridScrollPosition.start,
   }) async {
-    return scrollToCell(
-      rowIndex,
-      -1,
-      canAnimate: canAnimate,
-      rowPosition: position,
-    );
+    return scrollToCell(rowIndex, -1, canAnimate: canAnimate, rowPosition: position);
   }
 
   /// Scrolls the [SfDataGrid] to the given column index.
@@ -4982,21 +4722,13 @@ class DataGridController extends DataGridSourceChangeNotifier {
     bool canAnimate = false,
     DataGridScrollPosition position = DataGridScrollPosition.start,
   }) async {
-    return scrollToCell(
-      -1,
-      columnIndex,
-      canAnimate: canAnimate,
-      columnPosition: position,
-    );
+    return scrollToCell(-1, columnIndex, canAnimate: canAnimate, columnPosition: position);
   }
 
   /// Scroll the vertical scrollbar from current position to the given value.
   ///
   /// If you want animation on scrolling, you can pass true as canAnimate argument.
-  Future<void> scrollToVerticalOffset(
-    double offset, {
-    bool canAnimate = false,
-  }) async {
+  Future<void> scrollToVerticalOffset(double offset, {bool canAnimate = false}) async {
     if (_dataGridStateDetails != null) {
       final DataGridConfiguration dataGridSettings = _dataGridStateDetails!();
       return grid_helper.scrollVertical(dataGridSettings, offset, canAnimate);
@@ -5006,10 +4738,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Scroll the horizontal scrollbar from current value to the given value.
   ///
   /// If you want animation on scrolling, you can pass true as canAnimate argument.
-  Future<void> scrollToHorizontalOffset(
-    double offset, {
-    bool canAnimate = false,
-  }) async {
+  Future<void> scrollToHorizontalOffset(double offset, {bool canAnimate = false}) async {
     if (_dataGridStateDetails != null) {
       final DataGridConfiguration dataGridSettings = _dataGridStateDetails!();
       return grid_helper.scrollHorizontal(dataGridSettings, offset, canAnimate);
@@ -5019,17 +4748,14 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Begins the edit to the given [RowColumnIndex] in [SfDataGrid].
   Future<void> beginEdit(RowColumnIndex rowColumnIndex) async {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       if (!dataGridConfiguration.allowEditing ||
           dataGridConfiguration.selectionMode == SelectionMode.none ||
           dataGridConfiguration.navigationMode == GridNavigationMode.row) {
         return;
       }
       if (isCurrentCellInEditing) {
-        if (!await dataGridConfiguration.currentCell.canSubmitCell(
-          dataGridConfiguration,
-        )) {
+        if (!await dataGridConfiguration.currentCell.canSubmitCell(dataGridConfiguration)) {
           return;
         }
 
@@ -5048,53 +4774,41 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Ends the current editing of a cell in [SfDataGrid].
   Future<void> endEdit() async {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       if (!dataGridConfiguration.allowEditing ||
           dataGridConfiguration.selectionMode == SelectionMode.none ||
           dataGridConfiguration.navigationMode == GridNavigationMode.row) {
         return;
       }
 
-      await dataGridConfiguration.currentCell.onCellSubmit(
-        dataGridConfiguration,
-      );
+      await dataGridConfiguration.currentCell.onCellSubmit(dataGridConfiguration);
     }
   }
 
   /// Expands all the groups in the [SfDataGrid].
   void expandAllGroup() {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final Group grouping = dataGridConfiguration.group!;
       grouping.expandAll(grouping);
-      notifyDataGridPropertyChangeListeners(
-        dataGridConfiguration.source,
-        propertyName: 'grouping',
-      );
+      notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'grouping');
     }
   }
 
   /// Collapses all the groups in the [SfDataGrid].
   void collapseAllGroup() {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final Group grouping = dataGridConfiguration.group!;
       grouping.collapseAll(grouping);
-      notifyDataGridPropertyChangeListeners(
-        dataGridConfiguration.source,
-        propertyName: 'grouping',
-      );
+      notifyDataGridPropertyChangeListeners(dataGridConfiguration.source, propertyName: 'grouping');
     }
   }
 
   /// Collapses the groups based on the respective level.
   void collapseGroupsAtLevel(int level) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final Group grouping = dataGridConfiguration.group!;
       final int length = dataGridConfiguration.source.groupedColumns.length;
 
@@ -5111,8 +4825,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Expands the groups based on the respective level.
   void expandGroupsAtLevel(int level) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final Group grouping = _dataGridStateDetails!().group!;
       final int length = dataGridConfiguration.source.groupedColumns.length;
       if (level > 0 && level <= length) {
@@ -5130,8 +4843,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   ///  Returns null if there are no rows available in the given region.
   int? getVisibleRowStartIndex(RowRegion rowRegion) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final ScrollAxisRegion scrollAxisRegion = _getScrollAxisRegion(rowRegion);
       return dataGridConfiguration.container.scrollRows
           .getVisibleLinesRange(scrollAxisRegion)
@@ -5145,12 +4857,9 @@ class DataGridController extends DataGridSourceChangeNotifier {
   ///  Returns null if there are no rows available in the given region.
   int? getVisibleRowEndIndex(RowRegion rowRegion) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final ScrollAxisRegion scrollAxisRegion = _getScrollAxisRegion(rowRegion);
-      return dataGridConfiguration.container.scrollRows
-          .getVisibleLinesRange(scrollAxisRegion)
-          ?.end;
+      return dataGridConfiguration.container.scrollRows.getVisibleLinesRange(scrollAxisRegion)?.end;
     }
     return null;
   }
@@ -5160,8 +4869,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   ///  Returns null if there are no rows available in the given region.
   int? getVisibleColumnStartIndex(RowRegion rowRegion) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final ScrollAxisRegion scrollAxisRegion = _getScrollAxisRegion(rowRegion);
       return dataGridConfiguration.container.scrollColumns
           .getVisibleLinesRange(scrollAxisRegion)
@@ -5175,8 +4883,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   ///  Returns null if there are no rows available in the given region.
   int? getVisibleColumnEndIndex(RowRegion rowRegion) {
     if (_dataGridStateDetails != null) {
-      final DataGridConfiguration dataGridConfiguration =
-          _dataGridStateDetails!();
+      final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
       final ScrollAxisRegion scrollAxisRegion = _getScrollAxisRegion(rowRegion);
       return dataGridConfiguration.container.scrollColumns
           .getVisibleLinesRange(scrollAxisRegion)
@@ -5209,8 +4916,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
       return null;
     }
 
-    final DataGridConfiguration dataGridConfiguration =
-        _dataGridStateDetails!();
+    final DataGridConfiguration dataGridConfiguration = _dataGridStateDetails!();
     final RowType? rowType = _getRowType(dataGridConfiguration, rowIndex);
 
     if (rowType == null) {
@@ -5218,32 +4924,18 @@ class DataGridController extends DataGridSourceChangeNotifier {
     }
 
     if (rowType != RowType.dataRow) {
-      return DataGridRowDetails(
-        rowType: rowType,
-        dataGridRow: null,
-        isSelected: false,
-      );
+      return DataGridRowDetails(rowType: rowType, dataGridRow: null, isSelected: false);
     }
 
-    final int recordIndex = grid_helper.resolveToRecordIndex(
-      dataGridConfiguration,
-      rowIndex,
-    );
+    final int recordIndex = grid_helper.resolveToRecordIndex(dataGridConfiguration, rowIndex);
 
     final DataGridRow? dataGridRow =
-        (recordIndex >= 0)
-            ? grid_helper.getDataRow(dataGridConfiguration, recordIndex)
-            : null;
+        (recordIndex >= 0) ? grid_helper.getDataRow(dataGridConfiguration, recordIndex) : null;
 
     final bool isSelected =
-        dataGridRow != null &&
-        selection_manager.isSelectedRow(dataGridConfiguration, dataGridRow);
+        dataGridRow != null && selection_manager.isSelectedRow(dataGridConfiguration, dataGridRow);
 
-    return DataGridRowDetails(
-      rowType: rowType,
-      dataGridRow: dataGridRow,
-      isSelected: isSelected,
-    );
+    return DataGridRowDetails(rowType: rowType, dataGridRow: dataGridRow, isSelected: isSelected);
   }
 
   /// Determines the row type based on the given row index.
@@ -5263,25 +4955,16 @@ class DataGridController extends DataGridSourceChangeNotifier {
     }
 
     if (dataGridConfiguration.source.groupedColumns.isNotEmpty &&
-        grid_helper.isCaptionSummaryRow(
-          dataGridConfiguration,
-          rowIndex,
-          true,
-        )) {
+        grid_helper.isCaptionSummaryRow(dataGridConfiguration, rowIndex, true)) {
       return RowType.captionSummaryCoveredRow;
     }
     if (grid_helper.isFooterWidgetRow(rowIndex, dataGridConfiguration)) {
       return RowType.footerRow;
     }
 
-    final int recordIndex = grid_helper.resolveToRecordIndex(
-      dataGridConfiguration,
-      rowIndex,
-    );
+    final int recordIndex = grid_helper.resolveToRecordIndex(dataGridConfiguration, rowIndex);
 
-    final int rowCount = grid_helper.resolveEffectiveRowCount(
-      dataGridConfiguration,
-    );
+    final int rowCount = grid_helper.resolveEffectiveRowCount(dataGridConfiguration);
 
     if (recordIndex >= 0 && recordIndex < rowCount) {
       return RowType.dataRow;
@@ -5293,10 +4976,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Determines the row type for a table summary row based on its position.
   /// Returns [RowType.tableSummaryCoveredRow] if the summary should be covered,
   /// otherwise returns [RowType.tableSummaryRow].
-  RowType _getTableSummaryRowType(
-    DataGridConfiguration dataGridConfiguration,
-    int rowIndex,
-  ) {
+  RowType _getTableSummaryRowType(DataGridConfiguration dataGridConfiguration, int rowIndex) {
     final GridTableSummaryRow? tableSummaryRow = grid_helper.getTableSummaryRow(
       dataGridConfiguration,
       rowIndex,
@@ -5313,11 +4993,7 @@ class DataGridController extends DataGridSourceChangeNotifier {
 
 /// Returns the row details for the specified row index.
 class DataGridRowDetails {
-  DataGridRowDetails({
-    required this.rowType,
-    required this.dataGridRow,
-    required this.isSelected,
-  });
+  DataGridRowDetails({required this.rowType, required this.dataGridRow, required this.isSelected});
 
   /// The instance of [DataGridRow] that associated with the row.
   final RowType rowType;
@@ -5381,19 +5057,14 @@ class DataGridSourceChangeNotifier extends ChangeNotifier {
     _dataGridSourceListeners.remove(listener);
   }
 
-  final ObserverList<_DataGridPropertyChangeListener>
-  _dataGridPropertyChangeListeners =
+  final ObserverList<_DataGridPropertyChangeListener> _dataGridPropertyChangeListeners =
       ObserverList<_DataGridPropertyChangeListener>();
 
-  void _addDataGridPropertyChangeListener(
-    _DataGridPropertyChangeListener listener,
-  ) {
+  void _addDataGridPropertyChangeListener(_DataGridPropertyChangeListener listener) {
     _dataGridPropertyChangeListeners.add(listener);
   }
 
-  void _removeDataGridPropertyChangeListener(
-    _DataGridPropertyChangeListener listener,
-  ) {
+  void _removeDataGridPropertyChangeListener(_DataGridPropertyChangeListener listener) {
     _dataGridPropertyChangeListeners.remove(listener);
   }
 
@@ -5467,11 +5138,7 @@ List<DataGridRow> effectiveRows(DataGridSource source) {
 }
 
 /// Called when grouping is applied to the columns.
-String performGrouping(
-  DataGridSource? source,
-  String columnNames,
-  DataGridRow row,
-) {
+String performGrouping(DataGridSource? source, String columnNames, DataGridRow row) {
   return source!.performGrouping(columnNames, row);
 }
 
@@ -5509,10 +5176,7 @@ void updateSelectedIndex(DataGridController controller, int newSelectedIndex) {
 }
 
 /// Updates the given [DataGridRow] to the controller's `selectedRow` property.
-void updateSelectedRow(
-  DataGridController controller,
-  DataGridRow? newSelectedRow,
-) {
+void updateSelectedRow(DataGridController controller, DataGridRow? newSelectedRow) {
   controller._selectedRow = newSelectedRow;
 }
 
@@ -5527,10 +5191,7 @@ void updateHorizontalOffset(DataGridController controller, double offset) {
 }
 
 /// Sets the `childColumnIndexes` property in the [StackedHeaderCell].
-void setChildColumnIndexes(
-  StackedHeaderCell stackedHeaderCell,
-  List<int> childSequence,
-) {
+void setChildColumnIndexes(StackedHeaderCell stackedHeaderCell, List<int> childSequence) {
   stackedHeaderCell._childColumnIndexes = childSequence;
 }
 
@@ -5562,10 +5223,7 @@ int? getRowsPerPage(DataPagerDelegate delegate) {
 class DataGridThemeHelper {
   /// To Do
 
-  DataGridThemeHelper(
-    SfDataGridThemeData dataGridThemeData,
-    BuildContext context,
-  ) {
+  DataGridThemeHelper(SfDataGridThemeData dataGridThemeData, BuildContext context) {
     final SfDataGridThemeData defaults = SfDataGridTheme.of(context);
     final _SfDataGridThemeData sfDataGridThemeData = _SfDataGridThemeData(
       context,
@@ -5574,48 +5232,35 @@ class DataGridThemeHelper {
 
     headerColor = defaults.headerColor ?? sfDataGridThemeData.headerColor;
     gridLineColor = defaults.gridLineColor ?? sfDataGridThemeData.gridLineColor;
-    gridLineStrokeWidth =
-        defaults.gridLineStrokeWidth ?? sfDataGridThemeData.gridLineStrokeWidth;
-    frozenPaneElevation =
-        defaults.frozenPaneElevation ?? sfDataGridThemeData.frozenPaneElevation;
-    frozenPaneLineWidth =
-        defaults.frozenPaneLineWidth ?? sfDataGridThemeData.frozenPaneLineWidth;
-    selectionColor =
-        defaults.selectionColor ?? sfDataGridThemeData.selectionColor;
-    headerHoverColor =
-        defaults.headerHoverColor ?? sfDataGridThemeData.headerHoverColor;
+    gridLineStrokeWidth = defaults.gridLineStrokeWidth ?? sfDataGridThemeData.gridLineStrokeWidth;
+    frozenPaneElevation = defaults.frozenPaneElevation ?? sfDataGridThemeData.frozenPaneElevation;
+    frozenPaneLineWidth = defaults.frozenPaneLineWidth ?? sfDataGridThemeData.frozenPaneLineWidth;
+    selectionColor = defaults.selectionColor ?? sfDataGridThemeData.selectionColor;
+    headerHoverColor = defaults.headerHoverColor ?? sfDataGridThemeData.headerHoverColor;
     rowHoverColor = defaults.rowHoverColor ?? sfDataGridThemeData.rowHoverColor;
     sortIconColor = defaults.sortIconColor ?? sfDataGridThemeData.sortIconColor;
-    frozenPaneLineColor =
-        defaults.frozenPaneLineColor ?? sfDataGridThemeData.frozenPaneLineColor;
+    frozenPaneLineColor = defaults.frozenPaneLineColor ?? sfDataGridThemeData.frozenPaneLineColor;
     columnResizeIndicatorColor =
-        defaults.columnResizeIndicatorColor ??
-        sfDataGridThemeData.columnResizeIndicatorColor;
+        defaults.columnResizeIndicatorColor ?? sfDataGridThemeData.columnResizeIndicatorColor;
     columnResizeIndicatorStrokeWidth =
         defaults.columnResizeIndicatorStrokeWidth ??
         sfDataGridThemeData.columnResizeIndicatorStrokeWidth;
-    currentCellStyle =
-        defaults.currentCellStyle ?? sfDataGridThemeData.currentCellStyle;
+    currentCellStyle = defaults.currentCellStyle ?? sfDataGridThemeData.currentCellStyle;
 
-    rowHoverTextStyle =
-        defaults.rowHoverTextStyle ?? sfDataGridThemeData.rowHoverTextStyle;
+    rowHoverTextStyle = defaults.rowHoverTextStyle ?? sfDataGridThemeData.rowHoverTextStyle;
     sortIcon = defaults.sortIcon ?? sfDataGridThemeData.sortIcon;
     filterIcon = defaults.filterIcon ?? sfDataGridThemeData.filterIcon;
-    filterIconColor =
-        defaults.filterIconColor ?? sfDataGridThemeData.filterIconColor;
+    filterIconColor = defaults.filterIconColor ?? sfDataGridThemeData.filterIconColor;
     filterIconHoverColor =
-        defaults.filterIconHoverColor ??
-        sfDataGridThemeData.filterIconHoverColor;
+        defaults.filterIconHoverColor ?? sfDataGridThemeData.filterIconHoverColor;
     sortOrderNumberColor =
-        defaults.sortOrderNumberColor ??
-        sfDataGridThemeData.sortOrderNumberColor;
+        defaults.sortOrderNumberColor ?? sfDataGridThemeData.sortOrderNumberColor;
     sortOrderNumberBackgroundColor =
         defaults.sortOrderNumberBackgroundColor ??
         sfDataGridThemeData.sortOrderNumberBackgroundColor;
     _filterPopupTextStyle = sfDataGridThemeData.filterPopupTextStyle;
 
-    _filterPopupDisabledTextStyle =
-        sfDataGridThemeData.filterPopupDisabledTextStyle;
+    _filterPopupDisabledTextStyle = sfDataGridThemeData.filterPopupDisabledTextStyle;
 
     filterPopupTextStyle = _filterPopupTextStyle!.merge(
       defaults.filterPopupTextStyle ?? sfDataGridThemeData.filterPopupTextStyle,
@@ -5625,72 +5270,51 @@ class DataGridThemeHelper {
     );
 
     columnDragIndicatorColor =
-        defaults.columnDragIndicatorColor ??
-        sfDataGridThemeData.columnDragIndicatorColor;
+        defaults.columnDragIndicatorColor ?? sfDataGridThemeData.columnDragIndicatorColor;
     columnDragIndicatorStrokeWidth =
         defaults.columnDragIndicatorStrokeWidth ??
         sfDataGridThemeData.columnDragIndicatorStrokeWidth;
     groupExpanderIcon = defaults.groupExpanderIcon;
-    indentColumnWidth =
-        defaults.indentColumnWidth ?? sfDataGridThemeData.indentColumnWidth;
-    indentColumnColor =
-        defaults.indentColumnColor ?? sfDataGridThemeData.indentColumnColor;
+    indentColumnWidth = defaults.indentColumnWidth ?? sfDataGridThemeData.indentColumnWidth;
+    indentColumnColor = defaults.indentColumnColor ?? sfDataGridThemeData.indentColumnColor;
     filterPopupIconColor =
-        defaults.filterPopupIconColor ??
-        sfDataGridThemeData.filterPopupIconColor;
+        defaults.filterPopupIconColor ?? sfDataGridThemeData.filterPopupIconColor;
     filterPopupDisabledIconColor =
-        defaults.filterPopupDisabledIconColor ??
-        sfDataGridThemeData.filterPopupDisabledIconColor;
+        defaults.filterPopupDisabledIconColor ?? sfDataGridThemeData.filterPopupDisabledIconColor;
     filterPopupBorderColor = sfDataGridThemeData.filterPopupBorderColor;
     filterPopupBackgroundColor =
-        defaults.filterPopupBackgroundColor ??
-        sfDataGridThemeData.filterPopupBackgroundColor;
+        defaults.filterPopupBackgroundColor ?? sfDataGridThemeData.filterPopupBackgroundColor;
     filterPopupTextColor = sfDataGridThemeData.filterPopupTextColor;
     filterPopupOuterColor = sfDataGridThemeData.filterPopupOuterColor;
     feedBackWidgetColor = sfDataGridThemeData.feedBackWidgetColor;
     captionSummaryRowColor =
-        defaults.captionSummaryRowColor ??
-        sfDataGridThemeData.captionSummaryRowColor!;
-    captionSummaryRowHoverColor =
-        sfDataGridThemeData.captionSummaryRowHoverColor!;
+        defaults.captionSummaryRowColor ?? sfDataGridThemeData.captionSummaryRowColor!;
+    captionSummaryRowHoverColor = sfDataGridThemeData.captionSummaryRowHoverColor!;
     tableSummaryRowColor = sfDataGridThemeData.tableSummaryRowColor;
     filterPopupCheckColor =
-        defaults.filterPopupCheckColor ??
-        sfDataGridThemeData.filterPopupCheckColor;
+        defaults.filterPopupCheckColor ?? sfDataGridThemeData.filterPopupCheckColor;
     filterPopupCheckboxFillColor =
-        defaults.filterPopupCheckboxFillColor ??
-        sfDataGridThemeData.filterPopupCheckboxFillColor;
+        defaults.filterPopupCheckboxFillColor ?? sfDataGridThemeData.filterPopupCheckboxFillColor;
     noMatchesFilteringLabelColor =
-        defaults.noMatchesFilteringLabelColor ??
-        sfDataGridThemeData.noMatchesFilteringLabelColor;
+        defaults.noMatchesFilteringLabelColor ?? sfDataGridThemeData.noMatchesFilteringLabelColor;
     okFilteringLabelColor =
-        defaults.okFilteringLabelColor ??
-        sfDataGridThemeData.okFilteringLabelColor;
+        defaults.okFilteringLabelColor ?? sfDataGridThemeData.okFilteringLabelColor;
     okFilteringLabelButtonColor =
-        defaults.okFilteringLabelButtonColor ??
-        sfDataGridThemeData.okFilteringLabelButtonColor;
+        defaults.okFilteringLabelButtonColor ?? sfDataGridThemeData.okFilteringLabelButtonColor;
     cancelFilteringLabelColor =
-        defaults.cancelFilteringLabelColor ??
-        sfDataGridThemeData.cancelFilteringLabelColor;
+        defaults.cancelFilteringLabelColor ?? sfDataGridThemeData.cancelFilteringLabelColor;
     cancelFilteringLabelButtonColor =
         defaults.cancelFilteringLabelButtonColor ??
         sfDataGridThemeData.cancelFilteringLabelButtonColor;
     searchAreaFocusedBorderColor =
-        defaults.searchAreaFocusedBorderColor ??
-        sfDataGridThemeData.searchAreaFocusedBorderColor;
+        defaults.searchAreaFocusedBorderColor ?? sfDataGridThemeData.searchAreaFocusedBorderColor;
     searchAreaCursorColor =
-        defaults.searchAreaCursorColor ??
-        sfDataGridThemeData.searchAreaCursorColor;
-    andRadioActiveColor =
-        defaults.andRadioActiveColor ?? sfDataGridThemeData.andRadioActiveColor;
-    andRadioFillColor =
-        defaults.andRadioFillColor ?? sfDataGridThemeData.andRadioFillColor;
-    orRadioActiveColor =
-        defaults.orRadioActiveColor ?? sfDataGridThemeData.orRadioActiveColor;
-    orRadioFillColor =
-        defaults.orRadioFillColor ?? sfDataGridThemeData.orRadioFillColor;
-    calendarIconColor =
-        defaults.calendarIconColor ?? sfDataGridThemeData.calendarIconColor;
+        defaults.searchAreaCursorColor ?? sfDataGridThemeData.searchAreaCursorColor;
+    andRadioActiveColor = defaults.andRadioActiveColor ?? sfDataGridThemeData.andRadioActiveColor;
+    andRadioFillColor = defaults.andRadioFillColor ?? sfDataGridThemeData.andRadioFillColor;
+    orRadioActiveColor = defaults.orRadioActiveColor ?? sfDataGridThemeData.orRadioActiveColor;
+    orRadioFillColor = defaults.orRadioFillColor ?? sfDataGridThemeData.orRadioFillColor;
+    calendarIconColor = defaults.calendarIconColor ?? sfDataGridThemeData.calendarIconColor;
     advancedFilterValueDropdownFocusedBorderColor =
         defaults.advancedFilterValueDropdownFocusedBorderColor ??
         sfDataGridThemeData.advancedFilterValueDropdownFocusedBorderColor;
@@ -5700,19 +5324,15 @@ class DataGridThemeHelper {
     advancedFilterValueTextAreaCursorColor =
         defaults.advancedFilterValueTextAreaCursorColor ??
         sfDataGridThemeData.advancedFilterValueTextAreaCursorColor;
-    searchIconColor =
-        defaults.searchIconColor ?? sfDataGridThemeData.searchIconColor;
-    closeIconColor =
-        defaults.closeIconColor ?? sfDataGridThemeData.closeIconColor;
+    searchIconColor = defaults.searchIconColor ?? sfDataGridThemeData.searchIconColor;
+    closeIconColor = defaults.closeIconColor ?? sfDataGridThemeData.closeIconColor;
     advancedFilterPopupDropdownIconColor =
         defaults.advancedFilterPopupDropdownIconColor ??
         sfDataGridThemeData.advancedFilterPopupDropdownIconColor;
     caseSensitiveIconActiveColor =
-        defaults.caseSensitiveIconActiveColor ??
-        sfDataGridThemeData.caseSensitiveIconActiveColor;
+        defaults.caseSensitiveIconActiveColor ?? sfDataGridThemeData.caseSensitiveIconActiveColor;
     caseSensitiveIconColor =
-        defaults.caseSensitiveIconColor ??
-        sfDataGridThemeData.caseSensitiveIconColor;
+        defaults.caseSensitiveIconColor ?? sfDataGridThemeData.caseSensitiveIconColor;
     advancedFilterValueDropdownIconColor =
         defaults.advancedFilterValueDropdownIconColor ??
         sfDataGridThemeData.advancedFilterValueDropdownIconColor;
@@ -5720,20 +5340,16 @@ class DataGridThemeHelper {
         defaults.advancedFilterTypeDropdownIconColor ??
         sfDataGridThemeData.advancedFilterTypeDropdownIconColor;
     filterPopupBottomDividerColor =
-        defaults.filterPopupBottomDividerColor ??
-        sfDataGridThemeData.filterPopupBottomDividerColor;
+        defaults.filterPopupBottomDividerColor ?? sfDataGridThemeData.filterPopupBottomDividerColor;
     filterPopupTopDividerColor =
-        defaults.filterPopupTopDividerColor ??
-        sfDataGridThemeData.filterPopupTopDividerColor;
+        defaults.filterPopupTopDividerColor ?? sfDataGridThemeData.filterPopupTopDividerColor;
     okFilteringLabelDisabledButtonColor =
         defaults.okFilteringLabelDisabledButtonColor ??
         sfDataGridThemeData.okFilteringLabelDisabledButtonColor;
     appBarBottomBorderColor =
-        defaults.appBarBottomBorderColor ??
-        sfDataGridThemeData.appBarBottomBorderColor;
+        defaults.appBarBottomBorderColor ?? sfDataGridThemeData.appBarBottomBorderColor;
     filterPopupInputBorderColor =
-        defaults.filterPopupInputBorderColor ??
-        sfDataGridThemeData.filterPopupInputBorderColor;
+        defaults.filterPopupInputBorderColor ?? sfDataGridThemeData.filterPopupInputBorderColor;
     advancedFilterPopupDropdownColor =
         defaults.advancedFilterPopupDropdownColor ??
         sfDataGridThemeData.advancedFilterPopupDropdownColor;
@@ -6050,10 +5666,8 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color? get selectionColor => colorScheme.onSurface[19];
 
   @override
-  DataGridCurrentCellStyle get currentCellStyle => DataGridCurrentCellStyle(
-    borderColor: colorScheme.onSurface[66]!,
-    borderWidth: 1.0,
-  );
+  DataGridCurrentCellStyle get currentCellStyle =>
+      DataGridCurrentCellStyle(borderColor: colorScheme.onSurface[66]!, borderWidth: 1.0);
 
   @override
   double get frozenPaneLineWidth => 2;
@@ -6106,8 +5720,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
   Color? get sortOrderNumberColor => dataGridThemeData.sortOrderNumberColor;
 
   @override
-  Color? get sortOrderNumberBackgroundColor =>
-      dataGridThemeData.sortOrderNumberBackgroundColor;
+  Color? get sortOrderNumberBackgroundColor => dataGridThemeData.sortOrderNumberBackgroundColor;
 
   @override
   TextStyle get filterPopupTextStyle => TextStyle(
@@ -6185,8 +5798,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The color of the "No Matches" filtering label when no results are found.
   @override
-  Color? get noMatchesFilteringLabelColor =>
-      dataGridThemeData.noMatchesFilteringLabelColor;
+  Color? get noMatchesFilteringLabelColor => dataGridThemeData.noMatchesFilteringLabelColor;
 
   /// The color of the OK label in the filtering popup.
   @override
@@ -6194,23 +5806,19 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The color of the OK button in the filtering popup.
   @override
-  Color? get okFilteringLabelButtonColor =>
-      dataGridThemeData.okFilteringLabelButtonColor;
+  Color? get okFilteringLabelButtonColor => dataGridThemeData.okFilteringLabelButtonColor;
 
   /// The color of the cancel label in the filtering popup.
   @override
-  Color? get cancelFilteringLabelColor =>
-      dataGridThemeData.cancelFilteringLabelColor;
+  Color? get cancelFilteringLabelColor => dataGridThemeData.cancelFilteringLabelColor;
 
   /// The color of the cancel button in the filtering popup.
   @override
-  Color? get cancelFilteringLabelButtonColor =>
-      dataGridThemeData.cancelFilteringLabelButtonColor;
+  Color? get cancelFilteringLabelButtonColor => dataGridThemeData.cancelFilteringLabelButtonColor;
 
   /// The focused border color of the search area.
   @override
-  Color? get searchAreaFocusedBorderColor =>
-      dataGridThemeData.searchAreaFocusedBorderColor;
+  Color? get searchAreaFocusedBorderColor => dataGridThemeData.searchAreaFocusedBorderColor;
 
   /// The cursor color in the search area.
   @override
@@ -6222,8 +5830,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The fill color of the "AND" radio button.
   @override
-  WidgetStateProperty<Color?>? get andRadioFillColor =>
-      dataGridThemeData.andRadioFillColor;
+  WidgetStateProperty<Color?>? get andRadioFillColor => dataGridThemeData.andRadioFillColor;
 
   /// The active (selected) color of the "OR" radio button.
   @override
@@ -6231,8 +5838,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The fill color of the "OR" radio button.
   @override
-  WidgetStateProperty<Color?>? get orRadioFillColor =>
-      dataGridThemeData.orRadioFillColor;
+  WidgetStateProperty<Color?>? get orRadioFillColor => dataGridThemeData.orRadioFillColor;
 
   /// The color of the calendar icon.
   @override
@@ -6268,8 +5874,7 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The active color of the case-sensitive icon.
   @override
-  Color? get caseSensitiveIconActiveColor =>
-      dataGridThemeData.caseSensitiveIconActiveColor;
+  Color? get caseSensitiveIconActiveColor => dataGridThemeData.caseSensitiveIconActiveColor;
 
   /// The default color of the case-sensitive icon.
   @override
@@ -6287,13 +5892,11 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The color of the bottom divider in the filter popup.
   @override
-  Color? get filterPopupBottomDividerColor =>
-      dataGridThemeData.filterPopupBottomDividerColor;
+  Color? get filterPopupBottomDividerColor => dataGridThemeData.filterPopupBottomDividerColor;
 
   /// The color of the top divider in the filter popup.
   @override
-  Color? get filterPopupTopDividerColor =>
-      dataGridThemeData.filterPopupTopDividerColor;
+  Color? get filterPopupTopDividerColor => dataGridThemeData.filterPopupTopDividerColor;
 
   /// The color of the disabled OK button in the filtering popup.
   @override
@@ -6302,16 +5905,13 @@ class _SfDataGridThemeData extends SfDataGridThemeData {
 
   /// The color of the bottom border of the app bar.
   @override
-  Color? get appBarBottomBorderColor =>
-      dataGridThemeData.appBarBottomBorderColor;
+  Color? get appBarBottomBorderColor => dataGridThemeData.appBarBottomBorderColor;
 
   /// The border color of the text field (input box) inside the filter popup.
   @override
-  Color? get filterPopupInputBorderColor =>
-      dataGridThemeData.filterPopupInputBorderColor;
+  Color? get filterPopupInputBorderColor => dataGridThemeData.filterPopupInputBorderColor;
 
   /// The background color of the dropdown in the advanced filter popup.
   @override
-  Color? get advancedFilterPopupDropdownColor =>
-      dataGridThemeData.advancedFilterPopupDropdownColor;
+  Color? get advancedFilterPopupDropdownColor => dataGridThemeData.advancedFilterPopupDropdownColor;
 }

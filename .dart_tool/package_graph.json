@@ -10,9 +10,17 @@
         "collection",
         "flutter",
         "flutter_hooks",
-        "syncfusion_flutter_core"
+        "syncfusion_flutter_core",
+        "timezone"
       ],
       "devDependencies": []
+    },
+    {
+      "name": "timezone",
+      "version": "0.9.4",
+      "dependencies": [
+        "path"
+      ]
     },
     {
       "name": "flutter_hooks",
@@ -71,6 +79,11 @@
     {
       "name": "characters",
       "version": "1.4.0",
+      "dependencies": []
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
       "dependencies": []
     }
   ],
