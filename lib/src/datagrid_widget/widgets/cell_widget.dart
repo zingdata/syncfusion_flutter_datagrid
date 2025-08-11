@@ -24,11 +24,14 @@ import '../sfdatagrid.dart';
 import 'paginated_widgets.dart';
 import 'rendering_widget.dart';
 
+// ignore: avoid_classes_with_only_static_members
 /// Utility class for handling timezone operations in DataGrid.
 class _TimezoneHelper {
   /// Validates if a timezone string is valid.
   static bool isValidTimezone(String? timezone) {
-    if (timezone == null || timezone.trim().isEmpty) return false;
+    if (timezone == null || timezone.trim().isEmpty) {
+      return false;
+    }
     try {
       tz.getLocation(timezone);
       return true;
@@ -37,50 +40,65 @@ class _TimezoneHelper {
     }
   }
 
-  /// Formats a DateTime value in the specified timezone.
-  static String formatDateInTimezone(DateTime? date, String? timezone, {bool dateOnly = false}) {
-    if (date == null) return '';
-
-    try {
-      final String validTimezone = isValidTimezone(timezone) ? timezone! : 'UTC';
-      final tz.Location location = tz.getLocation(validTimezone);
-      final tz.TZDateTime tzDateTime = tz.TZDateTime.from(date, location);
-
-      if (dateOnly) {
-        return '${tzDateTime.year}-${tzDateTime.month.toString().padLeft(2, '0')}-${tzDateTime.day.toString().padLeft(2, '0')}';
-      } else {
-        final String hour =
-            tzDateTime.hour > 12
-                ? (tzDateTime.hour - 12).toString().padLeft(2, '0')
-                : (tzDateTime.hour == 0 ? 12 : tzDateTime.hour).toString().padLeft(2, '0');
-        final String amPm = tzDateTime.hour >= 12 ? 'PM' : 'AM';
-        return '${tzDateTime.month}/${tzDateTime.day}/${tzDateTime.year} $hour:${tzDateTime.minute.toString().padLeft(2, '0')} $amPm';
-      }
-    } catch (e) {
-      return date.toString();
-    }
-  }
-
   /// Gets the timezone display name for UI.
   static String getTimezoneDisplayName(String? timezone) {
-    if (!isValidTimezone(timezone)) return 'Local Time';
+    if (!isValidTimezone(timezone)) {
+      return 'Local Time';
+    }
     return timezone!.replaceAll('_', ' ');
   }
 
-  /// Gets common timezone options for dropdown.
+  /// Gets all available timezone options for dropdown from timezone database.
   static List<Map<String, String>> getCommonTimezones() {
-    return [
-      {'value': 'America/New_York', 'label': 'Eastern Time (UTC-5/-4)'},
-      {'value': 'America/Chicago', 'label': 'Central Time (UTC-6/-5)'},
-      {'value': 'America/Denver', 'label': 'Mountain Time (UTC-7/-6)'},
-      {'value': 'America/Los_Angeles', 'label': 'Pacific Time (UTC-8/-7)'},
-      {'value': 'Europe/London', 'label': 'London (UTC+0/+1)'},
-      {'value': 'Europe/Paris', 'label': 'Paris (UTC+1/+2)'},
-      {'value': 'Asia/Tokyo', 'label': 'Tokyo (UTC+9)'},
-      {'value': 'Asia/Shanghai', 'label': 'Shanghai (UTC+8)'},
-      {'value': 'Australia/Sydney', 'label': 'Sydney (UTC+10/+11)'},
-      {'value': 'UTC', 'label': 'UTC'},
-    ];
+    try {
+      final Set<String> locations = tz.timeZoneDatabase.locations.keys.toSet();
+      
+      // ignore: lines_longer_than_80_chars
+      final List<Map<String, String>> timezones = locations.map((String locationName) {
+        try {
+          final tz.Location location = tz.getLocation(locationName);
+          final tz.TZDateTime now = tz.TZDateTime.now(location);
+          final Duration offset = now.timeZoneOffset;
+          
+          // Format offset as +/-HH:mm
+          final String sign = offset.isNegative ? '-' : '+';
+          final int hours = offset.inHours.abs();
+          final int minutes = offset.inMinutes.abs() % 60;
+          // ignore: lines_longer_than_80_chars
+          final String offsetStr = '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+          
+          // Create display name: "Region/City (UTC+/-HH:mm)"
+          // ignore: lines_longer_than_80_chars
+          final String displayName = '${locationName.replaceAll('_', ' ')} (UTC$offsetStr)';
+          
+          return <String, String>{
+            'value': locationName,
+            'label': displayName,
+          };
+        } catch (e) {
+          // Fallback for problematic timezone names
+          return <String, String>{
+            'value': locationName,
+            'label': locationName.replaceAll('_', ' '),
+          };
+        }
+      }).toList();
+      
+      // Sort timezones alphabetically by display label
+      timezones.sort((Map<String, String> a, Map<String, String> b) {
+        return (a['label'] ?? '').compareTo(b['label'] ?? '');
+      });
+      
+      return timezones;
+    } catch (e) {
+      // Fallback to basic timezone list if database access fails
+      return <Map<String, String>>[
+        <String, String>{'value': 'UTC', 'label': 'UTC (UTC+00:00)'},
+        <String, String>{'value': 'America/New_York', 'label': 'America/New York (UTC-05:00)'},
+        <String, String>{'value': 'Europe/London', 'label': 'Europe/London (UTC+00:00)'},
+        <String, String>{'value': 'Asia/Tokyo', 'label': 'Asia/Tokyo (UTC+09:00)'},
+      ];
+    }
   }
 }
 
@@ -1391,7 +1409,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
 
     Widget buildTopSection() {
       return Column(
-        children: [
+        children: <Widget>[
           if (canShowSortingOptions)
             _FilterPopupMenuTile(
               style:
@@ -1497,7 +1515,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
 
       return AnimatedBuilder(
         animation: _topSectionAnimation,
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           final double animationValue = _topSectionAnimation.value;
 
           return ClipRect(
@@ -1924,18 +1942,18 @@ class _CheckboxFilterMenu extends StatelessWidget {
       checkboxHeight = isMobile ? max(viewSize!.height - occupiedHeight, 120.0) : 200.0;
     }
 
-    final canShowSelectAllButton =
+    final bool canShowSelectAllButton =
         filterHelper.textController.text.isEmpty || !column.usePaginatedFiltering;
     final double selectAllButtonHeight =
         canShowSelectAllButton ? (isMobile ? helper.tileHeight - 4 : helper.tileHeight) : 0.0;
 
-    final hasExactlyOneSelected = hasExactlyTrue(
+    final bool hasExactlyOneSelected = hasExactlyTrue(
       filterHelper.filterCheckboxItems,
       1,
       (FilterElement element) => element.isSelected,
     );
 
-    final suffixText =
+    final String suffixText =
         filterHelper.isSelectAllChecked == null
             ? hasExactlyOneSelected
                 ? 'Clear'
@@ -1944,7 +1962,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
             ? 'Clear All'
             : '';
 
-    final valuesListView =
+    final Widget valuesListView =
         filterHelper.usePaginatedFiltering
             ? _buildPaginatedListView(context, helper.textStyle)
             : ListView.builder(
@@ -2017,7 +2035,7 @@ class _CheckboxFilterMenu extends StatelessWidget {
                   ),
                   onTap: onHandleSelectAllCheckboxTap,
                   child: Row(
-                    children: [
+                    children: <Widget>[
                       Expanded(
                         child: Text(
                           dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
@@ -2442,7 +2460,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
               child: Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: Text(
                       currentValue != null
@@ -3418,7 +3436,8 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   bool _isExpanded = false;
   bool _isDropdownOpen = false;
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _filteredTimezones = [];
+  final ScrollController _scrollController = ScrollController();
+  List<Map<String, String>> _filteredTimezones = <Map<String, String>>[];
 
   @override
   void initState() {
@@ -3430,6 +3449,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -3465,11 +3485,11 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
       if (query.trim().isEmpty) {
         _filteredTimezones = _TimezoneHelper.getCommonTimezones();
       } else {
-        final lowercaseQuery = query.toLowerCase();
+        final String lowercaseQuery = query.toLowerCase();
         _filteredTimezones =
             _TimezoneHelper.getCommonTimezones()
                 .where(
-                  (tz) =>
+                  (Map<String, String> tz) =>
                       (tz['label'] ?? '').toLowerCase().contains(lowercaseQuery) ||
                       (tz['value'] ?? '').toLowerCase().contains(lowercaseQuery),
                 )
@@ -3486,7 +3506,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     final DataGridFilterHelper helper = cfg.dataGridFilterHelper!;
 
     return Column(
-      children: [
+      children: <Widget>[
         const Divider(height: 8),
         // Timezone Settings Header
         Material(
@@ -3496,7 +3516,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Row(
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.settings,
                     size: 20.0,
@@ -3529,13 +3549,15 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
         ),
 
         // Expanded Content
-        if (_isExpanded) ...[
+        if (_isExpanded) ...<Widget>[
           const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
                 // Display timezone label
                 Text(
                   'Display timezone',
@@ -3547,7 +3569,21 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => setState(() => _isDropdownOpen = !_isDropdownOpen),
+                    onTap: () {
+                      setState(() => _isDropdownOpen = !_isDropdownOpen);
+                      // Auto-scroll to show dropdown content when opened
+                      if (_isDropdownOpen) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (_scrollController.hasClients) {
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          }
+                        });
+                      }
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: theme.filterPopupOuterColor,
@@ -3559,7 +3595,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
                       child: Row(
-                        children: [
+                        children: <Widget>[
                           Expanded(
                             child: Text(
                               _getTimezoneDisplayWithOffset(_selectedTimezone),
@@ -3579,7 +3615,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                 ),
 
                 // Search and dropdown list
-                if (_isDropdownOpen) ...[
+                if (_isDropdownOpen) ...<Widget>[
                   const SizedBox(height: 8),
                   // Search field
                   Container(
@@ -3592,6 +3628,8 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       controller: _searchController,
                       onChanged: _onSearchChanged,
                       style: helper.textStyle.copyWith(fontSize: 14.0),
+                      textAlign: TextAlign.left,
+                      textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
                         hintText: 'Search timezones...',
                         hintStyle: helper.textStyle.copyWith(
@@ -3645,12 +3683,13 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                 ),
                               ),
                             )
-                            : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _filteredTimezones.length,
-                              itemBuilder: (context, index) {
-                                final timezone = _filteredTimezones[index];
-                                final isSelected = timezone['value'] == _selectedTimezone;
+                                                         : ListView.builder(
+                               shrinkWrap: true,
+                               physics: const NeverScrollableScrollPhysics(),
+                               itemCount: _filteredTimezones.length,
+                               itemBuilder: (BuildContext context, int index) {
+                                final Map<String, String> timezone = _filteredTimezones[index];
+                                final bool isSelected = timezone['value'] == _selectedTimezone;
 
                                 return Material(
                                   color: Colors.transparent,
@@ -3662,7 +3701,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                         vertical: 10.0,
                                       ),
                                       child: Row(
-                                        children: [
+                                        children: <Widget>[
                                           SizedBox(
                                             width: 20.0,
                                             child:
@@ -3701,7 +3740,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                   ),
 
                   // Current selection indicator
-                  if (_selectedTimezone != null) ...[
+                  if (_selectedTimezone != null) ...<Widget>[
                     const SizedBox(height: 8),
                     Text(
                       'Current: ${_TimezoneHelper.getTimezoneDisplayName(_selectedTimezone)}',
@@ -3716,18 +3755,21 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
               ],
             ),
           ),
+        ),
         ],
       ],
     );
   }
 
   String _getTimezoneDisplayWithOffset(String? timezone) {
-    if (timezone == null) return 'UTC (UTC+0)';
+    if (timezone == null) {
+      return 'UTC (UTC+0)';
+    }
 
-    final timezones = _TimezoneHelper.getCommonTimezones();
-    final match = timezones.firstWhere(
-      (tz) => tz['value'] == timezone,
-      orElse: () => {'label': _TimezoneHelper.getTimezoneDisplayName(timezone)},
+    final List<Map<String, String>> timezones = _TimezoneHelper.getCommonTimezones();
+    final Map<String, String> match = timezones.firstWhere(
+      (Map<String, String> tz) => tz['value'] == timezone,
+      orElse: () => <String, String>{'label': _TimezoneHelper.getTimezoneDisplayName(timezone)},
     );
 
     return match['label'] ?? _TimezoneHelper.getTimezoneDisplayName(timezone);
