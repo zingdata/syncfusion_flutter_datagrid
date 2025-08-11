@@ -52,42 +52,41 @@ class _TimezoneHelper {
   static List<Map<String, String>> getCommonTimezones() {
     try {
       final Set<String> locations = tz.timeZoneDatabase.locations.keys.toSet();
-      
+
       // ignore: lines_longer_than_80_chars
-      final List<Map<String, String>> timezones = locations.map((String locationName) {
-        try {
-          final tz.Location location = tz.getLocation(locationName);
-          final tz.TZDateTime now = tz.TZDateTime.now(location);
-          final Duration offset = now.timeZoneOffset;
-          
-          // Format offset as +/-HH:mm
-          final String sign = offset.isNegative ? '-' : '+';
-          final int hours = offset.inHours.abs();
-          final int minutes = offset.inMinutes.abs() % 60;
-          // ignore: lines_longer_than_80_chars
-          final String offsetStr = '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-          
-          // Create display name: "Region/City (UTC+/-HH:mm)"
-          final String displayName = '${locationName.replaceAll('_', ' ')} (UTC$offsetStr)';
-          
-          return <String, String>{
-            'value': locationName,
-            'label': displayName,
-          };
-    } catch (e) {
-          // Fallback for problematic timezone names
-          return <String, String>{
-            'value': locationName,
-            'label': locationName.replaceAll('_', ' '),
-          };
-        }
-      }).toList();
-      
+      final List<Map<String, String>> timezones =
+          locations.map((String locationName) {
+            try {
+              final tz.Location location = tz.getLocation(locationName);
+              final tz.TZDateTime now = tz.TZDateTime.now(location);
+              final Duration offset = now.timeZoneOffset;
+
+              // Format offset as +/-HH:mm
+              final String sign = offset.isNegative ? '-' : '+';
+              final int hours = offset.inHours.abs();
+              final int minutes = offset.inMinutes.abs() % 60;
+              // ignore: lines_longer_than_80_chars
+              final String offsetStr =
+                  '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+
+              // Create display name: "Region/City (UTC+/-HH:mm)"
+              final String displayName = '${locationName.replaceAll('_', ' ')} (UTC$offsetStr)';
+
+              return <String, String>{'value': locationName, 'label': displayName};
+            } catch (e) {
+              // Fallback for problematic timezone names
+              return <String, String>{
+                'value': locationName,
+                'label': locationName.replaceAll('_', ' '),
+              };
+            }
+          }).toList();
+
       // Sort timezones alphabetically by display label
       timezones.sort((Map<String, String> a, Map<String, String> b) {
         return (a['label'] ?? '').compareTo(b['label'] ?? '');
       });
-      
+
       return timezones;
     } catch (e) {
       // Fallback to basic timezone list if database access fails
@@ -106,10 +105,10 @@ class GridCell extends StatefulWidget {
   /// Creates the [GridCell] for [SfDataGrid] widget.
   const GridCell({
     required Key key,
-      required this.dataCell,
-      required this.isDirty,
-      required this.backgroundColor,
-      required this.child,
+    required this.dataCell,
+    required this.isDirty,
+    required this.backgroundColor,
+    required this.child,
     required this.dataGridStateDetails,
   }) : super(key: key);
 
@@ -177,10 +176,10 @@ class _GridCellState extends State<GridCell> {
           return;
         }
         _handleOnTapUp(
-            tapDownDetails: details,
-            tapUpDetails: null,
-            dataGridConfiguration: dataGridConfiguration,
-            dataCell: dataCell,
+          tapDownDetails: details,
+          tapUpDetails: null,
+          dataGridConfiguration: dataGridConfiguration,
+          dataCell: dataCell,
           kind: _kind,
         );
         tapTimer?.cancel();
@@ -199,28 +198,28 @@ class _GridCellState extends State<GridCell> {
     return GestureDetector(
       onTapUp:
           isDoubleTapEnabled
-          ? null
-          : (TapUpDetails details) {
-              _handleOnTapUp(
+              ? null
+              : (TapUpDetails details) {
+                _handleOnTapUp(
                   tapUpDetails: details,
                   tapDownDetails: null,
                   dataGridConfiguration: dataGridConfiguration,
                   dataCell: dataCell,
                   kind: _kind,
                 );
-            },
+              },
       onTapDown: (TapDownDetails details) => _handleOnTapDown(details, false),
       onTap:
           isDoubleTapEnabled
-          ? () {
-              if (tapTimer != null && !tapTimer!.isActive) {
-                _handleOnDoubleTap(
+              ? () {
+                if (tapTimer != null && !tapTimer!.isActive) {
+                  _handleOnDoubleTap(
                     dataCell: dataCell,
                     dataGridConfiguration: dataGridConfiguration,
                   );
+                }
               }
-            }
-          : null,
+              : null,
       onTapCancel: () {
         if (tapTimer != null && tapTimer!.isActive) {
           tapTimer?.cancel();
@@ -228,9 +227,9 @@ class _GridCellState extends State<GridCell> {
       },
       onSecondaryTapUp: (TapUpDetails details) {
         _handleOnSecondaryTapUp(
-            tapUpDetails: details,
-            dataGridConfiguration: dataGridConfiguration,
-            dataCell: dataCell,
+          tapUpDetails: details,
+          dataGridConfiguration: dataGridConfiguration,
+          dataCell: dataCell,
           kind: _kind,
         );
       },
@@ -240,16 +239,16 @@ class _GridCellState extends State<GridCell> {
   }
 
   Widget _wrapInsideContainer() => Container(
-      key: widget.key,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(border: _getCellBorder(dataGridStateDetails(), widget.dataCell)),
-      alignment: Alignment.center,
-      child: _wrapInsideCellContainer(
-        dataGridConfiguration: dataGridStateDetails(),
-        child: widget.child,
-        dataCell: widget.dataCell,
-        key: widget.key!,
-        backgroundColor: widget.backgroundColor,
+    key: widget.key,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(border: _getCellBorder(dataGridStateDetails(), widget.dataCell)),
+    alignment: Alignment.center,
+    child: _wrapInsideCellContainer(
+      dataGridConfiguration: dataGridStateDetails(),
+      child: widget.child,
+      dataCell: widget.dataCell,
+      key: widget.key!,
+      backgroundColor: widget.backgroundColor,
     ),
   );
 
@@ -278,10 +277,10 @@ class GridHeaderCell extends StatefulWidget {
   /// Creates the [GridHeaderCell] for [SfDataGrid] widget.
   const GridHeaderCell({
     required Key key,
-      required this.dataCell,
-      required this.backgroundColor,
-      required this.isDirty,
-      required this.child,
+    required this.dataCell,
+    required this.backgroundColor,
+    required this.isDirty,
+    required this.child,
     required this.dataGridStateDetails,
   }) : super(key: key);
 
@@ -346,10 +345,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellTap != null) {
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-          rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-          column: dataCell.gridColumn!,
-          globalPosition: tapUpDetails.globalPosition,
-          localPosition: tapUpDetails.localPosition,
+        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        column: dataCell.gridColumn!,
+        globalPosition: tapUpDetails.globalPosition,
+        localPosition: tapUpDetails.localPosition,
         kind: _kind,
       );
       dataGridConfiguration.onCellTap!(details);
@@ -368,7 +367,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellDoubleTap != null) {
       final DataGridCellDoubleTapDetails details = DataGridCellDoubleTapDetails(
-          rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
         column: dataCell.gridColumn!,
       );
       dataGridConfiguration.onCellDoubleTap!(details);
@@ -387,10 +386,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellSecondaryTap != null) {
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-          rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-          column: dataCell.gridColumn!,
-          globalPosition: tapUpDetails.globalPosition,
-          localPosition: tapUpDetails.localPosition,
+        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        column: dataCell.gridColumn!,
+        globalPosition: tapUpDetails.globalPosition,
+        localPosition: tapUpDetails.localPosition,
         kind: _kind,
       );
       dataGridConfiguration.onCellSecondaryTap!(details);
@@ -416,15 +415,15 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     return GestureDetector(
       onTapUp:
           dataGridConfiguration.onCellTap != null ||
-              dataGridConfiguration.sortingGestureType == SortingGestureType.tap
-          ? _handleOnTapUp
-          : null,
+                  dataGridConfiguration.sortingGestureType == SortingGestureType.tap
+              ? _handleOnTapUp
+              : null,
       onTapDown: _handleOnTapDown,
       onDoubleTap:
           dataGridConfiguration.onCellDoubleTap != null ||
-              dataGridConfiguration.sortingGestureType == SortingGestureType.doubleTap
-          ? _handleOnDoubleTap
-          : null,
+                  dataGridConfiguration.sortingGestureType == SortingGestureType.doubleTap
+              ? _handleOnDoubleTap
+              : null,
       onSecondaryTapUp:
           dataGridConfiguration.onCellSecondaryTap != null ? _handleOnSecondaryTapUp : null,
       onSecondaryTapDown: _handleOnTapDown,
@@ -439,7 +438,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     Widget checkHeaderCellConstraints(Widget child) {
       return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-        return _buildHeaderCell(child, _sortDirection, constraints.maxWidth);
+          return _buildHeaderCell(child, _sortDirection, constraints.maxWidth);
         },
       );
     }
@@ -447,10 +446,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _ensureSortIconVisibility(column!, dataGridConfiguration);
 
     Widget child = _wrapInsideCellContainer(
-        dataGridConfiguration: dataGridConfiguration,
-        child: checkHeaderCellConstraints(widget.child),
-        dataCell: widget.dataCell,
-        key: widget.key!,
+      dataGridConfiguration: dataGridConfiguration,
+      child: checkHeaderCellConstraints(widget.child),
+      dataCell: widget.dataCell,
+      key: widget.key!,
       backgroundColor: widget.backgroundColor,
     );
 
@@ -458,12 +457,12 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
       return dataGridConfiguration.columnDragFeedbackBuilder != null
           ? dataGridConfiguration.columnDragFeedbackBuilder!(context, widget.dataCell.gridColumn!)
           : Container(
-              width: widget.dataCell.gridColumn!.actualWidth,
-              height: dataGridConfiguration.headerRowHeight,
-              decoration: BoxDecoration(
-                  color: dataGridConfiguration.dataGridThemeHelper!.feedBackWidgetColor,
-                  border: Border.all(
-                      color: dataGridConfiguration.dataGridThemeHelper!.gridLineColor!,
+            width: widget.dataCell.gridColumn!.actualWidth,
+            height: dataGridConfiguration.headerRowHeight,
+            decoration: BoxDecoration(
+              color: dataGridConfiguration.dataGridThemeHelper!.feedBackWidgetColor,
+              border: Border.all(
+                color: dataGridConfiguration.dataGridThemeHelper!.gridLineColor!,
                 width: dataGridConfiguration.dataGridThemeHelper!.gridLineStrokeWidth!,
               ),
             ),
@@ -484,10 +483,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         feedback: MouseRegion(
           cursor:
               isWindowsPlatform
-                ? MouseCursor.defer
-                : (dataGridConfiguration.isMacPlatform && !kIsWeb)
-                    ? SystemMouseCursors.grabbing
-                    : SystemMouseCursors.move,
+                  ? MouseCursor.defer
+                  : (dataGridConfiguration.isMacPlatform && !kIsWeb)
+                  ? SystemMouseCursors.grabbing
+                  : SystemMouseCursors.move,
           child: getFeedbackWidget(configuration),
         ),
         child: child,
@@ -501,8 +500,8 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     }
 
     return Container(
-        key: widget.key,
-        clipBehavior: Clip.antiAlias,
+      key: widget.key,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(border: _getCellBorder(dataGridConfiguration, widget.dataCell)),
       child: child,
     );
@@ -528,10 +527,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         _sortDirection = sortColumn.sortDirection;
         _sortNumberBackgroundColor =
             dataGridConfiguration.dataGridThemeHelper!.sortOrderNumberBackgroundColor ??
-                dataGridConfiguration.colorScheme!.onSurface[31]!;
+            dataGridConfiguration.colorScheme!.onSurface[31]!;
         _sortNumberTextColor =
             (dataGridConfiguration.dataGridThemeHelper!.sortOrderNumberColor ??
-            dataGridConfiguration.colorScheme!.onSurface[222])!;
+                dataGridConfiguration.colorScheme!.onSurface[222])!;
         if (dataGridConfiguration.source.sortedColumns.length > 1 &&
             dataGridConfiguration.showSortNumbers) {
           _sortNumber = sortNumber;
@@ -630,14 +629,14 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
             child: Center(
               child:
                   isColumnHeaderIconVisible
-                  ? Row(
-                      children: <Widget>[
-                        if (children.containsKey('sortIcon')) children['sortIcon']!,
-                        if (children.containsKey('sortNumber')) children['sortNumber']!,
-                        if (children.containsKey('filterIcon')) children['filterIcon']!,
-                      ],
-                    )
-                  : const SizedBox(),
+                      ? Row(
+                        children: <Widget>[
+                          if (children.containsKey('sortIcon')) children['sortIcon']!,
+                          if (children.containsKey('sortNumber')) children['sortNumber']!,
+                          if (children.containsKey('filterIcon')) children['filterIcon']!,
+                        ],
+                      )
+                      : const SizedBox(),
             ),
           );
         }
@@ -769,9 +768,9 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
       final String sortColumnName = column.columnName;
       final bool allowMultiSort =
           dataGridConfiguration.isMacPlatform
-          ? (dataGridConfiguration.isCommandKeyPressed &&
-              dataGridConfiguration.allowMultiColumnSorting)
-          : dataGridConfiguration.isDesktop
+              ? (dataGridConfiguration.isCommandKeyPressed &&
+                  dataGridConfiguration.allowMultiColumnSorting)
+              : dataGridConfiguration.isDesktop
               ? (dataGridConfiguration.isControlKeyPressed &&
                   dataGridConfiguration.allowMultiColumnSorting)
               : dataGridConfiguration.allowMultiColumnSorting;
@@ -803,10 +802,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
             }
           } else {
             sortedColumn = SortColumnDetails(
-                name: sortedColumn.name,
+              name: sortedColumn.name,
               sortDirection:
                   sortedColumn.sortDirection == DataGridSortDirection.ascending
-                    ? DataGridSortDirection.descending
+                      ? DataGridSortDirection.descending
                       : DataGridSortDirection.ascending,
             );
             final SortColumnDetails? removedSortColumn = sortedColumns.firstWhereOrNull(
@@ -833,17 +832,17 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
             }
           } else {
             currentSortColumn = SortColumnDetails(
-                name: currentSortColumn.name,
+              name: currentSortColumn.name,
               sortDirection:
                   currentSortColumn.sortDirection == DataGridSortDirection.ascending
-                    ? DataGridSortDirection.descending
+                      ? DataGridSortDirection.descending
                       : DataGridSortDirection.ascending,
             );
             final SortColumnDetails oldSortColumn = SortColumnDetails(
-                name: currentSortColumn.name,
+              name: currentSortColumn.name,
               sortDirection:
                   currentSortColumn.sortDirection == DataGridSortDirection.ascending
-                    ? DataGridSortDirection.descending
+                      ? DataGridSortDirection.descending
                       : DataGridSortDirection.ascending,
             );
             if (_raiseColumnSortChanging(currentSortColumn, oldSortColumn)) {
@@ -964,7 +963,7 @@ class _SortIconState extends State<_SortIcon> with SingleTickerProviderStateMixi
 
 class _FilterIcon extends StatelessWidget {
   const _FilterIcon({Key? key, required this.column, required this.dataGridConfiguration})
-      : super(key: key);
+    : super(key: key);
 
   final GridColumn column;
   final DataGridConfiguration dataGridConfiguration;
@@ -982,13 +981,13 @@ class _FilterIcon extends StatelessWidget {
       final Offset newOffset = renderBox.globalToLocal(details.globalPosition);
       final Size viewSize = renderBox.size;
       showMenu(
-          surfaceTintColor: Colors.transparent,
-          context: context,
-          color: dataGridConfiguration.dataGridThemeHelper!.filterPopupOuterColor,
-          constraints: const BoxConstraints(maxWidth: 274.0),
-          position: RelativeRect.fromSize(newOffset & Size.zero, viewSize),
-          items: <PopupMenuEntry<String>>[
-            _FilterPopupMenuItem<String>(
+        surfaceTintColor: Colors.transparent,
+        context: context,
+        color: dataGridConfiguration.dataGridThemeHelper!.filterPopupOuterColor,
+        constraints: const BoxConstraints(maxWidth: 274.0),
+        position: RelativeRect.fromSize(newOffset & Size.zero, viewSize),
+        items: <PopupMenuEntry<String>>[
+          _FilterPopupMenuItem<String>(
             column: column,
             dataGridConfiguration: dataGridConfiguration,
           ),
@@ -1010,8 +1009,8 @@ class _FilterIcon extends StatelessWidget {
       });
     } else {
       Navigator.push<_FilterPopup>(
-          context,
-          MaterialPageRoute<_FilterPopup>(
+        context,
+        MaterialPageRoute<_FilterPopup>(
           builder:
               (BuildContext context) =>
                   _FilterPopup(column: column, dataGridConfiguration: dataGridConfiguration),
@@ -1033,48 +1032,48 @@ class _FilterIcon extends StatelessWidget {
         padding: column.filterIconPadding,
         child: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-          return MouseRegion(
-            onEnter: (_) {
-              setState(() {
-                isHovered = true;
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                isHovered = false;
-              });
-            },
+            return MouseRegion(
+              onEnter: (_) {
+                setState(() {
+                  isHovered = true;
+                });
+              },
+              onExit: (_) {
+                setState(() {
+                  isHovered = false;
+                });
+              },
               child:
                   isFiltered
-                ? _FilteredIcon(
+                      ? _FilteredIcon(
                         iconColor:
                             isHovered
                                 ? (dataGridConfiguration
                                         .dataGridThemeHelper!
                                         .filterIconHoverColor ??
-                            dataGridConfiguration.colorScheme!.onSurface[222]!)
-                        : (dataGridConfiguration.dataGridThemeHelper!.filterIconColor ??
+                                    dataGridConfiguration.colorScheme!.onSurface[222]!)
+                                : (dataGridConfiguration.dataGridThemeHelper!.filterIconColor ??
                                     dataGridConfiguration
                                         .dataGridThemeHelper!
                                         .filterPopupIconColor!),
-                    filterIcon: dataGridConfiguration.dataGridThemeHelper!.filterIcon,
-                    gridColumnName: column.columnName,
-                  )
-                : _UnfilteredIcon(
+                        filterIcon: dataGridConfiguration.dataGridThemeHelper!.filterIcon,
+                        gridColumnName: column.columnName,
+                      )
+                      : _UnfilteredIcon(
                         iconColor:
                             isHovered
                                 ? (dataGridConfiguration
                                         .dataGridThemeHelper!
                                         .filterIconHoverColor ??
-                            dataGridConfiguration.colorScheme!.onSurface[222]!)
-                        : (dataGridConfiguration.dataGridThemeHelper!.filterIconColor ??
+                                    dataGridConfiguration.colorScheme!.onSurface[222]!)
+                                : (dataGridConfiguration.dataGridThemeHelper!.filterIconColor ??
                                     dataGridConfiguration
                                         .dataGridThemeHelper!
                                         .filterPopupIconColor!),
-                    filterIcon: dataGridConfiguration.dataGridThemeHelper!.filterIcon,
-                    gridColumnName: column.columnName,
-                  ),
-          );
+                        filterIcon: dataGridConfiguration.dataGridThemeHelper!.filterIcon,
+                        gridColumnName: column.columnName,
+                      ),
+            );
           },
         ),
       ),
@@ -1140,7 +1139,7 @@ class _FilteredIcon extends StatelessWidget {
 
 class _FilterPopupMenuItem<T> extends PopupMenuItem<T> {
   const _FilterPopupMenuItem({required this.column, required this.dataGridConfiguration})
-      : super(child: null);
+    : super(child: null);
 
   final GridColumn column;
 
@@ -1158,7 +1157,7 @@ class _FilterPopupMenuItemState<T> extends PopupMenuItemState<T, _FilterPopupMen
 
 class _FilterPopup extends StatefulHookWidget {
   const _FilterPopup({Key? key, required this.column, required this.dataGridConfiguration})
-      : super(key: key);
+    : super(key: key);
 
   final GridColumn column;
 
@@ -1263,11 +1262,11 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
       replacement: Material(child: _buildPopupView()),
       child: Theme(
         data: ThemeData(
-            colorScheme: Theme.of(context).colorScheme,
-            // Issue: FLUT-869897-The color of the filter pop-up menu was not working properly
-            // on the Mobile platform when using the Material 2.
-            //
-            // Fix: We have to set the useMaterial3 property to the theme data to resolve the above issue.
+          colorScheme: Theme.of(context).colorScheme,
+          // Issue: FLUT-869897-The color of the filter pop-up menu was not working properly
+          // on the Mobile platform when using the Material 2.
+          //
+          // Fix: We have to set the useMaterial3 property to the theme data to resolve the above issue.
           useMaterial3: Theme.of(context).useMaterial3,
         ),
         child: SafeArea(
@@ -1318,8 +1317,8 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
     filterHelper.setDataGridSource(
       widget.column,
       onCompleted: () {
-      // Trigger UI rebuild when paginated data is loaded
-      setState(() {});
+        // Trigger UI rebuild when paginated data is loaded
+        setState(() {});
       },
     );
 
@@ -1347,13 +1346,13 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
       child: AppBar(
         elevation: 0.0,
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
+          preferredSize: const Size.fromHeight(1.0),
           child: Container(height: 1.0, color: dataGridThemeHelper.filterPopupBorderColor),
         ),
         backgroundColor: dataGridThemeHelper.filterPopupBackgroundColor,
         leading: IconButton(
-            key: const ValueKey<String>('datagrid_filtering_cancelFilter_icon'),
-            onPressed: closePage,
+          key: const ValueKey<String>('datagrid_filtering_cancelFilter_icon'),
+          onPressed: closePage,
           icon: Icon(Icons.close, size: 22.0, color: dataGridThemeHelper.filterPopupIconColor),
         ),
         centerTitle: false,
@@ -1368,10 +1367,10 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
             onPressed: canDisableOkButton() ? null : onHandleOkButtonTap,
             icon: Icon(
               Icons.check,
-                size: 22.0,
+              size: 22.0,
               color:
                   canDisableOkButton()
-                    ? widget.dataGridConfiguration.colorScheme!.onSurface[97]
+                      ? widget.dataGridConfiguration.colorScheme!.onSurface[97]
                       : filterHelper.primaryColor,
             ),
           ),
@@ -1413,10 +1412,10 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
         children: <Widget>[
           if (canShowSortingOptions)
             _FilterPopupMenuTile(
-                style:
-                    isSortAscendingEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
-                height: filterHelper.tileHeight,
-                prefix: Icon(
+              style:
+                  isSortAscendingEnabled ? filterHelper.textStyle : filterHelper.disableTextStyle,
+              height: filterHelper.tileHeight,
+              prefix: Icon(
                 const IconData(
                   0xe700,
                   fontFamily: 'FilterIcon',
@@ -1424,19 +1423,19 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                 ),
                 color:
                     isSortAscendingEnabled
-                      ? iconColor
-                      : dataGridThemeHelper.filterPopupDisabledIconColor,
-                  size: filterHelper.textStyle.fontSize! + 10,
-                ),
-                prefixPadding: EdgeInsets.only(
-                    left: 4.0,
-                    right: filterHelper.textStyle.fontSize!,
+                        ? iconColor
+                        : dataGridThemeHelper.filterPopupDisabledIconColor,
+                size: filterHelper.textStyle.fontSize! + 10,
+              ),
+              prefixPadding: EdgeInsets.only(
+                left: 4.0,
+                right: filterHelper.textStyle.fontSize!,
                 bottom:
                     filterHelper.textStyle.fontSize! > 14
                         ? filterHelper.textStyle.fontSize! - 14
                         : 0,
               ),
-                onTap: isSortAscendingEnabled ? onHandleSortAscendingTap : null,
+              onTap: isSortAscendingEnabled ? onHandleSortAscendingTap : null,
               child: Text(
                 grid_helper.getSortButtonText(localizations, true, filterType),
                 overflow: TextOverflow.ellipsis,
@@ -1455,16 +1454,16 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                 ),
                 color:
                     isSortDescendingEnabled
-                    ? iconColor
-                    : dataGridThemeHelper.filterPopupDisabledIconColor,
+                        ? iconColor
+                        : dataGridThemeHelper.filterPopupDisabledIconColor,
                 size: filterHelper.textStyle.fontSize! + 10,
               ),
               prefixPadding: EdgeInsets.only(
-                  left: 4.0,
-                  right: filterHelper.textStyle.fontSize!,
+                left: 4.0,
+                right: filterHelper.textStyle.fontSize!,
                 bottom:
                     filterHelper.textStyle.fontSize! > 14
-                      ? filterHelper.textStyle.fontSize! - 14
+                        ? filterHelper.textStyle.fontSize! - 14
                         : 0,
               ),
               onTap: isSortDescendingEnabled ? onHandleSortDescendingTap : null,
@@ -1484,18 +1483,18 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                   fontFamily: 'FilterIcon',
                   fontPackage: 'syncfusion_flutter_datagrid',
                 ),
-                  size: filterHelper.textStyle.fontSize! + 8,
+                size: filterHelper.textStyle.fontSize! + 8,
                 color:
                     isClearFilterEnabled
-                      ? iconColor
+                        ? iconColor
                         : dataGridThemeHelper.filterPopupDisabledIconColor,
               ),
               prefixPadding: EdgeInsets.only(
-                  left: 4.0,
-                  right: filterHelper.textStyle.fontSize!,
+                left: 4.0,
+                right: filterHelper.textStyle.fontSize!,
                 bottom:
                     filterHelper.textStyle.fontSize! > 14
-                      ? filterHelper.textStyle.fontSize! - 14
+                        ? filterHelper.textStyle.fontSize! - 14
                         : 0,
               ),
               onTap: isClearFilterEnabled ? onHandleClearFilterTap : null,
@@ -1561,7 +1560,7 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                   height: filterHelper.tileHeight,
                   onTap: onHandleExpansionTileTap,
                   prefix: Icon(
-                      filterHelper.getFilterForm(widget.column) == FilteredFrom.advancedFilter
+                    filterHelper.getFilterForm(widget.column) == FilteredFrom.advancedFilter
                         ? const IconData(
                           0xe704,
                           fontFamily: 'FilterIcon',
@@ -1572,20 +1571,20 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                           fontFamily: 'FilterIcon',
                           fontPackage: 'syncfusion_flutter_datagrid',
                         ),
-                      size: filterHelper.textStyle.fontSize! + 6,
+                    size: filterHelper.textStyle.fontSize! + 6,
                     color: iconColor,
                   ),
                   suffix: Icon(
-                      isAdvancedFilter ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
-                      size: filterHelper.textStyle.fontSize! + 6,
+                    isAdvancedFilter ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                    size: filterHelper.textStyle.fontSize! + 6,
                     color: iconColor,
                   ),
                   prefixPadding: EdgeInsets.only(
-                      left: 4.0,
-                      right: filterHelper.textStyle.fontSize!,
+                    left: 4.0,
+                    right: filterHelper.textStyle.fontSize!,
                     bottom:
                         filterHelper.textStyle.fontSize! > 14
-                          ? filterHelper.textStyle.fontSize! - 14
+                            ? filterHelper.textStyle.fontSize! - 14
                             : 0,
                   ),
                   child: Text(
@@ -1623,16 +1622,16 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                       SizedBox(
+                      SizedBox(
                         width: 120.0,
                         height: filterHelper.tileHeight - 8,
                         child: OutlinedButton(
-                            onPressed: closePage,
-                            child: Text(
-                              localizations.cancelDataGridFilteringLabel,
-                              style: TextStyle(
-                                  color: filterHelper.primaryColor,
-                                  fontSize: filterHelper.textStyle.fontSize,
+                          onPressed: closePage,
+                          child: Text(
+                            localizations.cancelDataGridFilteringLabel,
+                            style: TextStyle(
+                              color: filterHelper.primaryColor,
+                              fontSize: filterHelper.textStyle.fontSize,
                               fontFamily: filterHelper.textStyle.fontFamily,
                             ),
                           ),
@@ -1642,34 +1641,34 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
                         width: 120.0,
                         height: filterHelper.tileHeight - 8,
                         child: ElevatedButton(
-                            style: ButtonStyle(
+                          style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.resolveWith<Color?>((
                               Set<WidgetState> states,
                             ) {
-                                  // Issue:
-                                  // FLUT-7487-The buttons UX in the filter popup menu is not very intuitive when using Material 3 design.
-                                  //
-                                  // Fix:
-                                  // There is an issue with the button user experience (UX) in the filter popup menu,
-                                  // which is caused by the default background color of the "ElevatedButton" widget
-                                  // being set to the surface color in the Material 3 design. To address this issue,
-                                  // we set the background color of the button to the primary color if it is not disabled.
-                                  // This means that the default value is ignored, and the given color is used instead.
-                                  if (states.contains(WidgetState.disabled)) {
-                                    return null;
-                                  } else {
-                                    return filterHelper.primaryColor;
-                                  }
+                              // Issue:
+                              // FLUT-7487-The buttons UX in the filter popup menu is not very intuitive when using Material 3 design.
+                              //
+                              // Fix:
+                              // There is an issue with the button user experience (UX) in the filter popup menu,
+                              // which is caused by the default background color of the "ElevatedButton" widget
+                              // being set to the surface color in the Material 3 design. To address this issue,
+                              // we set the background color of the button to the primary color if it is not disabled.
+                              // This means that the default value is ignored, and the given color is used instead.
+                              if (states.contains(WidgetState.disabled)) {
+                                return null;
+                              } else {
+                                return filterHelper.primaryColor;
+                              }
                             }),
-                            ),
-                            onPressed: canDisableOkButton() ? null : onHandleOkButtonTap,
+                          ),
+                          onPressed: canDisableOkButton() ? null : onHandleOkButtonTap,
                           child: Text(
                             localizations.okDataGridFilteringLabel,
-                                style: TextStyle(
-                                    color: const Color(0xFFFFFFFF),
-                                    fontSize: filterHelper.textStyle.fontSize,
+                            style: TextStyle(
+                              color: const Color(0xFFFFFFFF),
+                              fontSize: filterHelper.textStyle.fontSize,
                               fontFamily: filterHelper.textStyle.fontFamily,
-                      ),
+                            ),
                           ),
                         ),
                       ),
@@ -1743,12 +1742,12 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
   bool canDisableOkButton() {
     if (isAdvancedFilter) {
       final DataGridAdvancedFilterHelper helper = filterHelper.advancedFilterHelper;
-          return (helper.filterValue1 == null && helper.filterValue2 == null) &&
+      return (helper.filterValue1 == null && helper.filterValue2 == null) &&
           helper.disableFilterTypes.contains(helper.filterType1) &&
           helper.disableFilterTypes.contains(helper.filterType2);
-    //   return (helper.filterValue1 == null && helper.filterValue2 == null) &&
-    //       !helper.disableFilterTypes.contains(helper.filterType1) &&
-    //       !helper.disableFilterTypes.contains(helper.filterType2);
+      //   return (helper.filterValue1 == null && helper.filterValue2 == null) &&
+      //       !helper.disableFilterTypes.contains(helper.filterType1) &&
+      //       !helper.disableFilterTypes.contains(helper.filterType2);
     } else {
       final bool? isSelectAllChecked = filterHelper.checkboxFilterHelper.isSelectAllChecked;
       return (isSelectAllChecked != null && !isSelectAllChecked) ||
@@ -1781,12 +1780,12 @@ class _FilterPopupState extends State<_FilterPopup> with TickerProviderStateMixi
 class _FilterPopupMenuTile extends StatelessWidget {
   const _FilterPopupMenuTile({
     Key? key,
-      required this.child,
-      this.onTap,
-      this.prefix,
-      this.suffix,
-      this.height,
-      required this.style,
+    required this.child,
+    this.onTap,
+    this.prefix,
+    this.suffix,
+    this.height,
+    required this.style,
     this.prefixPadding = EdgeInsets.zero,
   }) : super(key: key);
 
@@ -1862,9 +1861,9 @@ class _FilterMenuDropdown extends StatelessWidget {
 class _CheckboxFilterMenu extends StatelessWidget {
   _CheckboxFilterMenu({
     Key? key,
-      required this.setState,
-      required this.column,
-      required this.viewSize,
+    required this.setState,
+    required this.column,
+    required this.viewSize,
     required this.dataGridConfiguration,
   }) : super(key: key);
 
@@ -1958,25 +1957,25 @@ class _CheckboxFilterMenu extends StatelessWidget {
 
     final String suffixText =
         filterHelper.isSelectAllChecked == null
-        ? hasExactlyOneSelected
-            ? 'Clear'
-            : 'Clear All'
-        : (filterHelper.isSelectAllChecked ?? false)
+            ? hasExactlyOneSelected
+                ? 'Clear'
+                : 'Clear All'
+            : (filterHelper.isSelectAllChecked ?? false)
             ? 'Clear All'
             : '';
 
     final Widget valuesListView =
         filterHelper.usePaginatedFiltering
-        ? _buildPaginatedListView(context, helper.textStyle)
-        : ListView.builder(
-            key: ValueKey<String>(
+            ? _buildPaginatedListView(context, helper.textStyle)
+            : ListView.builder(
+              key: ValueKey<String>(
                 'datagrid_filtering_checkbox_listView_${filterHelper.items.length}_${filterHelper.textController.text}',
               ),
               prototypeItem:
                   filterHelper.items.isNotEmpty
-                ? buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle)
-                : null,
-            itemCount: filterHelper.items.length,
+                      ? buildCheckboxTile(filterHelper.items.length - 1, helper.textStyle)
+                      : null,
+              itemCount: filterHelper.items.length,
               itemBuilder:
                   (BuildContext context, int index) => buildCheckboxTile(index, helper.textStyle),
             );
@@ -2025,38 +2024,38 @@ class _CheckboxFilterMenu extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-            if (canShowSelectAllButton)
-              _FilterPopupMenuTile(
-                style: helper.textStyle,
-                height: selectAllButtonHeight,
-                prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-                prefix: Checkbox(
-                  focusNode: checkboxFocusNode,
-                  tristate: filterHelper.isSelectAllInTriState,
-                  value: filterHelper.isSelectAllChecked,
-                  onChanged: (_) => onHandleSelectAllCheckboxTap(),
-                ),
-                onTap: onHandleSelectAllCheckboxTap,
-                child: Row(
+              if (canShowSelectAllButton)
+                _FilterPopupMenuTile(
+                  style: helper.textStyle,
+                  height: selectAllButtonHeight,
+                  prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
+                  prefix: Checkbox(
+                    focusNode: checkboxFocusNode,
+                    tristate: filterHelper.isSelectAllInTriState,
+                    value: filterHelper.isSelectAllChecked,
+                    onChanged: (_) => onHandleSelectAllCheckboxTap(),
+                  ),
+                  onTap: onHandleSelectAllCheckboxTap,
+                  child: Row(
                     children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
-                        overflow: TextOverflow.ellipsis,
+                      Expanded(
+                        child: Text(
+                          dataGridConfiguration.localizations.selectAllDataGridFilteringLabel,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    if (suffixText.isNotEmpty)
-                      Text(
-                        suffixText,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                      )
-                    else
+                      if (suffixText.isNotEmpty)
+                        Text(
+                          suffixText,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        )
+                      else
                         const SizedBox.shrink(),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
               // Use Expanded when searching on mobile, SizedBox with fixed height otherwise
               SizedBox(height: checkboxHeight, child: valuesListView),
@@ -2092,31 +2091,31 @@ class _CheckboxFilterMenu extends StatelessWidget {
           onChanged: onHandleSearchTextFieldChanged,
           onSubmitted: onSearchboxSubmitted,
           decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
             ),
-              suffixIcon: Visibility(
-                  visible: filterHelper.textController.text.isEmpty,
-                  replacement: IconButton(
-                      key: const ValueKey<String>('datagrid_filtering_clearSearch_icon'),
-                      iconSize: helper.textStyle.fontSize! + 8,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
-                      onPressed: () {
-                        filterHelper.textController.clear();
-                        onHandleSearchTextFieldChanged('');
-                      },
+            suffixIcon: Visibility(
+              visible: filterHelper.textController.text.isEmpty,
+              replacement: IconButton(
+                key: const ValueKey<String>('datagrid_filtering_clearSearch_icon'),
+                iconSize: helper.textStyle.fontSize! + 8,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
+                onPressed: () {
+                  filterHelper.textController.clear();
+                  onHandleSearchTextFieldChanged('');
+                },
                 icon: Icon(Icons.close, color: dataGridThemeHelper.filterPopupIconColor),
               ),
               child: Icon(
                 Icons.search,
-                      size: helper.textStyle.fontSize! + 8,
+                size: helper.textStyle.fontSize! + 8,
                 color: dataGridThemeHelper.filterPopupIconColor,
               ),
             ),
-              contentPadding: isMobile ? const EdgeInsets.all(16.0) : const EdgeInsets.all(8.0),
-              border: const OutlineInputBorder(),
-              hintStyle: helper.textStyle,
+            contentPadding: isMobile ? const EdgeInsets.all(16.0) : const EdgeInsets.all(8.0),
+            border: const OutlineInputBorder(),
+            hintStyle: helper.textStyle,
             hintText: dataGridConfiguration.localizations.searchDataGridFilteringLabel,
           ),
         ),
@@ -2133,15 +2132,15 @@ class _CheckboxFilterMenu extends StatelessWidget {
       );
 
       return _FilterPopupMenuTile(
-          style: style,
-          height: isMobile ? style.fontSize! + 34 : style.fontSize! + 26,
-          prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-          prefix: Checkbox(
-              focusNode: checkboxFocusNode,
-              value: element.isSelected,
+        style: style,
+        height: isMobile ? style.fontSize! + 34 : style.fontSize! + 26,
+        prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
+        prefix: Checkbox(
+          focusNode: checkboxFocusNode,
+          value: element.isSelected,
           onChanged: (_) => onHandleCheckboxTap(element),
         ),
-          onTap: () => onHandleCheckboxTap(element),
+        onTap: () => onHandleCheckboxTap(element),
         child: Text(displayText, overflow: TextOverflow.ellipsis),
       );
     }
@@ -2172,8 +2171,8 @@ class _CheckboxFilterMenu extends StatelessWidget {
     filterHelper.onSearchTextFieldTextChanged(
       value,
       onCompleted: () {
-      // Ensure UI rebuilds after search completes
-      setState(() {});
+        // Ensure UI rebuilds after search completes
+        setState(() {});
       },
     );
   }
@@ -2229,9 +2228,9 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
             child: Text(
               '${dataGridConfiguration.localizations.showRowsWhereDataGridFilteringLabel}:',
               style: TextStyle(
-                  fontFamily: helper.textStyle.fontFamily,
-                  fontSize: helper.textStyle.fontSize,
-                  color: helper.textStyle.color,
+                fontFamily: helper.textStyle.fontFamily,
+                fontSize: helper.textStyle.fontSize,
+                color: helper.textStyle.color,
                 fontWeight: FontWeight.bold,
               ),
               overflow: TextOverflow.ellipsis,
@@ -2279,37 +2278,37 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       children: <Widget>[
         Row(
           children: <Widget>[
-          SizedBox.fromSize(
-            size: const Size(24.0, 24.0),
-            child: Radio<bool>(
+            SizedBox.fromSize(
+              size: const Size(24.0, 24.0),
+              child: Radio<bool>(
                 key: const ValueKey<String>('datagrid_filtering_and_button'),
                 value: false,
                 activeColor: helper.primaryColor,
                 onChanged: handleChanged,
                 groupValue: filterHelper.isOrPredicate,
               ),
-          ),
-          const SizedBox(width: 8.0),
+            ),
+            const SizedBox(width: 8.0),
             Text(localizations.andDataGridFilteringLabel, style: helper.textStyle),
           ],
-          ),
+        ),
         const SizedBox(width: 16.0),
         Row(
           children: <Widget>[
-          SizedBox.fromSize(
-            size: const Size(24.0, 24.0),
-            child: Radio<bool>(
+            SizedBox.fromSize(
+              size: const Size(24.0, 24.0),
+              child: Radio<bool>(
                 key: const ValueKey<String>('datagrid_filtering_or_button'),
                 value: true,
                 activeColor: helper.primaryColor,
                 onChanged: handleChanged,
                 groupValue: filterHelper.isOrPredicate,
               ),
-          ),
-          const SizedBox(width: 8.0),
+            ),
+            const SizedBox(width: 8.0),
             Text(localizations.orDataGridFilteringLabel, style: helper.textStyle),
           ],
-          ),
+        ),
       ],
     );
   }
@@ -2361,20 +2360,20 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
           dropdownColor: dataGridThemeHelper.filterPopupOuterColor,
           key:
               isTopButton
-              ? const ValueKey<String>('datagrid_filtering_filterValue_first_button')
-              : const ValueKey<String>('datagrid_filtering_filterValue_second_button'),
+                  ? const ValueKey<String>('datagrid_filtering_filterValue_first_button')
+                  : const ValueKey<String>('datagrid_filtering_filterValue_second_button'),
           decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
-              ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-              border: OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            border: OutlineInputBorder(
               borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
             ),
           ),
           icon: Icon(
             Icons.keyboard_arrow_down,
-              size: helper.textStyle.fontSize! + 8,
+            size: helper.textStyle.fontSize! + 8,
             color: dataGridThemeHelper.filterPopupIconColor,
           ),
           isExpanded: true,
@@ -2388,7 +2387,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
                       child: Text(helper.getDisplayValue(value.value)),
                     ),
                   )
-              .toList(),
+                  .toList(),
           onChanged: enableDropdownButton(isTopButton) ? setValue : null,
         ),
       );
@@ -2399,12 +2398,12 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         style: helper.textStyle,
         key:
             isTopButton
-            ? const ValueKey<String>('datagrid_filtering_filterValue_first_button')
-            : const ValueKey<String>('datagrid_filtering_filterValue_second_button'),
+                ? const ValueKey<String>('datagrid_filtering_filterValue_first_button')
+                : const ValueKey<String>('datagrid_filtering_filterValue_second_button'),
         controller:
             isTopButton
-            ? filterHelper.firstValueTextController
-            : filterHelper.secondValueTextController,
+                ? filterHelper.firstValueTextController
+                : filterHelper.secondValueTextController,
         maxLengthEnforcement: MaxLengthEnforcement.enforced,
         keyboardType: getTextInputType(),
         inputFormatters: getInputFormatters(),
@@ -2413,11 +2412,11 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
           setValue(helper.getActualValue(value));
         },
         decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
           ),
-            contentPadding: isMobile ? const EdgeInsets.all(16.0) : const EdgeInsets.all(8.0),
-            border: const OutlineInputBorder(),
+          contentPadding: isMobile ? const EdgeInsets.all(16.0) : const EdgeInsets.all(8.0),
+          border: const OutlineInputBorder(),
           hintStyle: const TextStyle(fontSize: 14.0),
         ),
       );
@@ -2441,55 +2440,55 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
           (BuildContext context) => GestureDetector(
             onTap:
                 enableDropdownButton(isTopButton)
-            ? () async {
-                helper.checkboxFilterHelper.filterCheckboxItems =
-                    helper.checkboxFilterHelper.previousItems;
-                await _showPaginatedValuePicker(
-                  context: context,
-                  isTopButton: isTopButton,
-                  setValue: setValue,
-                  helper: helper,
-                  dataGridThemeHelper: dataGridThemeHelper,
-                  currentValue: currentValue,
-                );
-                helper.checkboxFilterHelper.items = helper.checkboxFilterHelper.previousItems;
-                filterHelper.items = helper.checkboxFilterHelper.items;
-              }
-            : null,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: dataGridThemeHelper.filterPopupBorderColor!),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-          child: Row(
+                    ? () async {
+                      helper.checkboxFilterHelper.filterCheckboxItems =
+                          helper.checkboxFilterHelper.previousItems;
+                      await _showPaginatedValuePicker(
+                        context: context,
+                        isTopButton: isTopButton,
+                        setValue: setValue,
+                        helper: helper,
+                        dataGridThemeHelper: dataGridThemeHelper,
+                        currentValue: currentValue,
+                      );
+                      helper.checkboxFilterHelper.items = helper.checkboxFilterHelper.previousItems;
+                      filterHelper.items = helper.checkboxFilterHelper.items;
+                    }
+                    : null,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: dataGridThemeHelper.filterPopupBorderColor!),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              child: Row(
                 children: <Widget>[
-              Expanded(
-                child: Text(
+                  Expanded(
+                    child: Text(
                       currentValue != null
                           ? helper.getDisplayValue(currentValue)
                           : 'Select value...',
-                  style: helper.textStyle.copyWith(
+                      style: helper.textStyle.copyWith(
                         color:
                             currentValue != null
-                        ? helper.textStyle.color
-                        : helper.textStyle.color?.withOpacity(0.6),
+                                ? helper.textStyle.color
+                                : helper.textStyle.color?.withOpacity(0.6),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Icon(
-                Icons.keyboard_arrow_down,
-                size: helper.textStyle.fontSize! + 8,
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: helper.textStyle.fontSize! + 8,
                     color:
                         enableDropdownButton(isTopButton)
-                    ? dataGridThemeHelper.filterPopupIconColor
-                    : dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.5),
+                            ? dataGridThemeHelper.filterPopupIconColor
+                            : dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.5),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -2506,11 +2505,11 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       context: context,
       builder:
           (BuildContext context) => _PaginatedValuePickerDialog(
-        helper: helper,
-        dataGridThemeHelper: dataGridThemeHelper,
-        currentValue: currentValue,
-        dataGridConfiguration: dataGridConfiguration,
-      ),
+            helper: helper,
+            dataGridThemeHelper: dataGridThemeHelper,
+            currentValue: currentValue,
+            dataGridConfiguration: dataGridConfiguration,
+          ),
     );
 
     if (selectedValue != null) {
@@ -2576,14 +2575,14 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         dropdownColor: dataGridThemeHelper.filterPopupOuterColor,
         key:
             isFirstButton
-            ? const ValueKey<String>('datagrid_filtering_filterType_first_button')
-            : const ValueKey<String>('datagrid_filtering_filterType_second_button'),
+                ? const ValueKey<String>('datagrid_filtering_filterType_first_button')
+                : const ValueKey<String>('datagrid_filtering_filterType_second_button'),
         decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
           ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-            border: OutlineInputBorder(
+          contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+          border: OutlineInputBorder(
             borderSide: BorderSide(color: dataGridThemeHelper.filterPopupBorderColor!),
           ),
         ),
@@ -2597,10 +2596,10 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
         style: helper.textStyle,
         items:
             filterHelper.filterTypeItems
-            .map<DropdownMenuItem<String>>(
+                .map<DropdownMenuItem<String>>(
                   (String value) => DropdownMenuItem<String>(value: value, child: Text(value)),
                 )
-            .toList(),
+                .toList(),
         onChanged: handleChanged,
       ),
     );
@@ -2622,7 +2621,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       if (usePaginatedFiltering) {
         initialDate =
             (isFirstButton
-            ? filterHelper.filterValue1 ?? currentDate
+                    ? filterHelper.filterValue1 ?? currentDate
                     : filterHelper.filterValue2 ?? currentDate)
                 as DateTime;
         firstDate = DateTime(firstDate.year - 25, firstDate.month, firstDate.day);
@@ -2705,26 +2704,26 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
       return IconButton(
         key:
             isFirstButton
-              ? const ValueKey<String>('datagrid_filtering_case_sensitive_first_button')
-              : const ValueKey<String>('datagrid_filtering_case_sensitive_second_button'),
-          iconSize: 22.0,
-          splashRadius: 20.0,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
-          onPressed: canEnableButton() ? handleCaseSensitiveTap : null,
+                ? const ValueKey<String>('datagrid_filtering_case_sensitive_first_button')
+                : const ValueKey<String>('datagrid_filtering_case_sensitive_second_button'),
+        iconSize: 22.0,
+        splashRadius: 20.0,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
+        onPressed: canEnableButton() ? handleCaseSensitiveTap : null,
         icon: Icon(caseSensitiveIcon, size: 22.0, color: getColor()),
       );
     } else {
       return IconButton(
         key:
             isFirstButton
-              ? const ValueKey<String>('datagrid_filtering_date_picker_first_button')
-              : const ValueKey<String>('datagrid_filtering_date_picker_second_button'),
-          iconSize: 22.0,
-          splashRadius: 20.0,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
-          onPressed: canEnableButton() ? handleDatePickerTap : null,
+                ? const ValueKey<String>('datagrid_filtering_date_picker_first_button')
+                : const ValueKey<String>('datagrid_filtering_date_picker_second_button'),
+        iconSize: 22.0,
+        splashRadius: 20.0,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints.tightFor(width: 22.0, height: 22.0),
+        onPressed: canEnableButton() ? handleDatePickerTap : null,
         icon: Icon(
           Icons.calendar_today_outlined,
           size: 22.0,
@@ -3019,7 +3018,7 @@ BorderDirectional _getCellBorder(
     }
   }
 
- BorderSide getRightBorder() {
+  BorderSide getRightBorder() {
     if (canDrawVerticalBorder ||
         canDrawHeaderVerticalBorder ||
         canDrawRightFrozenBorder ||
@@ -3056,7 +3055,7 @@ BorderDirectional _getCellBorder(
     }
   }
 
- BorderSide getBottomBorder() {
+  BorderSide getBottomBorder() {
     if (canDrawHorizontalBorder ||
         canDrawHeaderHorizontalBorder ||
         canDrawBottomFrozenBorder ||
@@ -3396,8 +3395,8 @@ Future<void> _handleOnSecondaryTapUp({
       kind: kind,
     );
     dataGridConfiguration.onCellSecondaryTap!(details);
-   }
   }
+}
 
 /// Dialog for selecting values from a paginated list with search functionality
 class _PaginatedValuePickerDialog extends StatelessWidget {
@@ -3425,7 +3424,11 @@ class _PaginatedValuePickerDialog extends StatelessWidget {
 
 /// Widget for timezone selection in DateTime columns
 class _TimezoneSelectionWidget extends StatefulWidget {
-  const _TimezoneSelectionWidget({required this.column, required this.dataGridConfiguration, required this.scrollController});
+  const _TimezoneSelectionWidget({
+    required this.column,
+    required this.dataGridConfiguration,
+    required this.scrollController,
+  });
 
   final GridColumn column;
   final DataGridConfiguration dataGridConfiguration;
@@ -3439,7 +3442,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   bool _isExpanded = false;
   bool _isDropdownOpen = false;
   final TextEditingController _searchController = TextEditingController();
- 
+
   List<Map<String, String>> _filteredTimezones = <Map<String, String>>[];
 
   @override
@@ -3500,13 +3503,13 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     });
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final String displayTimezone = _TimezoneHelper.getTimezoneDisplayName(_selectedTimezone);
     final DataGridConfiguration cfg = widget.dataGridConfiguration;
     final DataGridThemeHelper theme = cfg.dataGridThemeHelper!;
     final DataGridFilterHelper helper = cfg.dataGridFilterHelper!;
-    
+
     return Column(
       children: <Widget>[
         const Divider(height: 8),
@@ -3517,32 +3520,38 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
             onTap: () => setState(() => _isExpanded = !_isExpanded),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.settings,
-                    size: 20.0,
-                    color: theme.filterPopupIconColor?.withOpacity(0.8),
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.settings,
+                        size: 20.0,
+                        color: theme.filterPopupIconColor?.withOpacity(0.8),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Timezone Settings',
+                        style: helper.textStyle.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        size: 20.0,
+                        color: theme.filterPopupIconColor,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Timezone Settings',
-                      style: helper.textStyle.copyWith(fontWeight: FontWeight.w500, fontSize: 15.0),
-                    ),
-                  ),
+                  const SizedBox(height: 8),
                   Text(
                     '($displayTimezone)',
                     style: helper.textStyle.copyWith(
                       color: helper.textStyle.color?.withOpacity(0.6),
                       fontSize: 13.0,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                    size: 20.0,
-                    color: theme.filterPopupIconColor,
                   ),
                 ],
               ),
@@ -3555,108 +3564,108 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
           const Divider(height: 1),
           Container(
             width: double.infinity,
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6,
-            ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    // Display timezone label
-                    Text(
-                      'Display timezone',
-                      style: helper.textStyle.copyWith(fontWeight: FontWeight.w500, fontSize: 14.0),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Timezone dropdown
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() => _isDropdownOpen = !_isDropdownOpen);
-                          // Auto-scroll to show dropdown content when opened
-                          if (_isDropdownOpen) {
-                            Future.delayed(const Duration(milliseconds: 300), () {
-                              if (widget.scrollController.hasClients) {
-                                widget.scrollController.animateTo(
-                                  widget.scrollController.position.maxScrollExtent,
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            });
-                          }
-                        },
-                        child: Tooltip(
-                          message: _getTimezoneDisplayWithOffset(_selectedTimezone),
-                          waitDuration: const Duration(milliseconds: 500),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: theme.filterPopupOuterColor,
-                              border: Border.all(
-                                color: theme.filterPopupBorderColor!.withOpacity(0.5),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  // Display timezone label
+                  Text(
+                    'Display timezone',
+                    style: helper.textStyle.copyWith(fontWeight: FontWeight.w500, fontSize: 14.0),
+                  ),
+                  const SizedBox(height: 8),
+            
+                  // Timezone dropdown
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() => _isDropdownOpen = !_isDropdownOpen);
+                        // Auto-scroll to show dropdown content when opened
+                        if (_isDropdownOpen) {
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (widget.scrollController.hasClients) {
+                              widget.scrollController.animateTo(
+                                widget.scrollController.position.extentTotal,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          });
+                        }
+                      },
+                      child: Tooltip(
+                        message: _getTimezoneDisplayWithOffset(_selectedTimezone),
+                        waitDuration: const Duration(milliseconds: 500),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: theme.filterPopupOuterColor,
+                            border: Border.all(
+                              color: theme.filterPopupBorderColor!.withOpacity(0.5),
+                            ),
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  _getTimezoneDisplayWithOffset(_selectedTimezone),
+                                  style: helper.textStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                               ),
-                              borderRadius: BorderRadius.circular(6.0),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    _getTimezoneDisplayWithOffset(_selectedTimezone),
-                                    style: helper.textStyle,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                const SizedBox(width: 8.0),
-                                Icon(
-                                  _isDropdownOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                                  size: 20.0,
-                                  color: theme.filterPopupIconColor,
-                                ),
-                              ],
-                            ),
+                              const SizedBox(width: 8.0),
+                              Icon(
+                                _isDropdownOpen
+                                    ? Icons.keyboard_arrow_up
+                                    : Icons.keyboard_arrow_down,
+                                size: 20.0,
+                                color: theme.filterPopupIconColor,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-
-                    // Search and dropdown list
-                    if (_isDropdownOpen) ...<Widget>[
-                      const SizedBox(height: 8),
-                      // Search field
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: theme.filterPopupOuterColor,
-                          border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: _onSearchChanged,
-                          style: helper.textStyle.copyWith(fontSize: 14.0),
-                          textAlign: TextAlign.left,
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            hintText: 'Search timezones...',
-                            hintStyle: helper.textStyle.copyWith(
-                              color: helper.textStyle.color?.withOpacity(0.5),
-                              fontSize: 14.0,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              size: 18.0,
-                              color: theme.filterPopupIconColor?.withOpacity(0.6),
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
+                  ),
+            
+                  // Search and dropdown list
+                  if (_isDropdownOpen) ...<Widget>[
+                    const SizedBox(height: 8),
+                    // Search field
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: theme.filterPopupOuterColor,
+                        border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _onSearchChanged,
+                        style: helper.textStyle.copyWith(fontSize: 14.0),
+                        textAlign: TextAlign.left,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: InputDecoration(
+                          hintText: 'Search timezones...',
+                          hintStyle: helper.textStyle.copyWith(
+                            color: helper.textStyle.color?.withOpacity(0.5),
+                            fontSize: 14.0,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            size: 18.0,
+                            color: theme.filterPopupIconColor?.withOpacity(0.6),
+                          ),
+                          suffixIcon:
+                              _searchController.text.isNotEmpty
+                                  ? IconButton(
                                     icon: Icon(
                                       Icons.clear,
                                       size: 18.0,
@@ -3669,31 +3678,32 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                     splashRadius: 16.0,
                                     tooltip: 'Clear search',
                                   )
-                                : null,
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12.0,
-                              vertical: 10.0,
-                            ),
+                                  : null,
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 10.0,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-
-                      // Timezone list
-                      Container(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.4,
-                          maxWidth: MediaQuery.of(context).size.width * 0.8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.filterPopupBackgroundColor,
-                          border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        child: _filteredTimezones.isEmpty
-                            ? Padding(
+                    ),
+                    const SizedBox(height: 4),
+            
+                    // Timezone list
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                        maxWidth: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.filterPopupBackgroundColor,
+                        border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      child:
+                          _filteredTimezones.isEmpty
+                              ? Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Center(
                                   child: Text(
@@ -3704,14 +3714,14 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                   ),
                                 ),
                               )
-                            : ListView.builder(
+                              : ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: _filteredTimezones.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   final Map<String, String> timezone = _filteredTimezones[index];
                                   final bool isSelected = timezone['value'] == _selectedTimezone;
-
+            
                                   return Material(
                                     color: Colors.transparent,
                                     child: Tooltip(
@@ -3732,13 +3742,14 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                                 width: 20.0,
                                                 height: 20.0,
                                                 margin: const EdgeInsets.only(top: 2.0),
-                                                child: isSelected
-                                                    ? Icon(
-                                                        Icons.check,
-                                                        size: 16.0,
-                                                        color: helper.primaryColor,
-                                                      )
-                                                    : null,
+                                                child:
+                                                    isSelected
+                                                        ? Icon(
+                                                          Icons.check,
+                                                          size: 16.0,
+                                                          color: helper.primaryColor,
+                                                        )
+                                                        : null,
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
@@ -3749,13 +3760,16 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                                     Text(
                                                       timezone['label']!,
                                                       style: helper.textStyle.copyWith(
-                                                        fontWeight: isSelected
-                                                            ? FontWeight.w600
-                                                            : FontWeight.normal,
-                                                        color: isSelected
-                                                            ? helper.primaryColor
-                                                            : helper.textStyle.color,
-                                                        fontSize: (helper.textStyle.fontSize ?? 14),
+                                                        fontWeight:
+                                                            isSelected
+                                                                ? FontWeight.w600
+                                                                : FontWeight.normal,
+                                                        color:
+                                                            isSelected
+                                                                ? helper.primaryColor
+                                                                : helper.textStyle.color,
+                                                        fontSize:
+                                                            helper.textStyle.fontSize ?? 14,
                                                       ),
                                                       softWrap: true,
                                                       maxLines: 2,
@@ -3767,8 +3781,12 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                                         child: Text(
                                                           timezone['value']!,
                                                           style: helper.textStyle.copyWith(
-                                                            fontSize: (helper.textStyle.fontSize ?? 14) - 2,
-                                                            color: helper.textStyle.color?.withOpacity(0.6),
+                                                            fontSize:
+                                                                (helper.textStyle.fontSize ??
+                                                                    14) -
+                                                                2,
+                                                            color: helper.textStyle.color
+                                                                ?.withOpacity(0.6),
                                                           ),
                                                           maxLines: 1,
                                                           overflow: TextOverflow.ellipsis,
@@ -3785,37 +3803,36 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                   );
                                 },
                               ),
-                      ),
-
-                      // Current selection indicator
-                      if (_selectedTimezone != null) ...<Widget>[
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: helper.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4.0),
-                            border: Border.all(
-                              color: helper.primaryColor.withOpacity(0.3),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Text(
-                            'Current: ${_TimezoneHelper.getTimezoneDisplayName(_selectedTimezone)}',
-                            style: helper.textStyle.copyWith(
-                              fontSize: 12.0,
-                              color: helper.primaryColor.withOpacity(0.9),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
+                    ),
+            
+                    // Current selection indicator
+                    if (_selectedTimezone != null) ...<Widget>[
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: helper.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4.0),
+                          border: Border.all(
+                            color: helper.primaryColor.withOpacity(0.3),
+                            width: 1.0,
                           ),
                         ),
-                      ],
+                        child: Text(
+                          'Current: ${_TimezoneHelper.getTimezoneDisplayName(_selectedTimezone)}',
+                          style: helper.textStyle.copyWith(
+                            fontSize: 12.0,
+                            color: helper.primaryColor.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
                     ],
                   ],
-                ),
+                ],
               ),
             ),
           ),
@@ -3836,19 +3853,20 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     );
 
     String label = match['label'] ?? _TimezoneHelper.getTimezoneDisplayName(timezone);
-    
+
     // If the label is too long, show a more concise version
     if (label.length > 35) {
       try {
         final tz.Location location = tz.getLocation(timezone);
         final tz.TZDateTime now = tz.TZDateTime.now(location);
         final Duration offset = now.timeZoneOffset;
-        
+
         final String sign = offset.isNegative ? '-' : '+';
         final int hours = offset.inHours.abs();
-        final int minutes = (offset.inMinutes.abs() % 60);
-        final String offsetStr = '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-        
+        final int minutes = offset.inMinutes.abs() % 60;
+        final String offsetStr =
+            '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+
         // Show just the city name with offset for very long names
         final List<String> parts = timezone.split('/');
         final String city = parts.length > 1 ? parts.last.replaceAll('_', ' ') : timezone;
@@ -3857,7 +3875,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
         return timezone.replaceAll('_', ' ');
       }
     }
-    
+
     return label;
   }
 }
