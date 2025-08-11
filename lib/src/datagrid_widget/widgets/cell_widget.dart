@@ -3440,22 +3440,11 @@ class _TimezoneSelectionWidget extends StatefulWidget {
 class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   String? _selectedTimezone;
   bool _isExpanded = false;
-  bool _isDropdownOpen = false;
-  final TextEditingController _searchController = TextEditingController();
-
-  List<Map<String, String>> _filteredTimezones = <Map<String, String>>[];
 
   @override
   void initState() {
     super.initState();
     _selectedTimezone = widget.dataGridConfiguration.timezone ?? 'UTC';
-    _filteredTimezones = _TimezoneHelper.getCommonTimezones();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   void _onTimezoneSelected(String timezone) {
@@ -3475,9 +3464,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
 
     setState(() {
       _selectedTimezone = effective;
-      _isDropdownOpen = false;
-      _searchController.clear();
-      _filteredTimezones = _TimezoneHelper.getCommonTimezones();
     });
 
     // Persist on configuration and notify listeners
@@ -3485,22 +3471,84 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     cfg.timezoneCallback?.call(effective);
   }
 
-  void _onSearchChanged(String query) {
-    setState(() {
-      if (query.trim().isEmpty) {
-        _filteredTimezones = _TimezoneHelper.getCommonTimezones();
-      } else {
-        final String lowercaseQuery = query.toLowerCase();
-        _filteredTimezones =
-            _TimezoneHelper.getCommonTimezones()
-                .where(
-                  (Map<String, String> tz) =>
-                      (tz['label'] ?? '').toLowerCase().contains(lowercaseQuery) ||
-                      (tz['value'] ?? '').toLowerCase().contains(lowercaseQuery),
-                )
-                .toList();
-      }
-    });
+  Future<void> _showTimezoneDropdown() async {
+    final DataGridConfiguration cfg = widget.dataGridConfiguration;
+    final DataGridThemeHelper theme = cfg.dataGridThemeHelper!;
+    
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset position = renderBox.localToGlobal(Offset.zero);
+    final Size screenSize = MediaQuery.of(context).size;
+    
+    // Calculate optimal position for dropdown
+    final double dropdownHeight = min(screenSize.height * 0.6, 500.0);
+    final double dropdownWidth = min(screenSize.width * 0.85, 400.0);
+    
+    double left = position.dx;
+    double top = position.dy + renderBox.size.height + 8.0;
+    
+    // Adjust position if dropdown would go off screen
+    if (left + dropdownWidth > screenSize.width) {
+      left = screenSize.width - dropdownWidth - 16.0;
+    }
+    if (left < 16.0) {
+      left = 16.0;
+    }
+    if (top + dropdownHeight > screenSize.height) {
+      top = position.dy - dropdownHeight - 8.0;
+    }
+    if (top < 50.0) {
+      top = 50.0;
+    }
+    
+    final String? selectedTimezone = await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.1),
+      builder: (BuildContext context) {
+        return Stack(
+          children: <Widget>[
+            // Invisible barrier to detect outside taps
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(color: Colors.transparent),
+              ),
+            ),
+            // Dropdown content
+            Positioned(
+              left: left,
+              top: top,
+              child: Material(
+                elevation: 12.0,
+                borderRadius: BorderRadius.circular(8.0),
+                color: theme.filterPopupBackgroundColor,
+                shadowColor: Colors.black.withOpacity(0.15),
+                child: Container(
+                  width: dropdownWidth,
+                  height: dropdownHeight,
+                  decoration: BoxDecoration(
+                    color: theme.filterPopupBackgroundColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                      color: theme.filterPopupBorderColor!.withOpacity(0.3),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: _TimezoneDropdownContent(
+                    selectedTimezone: _selectedTimezone,
+                    dataGridConfiguration: cfg,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    
+    if (selectedTimezone != null) {
+      _onTimezoneSelected(selectedTimezone);
+    }
   }
 
   @override
@@ -3585,21 +3633,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {
-                        setState(() => _isDropdownOpen = !_isDropdownOpen);
-                        // Auto-scroll to show dropdown content when opened
-                        if (_isDropdownOpen) {
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            if (widget.scrollController.hasClients) {
-                              widget.scrollController.animateTo(
-                                widget.scrollController.position.extentTotal - 1,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
-                            }
-                          });
-                        }
-                      },
+                      onTap: _showTimezoneDropdown,
                       child: Tooltip(
                         message: _getTimezoneDisplayWithOffset(_selectedTimezone),
                         waitDuration: const Duration(milliseconds: 500),
@@ -3625,9 +3659,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                               ),
                               const SizedBox(width: 8.0),
                               Icon(
-                                _isDropdownOpen
-                                    ? Icons.keyboard_arrow_up
-                                    : Icons.keyboard_arrow_down,
+                                Icons.keyboard_arrow_down,
                                 size: 20.0,
                                 color: theme.filterPopupIconColor,
                               ),
@@ -3637,201 +3669,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       ),
                     ),
                   ),
-
-                  // Search and dropdown list
-                  if (_isDropdownOpen) ...<Widget>[
-                    const SizedBox(height: 8),
-                    // Search field
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.filterPopupOuterColor,
-                        border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: _onSearchChanged,
-                        style: helper.textStyle.copyWith(fontSize: 14.0),
-                        textAlign: TextAlign.left,
-                        textAlignVertical: TextAlignVertical.center,
-                        decoration: InputDecoration(
-                          hintText: 'Search timezones...',
-                          hintStyle: helper.textStyle.copyWith(
-                            color: helper.textStyle.color?.withOpacity(0.5),
-                            fontSize: 14.0,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            size: 18.0,
-                            color: theme.filterPopupIconColor?.withOpacity(0.6),
-                          ),
-                          suffixIcon:
-                              _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                    icon: Icon(
-                                      Icons.clear,
-                                      size: 18.0,
-                                      color: theme.filterPopupIconColor?.withOpacity(0.8),
-                                    ),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _onSearchChanged('');
-                                    },
-                                    splashRadius: 16.0,
-                                    tooltip: 'Clear search',
-                                  )
-                                  : null,
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12.0,
-                            vertical: 10.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-
-                    // Timezone list
-                    Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
-                        maxWidth: MediaQuery.of(context).size.width * 0.8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.filterPopupBackgroundColor,
-                        border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      child:
-                          _filteredTimezones.isEmpty
-                              ? Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Center(
-                                  child: Text(
-                                    'No timezones found',
-                                    style: helper.textStyle.copyWith(
-                                      color: helper.textStyle.color?.withOpacity(0.6),
-                                    ),
-                                  ),
-                                ),
-                              )
-                              : ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _filteredTimezones.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final Map<String, String> timezone = _filteredTimezones[index];
-                                  final bool isSelected = timezone['value'] == _selectedTimezone;
-
-                                  return Material(
-                                    color: Colors.transparent,
-                                    child: Tooltip(
-                                      message: timezone['label'],
-                                      waitDuration: const Duration(milliseconds: 800),
-                                      child: InkWell(
-                                        onTap: () => _onTimezoneSelected(timezone['value']!),
-                                        child: Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12.0,
-                                            vertical: 12.0,
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Container(
-                                                width: 20.0,
-                                                height: 20.0,
-                                                margin: const EdgeInsets.only(top: 2.0),
-                                                child:
-                                                    isSelected
-                                                        ? Icon(
-                                                          Icons.check,
-                                                          size: 16.0,
-                                                          color: helper.primaryColor,
-                                                        )
-                                                        : null,
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      timezone['label']!,
-                                                      style: helper.textStyle.copyWith(
-                                                        fontWeight:
-                                                            isSelected
-                                                                ? FontWeight.w600
-                                                                : FontWeight.normal,
-                                                        color:
-                                                            isSelected
-                                                                ? helper.primaryColor
-                                                                : helper.textStyle.color,
-                                                        fontSize: helper.textStyle.fontSize ?? 14,
-                                                      ),
-                                                      softWrap: true,
-                                                      maxLines: 2,
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                    if (timezone['label']!.length > 30)
-                                                      Padding(
-                                                        padding: const EdgeInsets.only(top: 2.0),
-                                                        child: Text(
-                                                          timezone['value']!,
-                                                          style: helper.textStyle.copyWith(
-                                                            fontSize:
-                                                                (helper.textStyle.fontSize ?? 14) -
-                                                                2,
-                                                            color: helper.textStyle.color
-                                                                ?.withOpacity(0.6),
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow.ellipsis,
-                                                        ),
-                                                      ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                    ),
-
-                    // Current selection indicator
-                    if (_selectedTimezone != null) ...<Widget>[
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                          color: helper.primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4.0),
-                          border: Border.all(
-                            color: helper.primaryColor.withOpacity(0.3),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Text(
-                          'Current: ${_TimezoneHelper.getTimezoneDisplayName(_selectedTimezone)}',
-                          style: helper.textStyle.copyWith(
-                            fontSize: 12.0,
-                            color: helper.primaryColor.withOpacity(0.9),
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                      ),
-                    ],
-                  ],
                 ],
               ),
             ),
@@ -3877,5 +3714,274 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     }
 
     return label;
+  }
+}
+
+/// Searchable dropdown content for timezone selection
+class _TimezoneDropdownContent extends StatefulWidget {
+  const _TimezoneDropdownContent({
+    required this.selectedTimezone,
+    required this.dataGridConfiguration,
+  });
+
+  final String? selectedTimezone;
+  final DataGridConfiguration dataGridConfiguration;
+
+  @override
+  _TimezoneDropdownContentState createState() => _TimezoneDropdownContentState();
+}
+
+class _TimezoneDropdownContentState extends State<_TimezoneDropdownContent> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredTimezones = <Map<String, String>>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredTimezones = _TimezoneHelper.getCommonTimezones();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      if (query.trim().isEmpty) {
+        _filteredTimezones = _TimezoneHelper.getCommonTimezones();
+      } else {
+        final String lowercaseQuery = query.toLowerCase();
+        _filteredTimezones = _TimezoneHelper.getCommonTimezones()
+            .where(
+              (Map<String, String> tz) =>
+                  (tz['label'] ?? '').toLowerCase().contains(lowercaseQuery) ||
+                  (tz['value'] ?? '').toLowerCase().contains(lowercaseQuery),
+            )
+            .toList();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final DataGridConfiguration cfg = widget.dataGridConfiguration;
+    final DataGridThemeHelper theme = cfg.dataGridThemeHelper!;
+    final DataGridFilterHelper helper = cfg.dataGridFilterHelper!;
+
+    return Column(
+      children: <Widget>[
+        // Header
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: theme.filterPopupOuterColor?.withOpacity(0.5),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+            ),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.schedule,
+                size: 20.0,
+                color: theme.filterPopupIconColor,
+              ),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: Text(
+                  'Select Timezone',
+                  style: helper.textStyle.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.close,
+                  size: 20.0,
+                  color: theme.filterPopupIconColor,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                splashRadius: 16.0,
+              ),
+            ],
+          ),
+        ),
+
+        // Search field
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.filterPopupOuterColor,
+              border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.3)),
+              borderRadius: BorderRadius.circular(6.0),
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              style: helper.textStyle.copyWith(fontSize: 14.0),
+              textAlign: TextAlign.left,
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                hintText: 'Search timezones...',
+                hintStyle: helper.textStyle.copyWith(
+                  color: helper.textStyle.color?.withOpacity(0.5),
+                  fontSize: 14.0,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 18.0,
+                  color: theme.filterPopupIconColor?.withOpacity(0.6),
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.clear,
+                          size: 18.0,
+                          color: theme.filterPopupIconColor?.withOpacity(0.8),
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchChanged('');
+                        },
+                        splashRadius: 16.0,
+                        tooltip: 'Clear search',
+                      )
+                    : null,
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 12.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Timezone list
+        Expanded(
+          child: _filteredTimezones.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.search_off,
+                          size: 48.0,
+                          color: helper.textStyle.color?.withOpacity(0.3),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Text(
+                          'No timezones found',
+                          style: helper.textStyle.copyWith(
+                            color: helper.textStyle.color?.withOpacity(0.6),
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          'Try a different search term',
+                          style: helper.textStyle.copyWith(
+                            color: helper.textStyle.color?.withOpacity(0.4),
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  itemCount: _filteredTimezones.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final Map<String, String> timezone = _filteredTimezones[index];
+                    final bool isSelected = timezone['value'] == widget.selectedTimezone;
+
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(timezone['value']),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 12.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? helper.primaryColor.withOpacity(0.1)
+                                : Colors.transparent,
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                width: 24.0,
+                                height: 24.0,
+                                margin: const EdgeInsets.only(right: 12.0),
+                                child: isSelected
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        size: 20.0,
+                                        color: helper.primaryColor,
+                                      )
+                                    : Icon(
+                                        Icons.schedule,
+                                        size: 18.0,
+                                        color: theme.filterPopupIconColor?.withOpacity(0.4),
+                                      ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      timezone['label']!,
+                                      style: helper.textStyle.copyWith(
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                        color: isSelected
+                                            ? helper.primaryColor
+                                            : helper.textStyle.color,
+                                        fontSize: helper.textStyle.fontSize ?? 14,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (timezone['label']!.length > 35)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4.0),
+                                        child: Text(
+                                          timezone['value']!,
+                                          style: helper.textStyle.copyWith(
+                                            fontSize: (helper.textStyle.fontSize ?? 14) - 2,
+                                            color: helper.textStyle.color?.withOpacity(0.6),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
   }
 }
