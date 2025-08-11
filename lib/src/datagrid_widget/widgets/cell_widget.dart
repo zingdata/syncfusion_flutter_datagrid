@@ -3521,6 +3521,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: <Widget>[
@@ -3530,11 +3531,13 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                         color: theme.filterPopupIconColor?.withOpacity(0.8),
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        'Timezone Settings',
-                        style: helper.textStyle.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 15.0,
+                      Expanded(
+                        child: Text(
+                          'Timezone Settings',
+                          style: helper.textStyle.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15.0,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -3577,7 +3580,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                     style: helper.textStyle.copyWith(fontWeight: FontWeight.w500, fontSize: 14.0),
                   ),
                   const SizedBox(height: 8),
-            
+
                   // Timezone dropdown
                   Material(
                     color: Colors.transparent,
@@ -3589,7 +3592,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                           Future.delayed(const Duration(milliseconds: 300), () {
                             if (widget.scrollController.hasClients) {
                               widget.scrollController.animateTo(
-                                widget.scrollController.position.extentTotal,
+                                widget.scrollController.position.extentTotal - 1,
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
@@ -3634,7 +3637,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       ),
                     ),
                   ),
-            
+
                   // Search and dropdown list
                   if (_isDropdownOpen) ...<Widget>[
                     const SizedBox(height: 8),
@@ -3689,7 +3692,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                       ),
                     ),
                     const SizedBox(height: 4),
-            
+
                     // Timezone list
                     Container(
                       constraints: BoxConstraints(
@@ -3716,16 +3719,15 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                               )
                               : ListView.builder(
                                 shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: _filteredTimezones.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   final Map<String, String> timezone = _filteredTimezones[index];
                                   final bool isSelected = timezone['value'] == _selectedTimezone;
-            
+
                                   return Material(
                                     color: Colors.transparent,
                                     child: Tooltip(
-                                      message: timezone['label']!,
+                                      message: timezone['label'],
                                       waitDuration: const Duration(milliseconds: 800),
                                       child: InkWell(
                                         onTap: () => _onTimezoneSelected(timezone['value']!),
@@ -3768,8 +3770,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                                             isSelected
                                                                 ? helper.primaryColor
                                                                 : helper.textStyle.color,
-                                                        fontSize:
-                                                            helper.textStyle.fontSize ?? 14,
+                                                        fontSize: helper.textStyle.fontSize ?? 14,
                                                       ),
                                                       softWrap: true,
                                                       maxLines: 2,
@@ -3782,8 +3783,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                                           timezone['value']!,
                                                           style: helper.textStyle.copyWith(
                                                             fontSize:
-                                                                (helper.textStyle.fontSize ??
-                                                                    14) -
+                                                                (helper.textStyle.fontSize ?? 14) -
                                                                 2,
                                                             color: helper.textStyle.color
                                                                 ?.withOpacity(0.6),
@@ -3804,7 +3804,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                                 },
                               ),
                     ),
-            
+
                     // Current selection indicator
                     if (_selectedTimezone != null) ...<Widget>[
                       const SizedBox(height: 12),
