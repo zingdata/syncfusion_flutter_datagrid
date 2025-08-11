@@ -3475,73 +3475,43 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     final DataGridConfiguration cfg = widget.dataGridConfiguration;
     final DataGridThemeHelper theme = cfg.dataGridThemeHelper!;
     
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset position = renderBox.localToGlobal(Offset.zero);
     final Size screenSize = MediaQuery.of(context).size;
     
-    // Calculate optimal position for dropdown
-    final double dropdownHeight = min(screenSize.height * 0.6, 500.0);
-    final double dropdownWidth = min(screenSize.width * 0.85, 400.0);
-    
-    double left = position.dx;
-    double top = position.dy + renderBox.size.height + 8.0;
-    
-    // Adjust position if dropdown would go off screen
-    if (left + dropdownWidth > screenSize.width) {
-      left = screenSize.width - dropdownWidth - 16.0;
-    }
-    if (left < 16.0) {
-      left = 16.0;
-    }
-    if (top + dropdownHeight > screenSize.height) {
-      top = position.dy - dropdownHeight - 8.0;
-    }
-    if (top < 50.0) {
-      top = 50.0;
-    }
+    // Calculate optimal size for centered dropdown
+    final double dropdownHeight = min(screenSize.height * 0.7, 600.0);
+    final double dropdownWidth = min(screenSize.width * 0.9, 450.0);
     
     final String? selectedTimezone = await showDialog<String>(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.1),
+      barrierColor: Colors.black.withOpacity(0.3),
       builder: (BuildContext context) {
-        return Stack(
-          children: <Widget>[
-            // Invisible barrier to detect outside taps
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(color: Colors.transparent),
-              ),
-            ),
-            // Dropdown content
-            Positioned(
-              left: left,
-              top: top,
-              child: Material(
-                elevation: 12.0,
-                borderRadius: BorderRadius.circular(8.0),
-                color: theme.filterPopupBackgroundColor,
-                shadowColor: Colors.black.withOpacity(0.15),
-                child: Container(
-                  width: dropdownWidth,
-                  height: dropdownHeight,
-                  decoration: BoxDecoration(
-                    color: theme.filterPopupBackgroundColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(
-                      color: theme.filterPopupBorderColor!.withOpacity(0.3),
-                      width: 1.0,
-                    ),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Center(
+            child: Material(
+              elevation: 16.0,
+              borderRadius: BorderRadius.circular(12.0),
+              color: theme.filterPopupBackgroundColor,
+              shadowColor: Colors.black.withOpacity(0.2),
+              child: Container(
+                width: dropdownWidth,
+                height: dropdownHeight,
+                decoration: BoxDecoration(
+                  color: theme.filterPopupBackgroundColor,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                    color: theme.filterPopupBorderColor!.withOpacity(0.2),
+                    width: 1.0,
                   ),
-                  child: _TimezoneDropdownContent(
-                    selectedTimezone: _selectedTimezone,
-                    dataGridConfiguration: cfg,
-                  ),
+                ),
+                child: _TimezoneDropdownContent(
+                  selectedTimezone: _selectedTimezone,
+                  dataGridConfiguration: cfg,
                 ),
               ),
             ),
-          ],
+          ),
         );
       },
     );
@@ -3597,11 +3567,14 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    '($displayTimezone)',
-                    style: helper.textStyle.copyWith(
-                      color: helper.textStyle.color?.withOpacity(0.6),
-                      fontSize: 13.0,
+                  Padding(
+                  padding: const EdgeInsetsGeometry.only(left: 30),  
+                    child: Text(
+                      '($displayTimezone)',
+                      style: helper.textStyle.copyWith(
+                        color: helper.textStyle.color?.withOpacity(0.6),
+                        fontSize: 13.0,
+                      ),
                     ),
                   ),
                 ],
@@ -3774,41 +3747,62 @@ class _TimezoneDropdownContentState extends State<_TimezoneDropdownContent> {
       children: <Widget>[
         // Header
         Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-            color: theme.filterPopupOuterColor?.withOpacity(0.5),
+            color: theme.filterPopupOuterColor?.withOpacity(0.3),
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              topRight: Radius.circular(8.0),
+              topLeft: Radius.circular(12.0),
+              topRight: Radius.circular(12.0),
             ),
           ),
           child: Row(
             children: <Widget>[
-              Icon(
-                Icons.schedule,
-                size: 20.0,
-                color: theme.filterPopupIconColor,
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: helper.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Icon(
+                  Icons.schedule,
+                  size: 20.0,
+                  color: helper.primaryColor,
+                ),
               ),
-              const SizedBox(width: 8.0),
+              const SizedBox(width: 12.0),
               Expanded(
-                child: Text(
-                  'Select Timezone',
-                  style: helper.textStyle.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.0,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Select Timezone',
+                      style: helper.textStyle.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                    const SizedBox(height: 2.0),
+                    Text(
+                      'Choose your preferred timezone for date display',
+                      style: helper.textStyle.copyWith(
+                        fontSize: 12.0,
+                        color: helper.textStyle.color?.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               IconButton(
                 icon: Icon(
                   Icons.close,
-                  size: 20.0,
+                  size: 22.0,
                   color: theme.filterPopupIconColor,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-                splashRadius: 16.0,
+                padding: const EdgeInsets.all(4.0),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                splashRadius: 18.0,
+                tooltip: 'Close',
               ),
             ],
           ),
@@ -3816,7 +3810,7 @@ class _TimezoneDropdownContentState extends State<_TimezoneDropdownContent> {
 
         // Search field
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 16.0),
           child: Container(
             decoration: BoxDecoration(
               color: theme.filterPopupOuterColor,
@@ -3913,8 +3907,8 @@ class _TimezoneDropdownContentState extends State<_TimezoneDropdownContent> {
                         onTap: () => Navigator.of(context).pop(timezone['value']),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 12.0,
+                            horizontal: 20.0,
+                            vertical: 14.0,
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
