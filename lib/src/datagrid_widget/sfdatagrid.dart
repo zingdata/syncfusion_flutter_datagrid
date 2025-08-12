@@ -113,9 +113,6 @@ typedef _DataGridPropertyChangeListener =
 /// Signature for [SfDataGrid.onColumnDragging] callback.
 typedef DataGridColumnDraggingCallback = bool Function(DataGridColumnDragDetails details);
 
-/// Signature for [SfDataGrid.timezone] callback.
-typedef TimezoneCallback = String? Function(String timezone);
-
 /// Signature for [SfDataGrid. columnDragFeedbackBuilder] callback.
 typedef ColumnDragFeedbackBuilderCallback =
     Widget Function(BuildContext context, GridColumn column);
@@ -490,7 +487,6 @@ class SfDataGrid extends StatefulWidget {
     this.onFilterChanging,
     this.onFilterChanged,
     this.paginatedFilterCallback,
-    this.timezoneCallback,
     this.timezone,
     this.checkboxShape,
     this.showHorizontalScrollbar = true,
@@ -1708,9 +1704,6 @@ class SfDataGrid extends StatefulWidget {
   /// ```
   final PaginatedFilterCallback? paginatedFilterCallback;
 
-  /// Called to fetch the timezone for a column.
-  final TimezoneCallback? timezoneCallback;
-
   /// The timezone to use for DateTime column formatting and filtering.
   ///
   /// This parameter is only relevant when [columnType] is [GridColumnType.dateTime].
@@ -2781,8 +2774,7 @@ class SfDataGridState extends State<SfDataGrid> with SingleTickerProviderStateMi
       ..groupCollapsed = widget.groupCollapsed
       ..groupCaptionTitleFormat = widget.groupCaptionTitleFormat
       ..paginatedFilterCallback = widget.paginatedFilterCallback
-      ..timezone = widget.timezone
-      ..timezoneCallback = widget.timezoneCallback;
+      ..timezone = widget.timezone;
 
     if (widget.allowPullToRefresh) {
       _dataGridConfiguration.refreshIndicatorKey ??= GlobalKey<RefreshIndicatorState>();

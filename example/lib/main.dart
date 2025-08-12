@@ -87,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
           GridColumn(
             columnName: 'hireDate',
             columnType: GridColumnType.dateTime,
-            timezone: 'America/New_York',
             label: Container(
               padding: EdgeInsets.all(8.0),
               alignment: Alignment.center,

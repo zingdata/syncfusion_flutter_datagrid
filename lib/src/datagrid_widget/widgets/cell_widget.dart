@@ -3450,12 +3450,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   void _onTimezoneSelected(String timezone) {
     final DataGridConfiguration cfg = widget.dataGridConfiguration;
 
-    // Allow host to transform/override via callback
     String effective = timezone;
-    final String? callbackResult = cfg.timezoneCallback?.call(timezone);
-    if (callbackResult != null && _TimezoneHelper.isValidTimezone(callbackResult)) {
-      effective = callbackResult;
-    }
 
     if (!_TimezoneHelper.isValidTimezone(effective)) {
       // Fallback to UTC on invalid
@@ -3468,7 +3463,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
 
     // Persist on configuration and notify listeners
     cfg.timezone = effective;
-    cfg.timezoneCallback?.call(effective);
   }
 
   Future<void> _showTimezoneDropdown() async {

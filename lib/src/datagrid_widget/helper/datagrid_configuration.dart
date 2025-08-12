@@ -370,9 +370,6 @@ class DataGridConfiguration {
   /// at once from the local data source.
   PaginatedFilterCallback? paginatedFilterCallback;
 
-  /// Called to fetch the timezone for a column.
-  TimezoneCallback? timezoneCallback;
-
   /// The timezone to use for DateTime column formatting and filtering.
   ///
   /// This parameter is only relevant when [columnType] is [GridColumnType.dateTime].

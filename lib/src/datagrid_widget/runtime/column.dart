@@ -2665,6 +2665,7 @@ class DataGridFilterHelper {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
         column: column,
         filterConditions: List<FilterCondition>.unmodifiable(filterConditions),
+        timezone: dataGridConfiguration.timezone,
       );
       return dataGridConfiguration.onFilterChanging!(details);
     }
@@ -2677,6 +2678,7 @@ class DataGridFilterHelper {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
         column: column,
         filterConditions: List<FilterCondition>.unmodifiable(filterConditions),
+        timezone: dataGridConfiguration.timezone,
       );
       dataGridConfiguration.onFilterChanged!(details);
     }

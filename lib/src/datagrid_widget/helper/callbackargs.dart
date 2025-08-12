@@ -299,6 +299,7 @@ class DataGridFilterChangeDetails {
   const DataGridFilterChangeDetails({
     required this.column,
     required this.filterConditions,
+    required this.timezone,
   });
 
   /// The column where the current filtering is applied.
@@ -307,6 +308,14 @@ class DataGridFilterChangeDetails {
   /// Holds the collection of [FilterCondition] which are applied currently to
   /// the column.
   final List<FilterCondition> filterConditions;
+
+  /// The timezone to use for DateTime column formatting and filtering.
+  ///
+  /// This parameter is only relevant when [columnType] is [GridColumnType.dateTime].
+  /// When null, the local timezone is used.
+  ///
+  /// Example: 'America/New_York', 'Europe/London', 'UTC'
+  final String? timezone;
 }
 
 /// Sets the `columnSizer` instance to the [RowHeightDetails] class.
