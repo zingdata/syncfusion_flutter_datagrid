@@ -1896,8 +1896,20 @@ class _CheckboxFilterMenu extends StatelessWidget {
   Widget _buildCheckboxListView(BuildContext context) {
     final DataGridFilterHelper helper = dataGridConfiguration.dataGridFilterHelper!;
 
+    // Height needed for timezone selector widget when shown (collapsed state)
+    const double timezoneWidgetHeight = 68.0;
+    
+    // Check if timezone selector will be shown for DateTime columns on mobile
+    final bool willShowTimezoneSelector = 
+        column.columnType == GridColumnType.dateTime && isMobile;
+
     // 340.0 it's a occupied height in the current view by the other widgets.
     double occupiedHeight = 340.0;
+    
+    // Reserve space for timezone selector if it will be shown
+    if (willShowTimezoneSelector) {
+      occupiedHeight += timezoneWidgetHeight;
+    }
 
     // Need to set the Checkbox Filter height in the mobile platform
     // based on the options enabled in the Filter popup menu
@@ -1924,6 +1936,11 @@ class _CheckboxFilterMenu extends StatelessWidget {
       // When searching, we need to account for the space taken by the search box
       // and any other UI elements that remain visible during search
       double searchOccupiedHeight = 340.0;
+      
+      // Reserve space for timezone selector if it will be shown
+      if (willShowTimezoneSelector) {
+        searchOccupiedHeight += timezoneWidgetHeight;
+      }
 
       // Adjust for the same filter popup menu options as above
       if (column.filterPopupMenuOptions != null) {
