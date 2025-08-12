@@ -3457,6 +3457,7 @@ class _TimezoneSelectionWidget extends StatefulWidget {
 class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
   String? _selectedTimezone;
   bool _isExpanded = false;
+  final GlobalKey _expandedContentKey = GlobalKey();
 
   @override
   void initState() {
@@ -3538,34 +3539,47 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     });
     
     // Auto-scroll to show the timezone selector when expanded
-    if (_isExpanded && widget.scrollController.hasClients) {
-      // Add a small delay to allow the expansion animation to start
+    if (_isExpanded) {
+      // Method 1: Try to use Scrollable.ensureVisible first for accurate positioning
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final double currentPosition = widget.scrollController.position.pixels;
-        final double maxScrollExtent = widget.scrollController.position.maxScrollExtent;
-        final double viewportHeight = widget.scrollController.position.viewportDimension;
-        
-        // Calculate the target scroll position to show the timezone selector
-        // We want to scroll down enough to make the expanded timezone selector visible
-        // but not go all the way to the bottom if not necessary
-        double targetPosition;
-        
-        if (maxScrollExtent > 0) {
-          // Estimate position of timezone selector (it's at the bottom of the popup)
-          // Scroll to show the timezone selector with some padding from the bottom
-          final double paddingFromBottom = viewportHeight * 0.2; // Leave 20% viewport at bottom for timezone selector
-          targetPosition = maxScrollExtent - paddingFromBottom;
+        final BuildContext? expandedContext = _expandedContentKey.currentContext;
+        if (expandedContext != null) {
+          Scrollable.ensureVisible(
+            expandedContext,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOutCubic,
+            alignment: 0.0, // Align to top of viewport
+          );
+        }
+      });
+      
+      // Method 2: Fallback to direct scroll controller manipulation
+      // This ensures we scroll even if ensureVisible doesn't work
+      Future.delayed(const Duration(milliseconds: 150), () {
+        if (widget.scrollController.hasClients) {
+          // Get the maximum scroll extent
+          final double maxScroll = widget.scrollController.position.maxScrollExtent;
           
-          // Ensure we don't scroll past the maximum
-          targetPosition = targetPosition.clamp(0.0, maxScrollExtent);
-          
-          // Only scroll if we need to move significantly (avoid micro-scrolls)
-          if ((targetPosition - currentPosition).abs() > 50.0) {
+          // Only scroll if we have scrollable content
+          if (maxScroll > 0) {
+            // Animate to the bottom to show timezone selector
             widget.scrollController.animateTo(
-              targetPosition,
+              maxScroll,
               duration: const Duration(milliseconds: 400),
-              curve: Curves.easeInOutCubic,
-            );
+              curve: Curves.easeOutCubic,
+            ).then((_) {
+              // Double-check we're at the bottom after animation
+              // This handles any late-rendering content
+              if (widget.scrollController.hasClients) {
+                final double finalMaxScroll = widget.scrollController.position.maxScrollExtent;
+                final double currentPosition = widget.scrollController.position.pixels;
+                
+                // If new content appeared, jump to the very bottom
+                if (finalMaxScroll > currentPosition) {
+                  widget.scrollController.jumpTo(finalMaxScroll);
+                }
+              }
+            });
           }
         }
       });
@@ -3638,6 +3652,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
         if (_isExpanded) ...<Widget>[
           const Divider(height: 1),
           Container(
+            key: _expandedContentKey,
             width: double.infinity,
             constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
             child: Padding(
