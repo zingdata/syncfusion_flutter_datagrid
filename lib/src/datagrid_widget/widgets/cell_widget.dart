@@ -3532,6 +3532,46 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     }
   }
 
+  void _handleExpansionTap() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+    
+    // Auto-scroll to show the timezone selector when expanded
+    if (_isExpanded && widget.scrollController.hasClients) {
+      // Add a small delay to allow the expansion animation to start
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final double currentPosition = widget.scrollController.position.pixels;
+        final double maxScrollExtent = widget.scrollController.position.maxScrollExtent;
+        final double viewportHeight = widget.scrollController.position.viewportDimension;
+        
+        // Calculate the target scroll position to show the timezone selector
+        // We want to scroll down enough to make the expanded timezone selector visible
+        // but not go all the way to the bottom if not necessary
+        double targetPosition;
+        
+        if (maxScrollExtent > 0) {
+          // Estimate position of timezone selector (it's at the bottom of the popup)
+          // Scroll to show the timezone selector with some padding from the bottom
+          final double paddingFromBottom = viewportHeight * 0.2; // Leave 20% viewport at bottom for timezone selector
+          targetPosition = maxScrollExtent - paddingFromBottom;
+          
+          // Ensure we don't scroll past the maximum
+          targetPosition = targetPosition.clamp(0.0, maxScrollExtent);
+          
+          // Only scroll if we need to move significantly (avoid micro-scrolls)
+          if ((targetPosition - currentPosition).abs() > 50.0) {
+            widget.scrollController.animateTo(
+              targetPosition,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOutCubic,
+            );
+          }
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String displayTimezone = _TimezoneHelper.getTimezoneDisplayName(_selectedTimezone);
@@ -3546,7 +3586,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
         Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
+            onTap: _handleExpansionTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Column(
