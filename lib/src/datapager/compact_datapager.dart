@@ -433,10 +433,17 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
   }
 
   Widget _buildEllipsisButton() {
+    // Make ellipsis button responsive based on screen size
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isSmallScreen = screenWidth < 400;
+    final double buttonWidth = isSmallScreen 
+        ? widget.navigationItemWidth  // Same width as other buttons on small screens
+        : widget.navigationItemWidth + 10;  // Slightly wider on larger screens
+    
     return Padding(
       padding: widget.itemPadding,
       child: SizedBox(
-        width: widget.navigationItemWidth + 10,
+        width: buttonWidth,
         height: widget.navigationItemHeight,
         child: Material(
           color: _dataPagerThemeHelper!.itemColor,
@@ -472,6 +479,11 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
     final List<Widget> items = [];
     final int currentPage = _currentPageIndex + 1;
     final int totalPages = _pageCount;
+    
+    // Get screen width to determine how many buttons we can show
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isVerySmallScreen = screenWidth < 360; // Very small phones
+    final bool isSmallScreen = screenWidth < 400; // Small phones
 
     if (totalPages <= widget.visibleItemsCount) {
       // Show all pages if total pages <= visibleItemsCount
@@ -483,22 +495,76 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
         ));
       }
     } else {
-      // Always show first page
-      items.add(_buildPageButton(
-        text: '1',
-        isSelected: currentPage == 1,
-        onPressed: () => _handlePageItemTapped(0),
-      ));
-
-      // Always show ellipsis after first page if there are more than 2 pages
-      // This ensures page jump is always available
-      if (totalPages > 2) {
-        if (currentPage > 2) {
-          // Show ellipsis before current page (if not adjacent to first page)
+      // Responsive logic for different screen sizes
+      if (isVerySmallScreen) {
+        // Very small screens: Show only current page with single ellipsis for navigation
+        if (currentPage == 1) {
+          // On first page: 1 ... [last]
+          items.add(_buildPageButton(
+            text: '1',
+            isSelected: true,
+            onPressed: () => _handlePageItemTapped(0),
+          ));
           items.add(_buildEllipsisButton());
+          items.add(_buildPageButton(
+            text: totalPages.toString(),
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(totalPages - 1),
+          ));
+        } else if (currentPage == totalPages) {
+          // On last page: 1 ... [last]
+          items.add(_buildPageButton(
+            text: '1',
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(0),
+          ));
+          items.add(_buildEllipsisButton());
+          items.add(_buildPageButton(
+            text: totalPages.toString(),
+            isSelected: true,
+            onPressed: () => _handlePageItemTapped(totalPages - 1),
+          ));
+        } else {
+          // In middle: 1 ... [current] ... last
+          items.add(_buildPageButton(
+            text: '1',
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(0),
+          ));
+          items.add(_buildEllipsisButton());
+          items.add(_buildPageButton(
+            text: currentPage.toString(),
+            isSelected: true,
+            onPressed: () => _handlePageItemTapped(_currentPageIndex),
+          ));
+          items.add(_buildEllipsisButton());
+          items.add(_buildPageButton(
+            text: totalPages.toString(),
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(totalPages - 1),
+          ));
+        }
+      } else if (isSmallScreen) {
+        // Small screens: Minimize ellipsis usage
+        items.add(_buildPageButton(
+          text: '1',
+          isSelected: currentPage == 1,
+          onPressed: () => _handlePageItemTapped(0),
+        ));
+
+        if (currentPage > 3) {
+          // Only show ellipsis if there's a significant gap
+          items.add(_buildEllipsisButton());
+        } else if (currentPage == 3) {
+          // Show page 2 instead of ellipsis when close
+          items.add(_buildPageButton(
+            text: '2',
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(1),
+          ));
         }
 
-        // Show current page if it's not 1 or last page
+        // Show current page if it's not 1 or last
         if (currentPage != 1 && currentPage != totalPages) {
           items.add(_buildPageButton(
             text: currentPage.toString(),
@@ -507,23 +573,61 @@ class SfCompactDataPagerState extends State<SfCompactDataPager> {
           ));
         }
 
-        // Always show ellipsis before last page (ensures page jump is always available)
-        if (currentPage < totalPages - 1) {
+        if (currentPage < totalPages - 2) {
+          // Only show ellipsis if there's a significant gap
           items.add(_buildEllipsisButton());
-        } else if (currentPage == 1 && totalPages > 2) {
-          // Special case: when on first page and there are many pages,
-          // show ellipsis to enable page jumping
-          items.add(_buildEllipsisButton());
+        } else if (currentPage == totalPages - 2) {
+          // Show page (totalPages - 1) instead of ellipsis when close
+          items.add(_buildPageButton(
+            text: (totalPages - 1).toString(),
+            isSelected: false,
+            onPressed: () => _handlePageItemTapped(totalPages - 2),
+          ));
         }
-      }
 
-      // Always show last page if more than 1 page
-      if (totalPages > 1) {
+        // Always show last page if more than 1 page
+        if (totalPages > 1) {
+          items.add(_buildPageButton(
+            text: totalPages.toString(),
+            isSelected: currentPage == totalPages,
+            onPressed: () => _handlePageItemTapped(totalPages - 1),
+          ));
+        }
+      } else {
+        // Normal screens: Original logic
         items.add(_buildPageButton(
-          text: totalPages.toString(),
-          isSelected: currentPage == totalPages,
-          onPressed: () => _handlePageItemTapped(totalPages - 1),
+          text: '1',
+          isSelected: currentPage == 1,
+          onPressed: () => _handlePageItemTapped(0),
         ));
+
+        if (totalPages > 2) {
+          if (currentPage > 2) {
+            items.add(_buildEllipsisButton());
+          }
+
+          if (currentPage != 1 && currentPage != totalPages) {
+            items.add(_buildPageButton(
+              text: currentPage.toString(),
+              isSelected: true,
+              onPressed: () => _handlePageItemTapped(_currentPageIndex),
+            ));
+          }
+
+          if (currentPage < totalPages - 1) {
+            items.add(_buildEllipsisButton());
+          } else if (currentPage == 1 && totalPages > 2) {
+            items.add(_buildEllipsisButton());
+          }
+        }
+
+        if (totalPages > 1) {
+          items.add(_buildPageButton(
+            text: totalPages.toString(),
+            isSelected: currentPage == totalPages,
+            onPressed: () => _handlePageItemTapped(totalPages - 1),
+          ));
+        }
       }
     }
 
