@@ -448,7 +448,7 @@ class SfDataPager extends StatefulWidget {
     );
   }
 }
-
+  String? selectedTimezone;
 /// A state class of a [SfDataPager] StatefulWidget that maintain the paging
 /// state details.
 class SfDataPagerState extends State<SfDataPager> {

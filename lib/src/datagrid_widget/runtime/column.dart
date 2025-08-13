@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 
+import '../../../datagrid.dart' show selectedTimezone;
 import '../../grid_common/enums.dart';
 import '../../grid_common/line_size_host.dart';
 import '../../grid_common/visible_line_info.dart';
@@ -2665,7 +2666,7 @@ class DataGridFilterHelper {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
         column: column,
         filterConditions: List<FilterCondition>.unmodifiable(filterConditions),
-        timezone: dataGridConfiguration.timezone,
+        timezone: selectedTimezone,
       );
       return dataGridConfiguration.onFilterChanging!(details);
     }
@@ -2678,7 +2679,7 @@ class DataGridFilterHelper {
       final DataGridFilterChangeDetails details = DataGridFilterChangeDetails(
         column: column,
         filterConditions: List<FilterCondition>.unmodifiable(filterConditions),
-        timezone: dataGridConfiguration.timezone,
+        timezone: selectedTimezone,
       );
       dataGridConfiguration.onFilterChanged!(details);
     }

@@ -10,6 +10,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:syncfusion_flutter_core/localizations.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../../datagrid.dart';
 import '../../grid_common/row_column_index.dart';
 import '../grouping/grouping.dart';
 import '../helper/callbackargs.dart';
@@ -3454,33 +3455,29 @@ class _TimezoneSelectionWidget extends StatefulWidget {
 }
 
 class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
-  String? _selectedTimezone;
   bool _isExpanded = false;
   final GlobalKey _expandedContentKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _selectedTimezone = widget.dataGridConfiguration.timezone ?? 'UTC';
+    selectedTimezone = widget.dataGridConfiguration.timezone ?? 'UTC';
   }
 
   void _onTimezoneSelected(String timezone) {
     final DataGridConfiguration cfg = widget.dataGridConfiguration;
 
-    final String effective = timezone;
+     String effective = timezone;
 
-    // if (!_TimezoneHelper.isValidTimezone(effective)) {
-    //   // Fallback to UTC on invalid
-    //   effective = 'UTC';
-    // }
+    if (!_TimezoneHelper.isValidTimezone(effective)) {
+      // Fallback to UTC on invalid
+      effective = 'UTC';
+    }
 
     setState(() {
-      _selectedTimezone = effective;
+      selectedTimezone = effective;
     });
-
-    // Persist on configuration and notify listeners
-    cfg.timezone = effective;
-    notifyDataGridPropertyChangeListeners(cfg.source, propertyName: 'timezone');
+   
   }
 
   Future<void> _showTimezoneDropdown() async {
@@ -3493,9 +3490,9 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     final double dropdownHeight = min(screenSize.height * 0.7, 600.0);
     final double dropdownWidth = min(screenSize.width * 0.9, 450.0);
 
-    final String? selectedTimezone = await showDialog<String>(
+    selectedTimezone = await showDialog<String>(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.3),
+      barrierColor: Colors.black.withValues(alpha: 0.3),
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -3504,17 +3501,17 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
               elevation: 16.0,
               borderRadius: BorderRadius.circular(12.0),
               color: theme.filterPopupBackgroundColor,
-              shadowColor: Colors.black.withOpacity(0.2),
+              shadowColor: Colors.black.withValues(alpha: 0.2),
               child: Container(
                 width: dropdownWidth,
                 height: dropdownHeight,
                 decoration: BoxDecoration(
                   color: theme.filterPopupBackgroundColor,
                   borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(color: theme.filterPopupBorderColor!.withOpacity(0.2)),
+                  border: Border.all(color: theme.filterPopupBorderColor!.withValues(alpha: 0.2)),
                 ),
                 child: _TimezoneDropdownContent(
-                  selectedTimezone: _selectedTimezone,
+                  selectedTimezone: selectedTimezone,
                   dataGridConfiguration: cfg,
                 ),
               ),
@@ -3525,7 +3522,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     );
 
     if (selectedTimezone != null) {
-      _onTimezoneSelected(selectedTimezone);
+      _onTimezoneSelected(selectedTimezone!);
     }
   }
 
@@ -3585,7 +3582,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final String displayTimezone = _TimezoneHelper.getTimezoneDisplayName(_selectedTimezone);
+    final String displayTimezone = _TimezoneHelper.getTimezoneDisplayName(selectedTimezone);
     final DataGridConfiguration cfg = widget.dataGridConfiguration;
     final DataGridThemeHelper theme = cfg.dataGridThemeHelper!;
     final DataGridFilterHelper helper = cfg.dataGridFilterHelper!;
@@ -3671,14 +3668,14 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                     child: InkWell(
                       onTap: _showTimezoneDropdown,
                       child: Tooltip(
-                        message: _getTimezoneDisplayWithOffset(_selectedTimezone),
+                        message: _getTimezoneDisplayWithOffset(selectedTimezone),
                         waitDuration: const Duration(milliseconds: 500),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: theme.filterPopupOuterColor,
                             border: Border.all(
-                              color: theme.filterPopupBorderColor!.withOpacity(0.5),
+                              color: theme.filterPopupBorderColor!.withValues(alpha: 0.5),
                             ),
                             borderRadius: BorderRadius.circular(6.0),
                           ),
@@ -3687,7 +3684,7 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                             children: <Widget>[
                               Expanded(
                                 child: Text(
-                                  _getTimezoneDisplayWithOffset(_selectedTimezone),
+                                  _getTimezoneDisplayWithOffset(selectedTimezone),
                                   style: helper.textStyle,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
