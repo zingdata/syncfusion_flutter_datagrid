@@ -70,7 +70,7 @@ class _TimezoneHelper {
                   '$sign${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
 
               // Create display name: "Region/City (UTC+/-HH:mm)"
-              final String displayName = '${locationName.replaceAll('_', ' ')} (UTC$offsetStr)';
+              final String displayName = '${locationName.replaceAll('_', ' ')} ($offsetStr)';
 
               return <String, String>{'value': locationName, 'label': displayName};
             } catch (e) {
@@ -3495,7 +3495,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
     
     final String? selectedTimezone = await showDialog<String>(
       context: context,
-      barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.3),
       builder: (BuildContext context) {
         return Dialog(
@@ -3514,7 +3513,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
                   borderRadius: BorderRadius.circular(12.0),
                   border: Border.all(
                     color: theme.filterPopupBorderColor!.withOpacity(0.2),
-                    width: 1.0,
                   ),
                 ),
                 child: _TimezoneDropdownContent(
@@ -3548,7 +3546,6 @@ class _TimezoneSelectionWidgetState extends State<_TimezoneSelectionWidget> {
             expandedContext,
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeOutCubic,
-            alignment: 0.0, // Align to top of viewport
           );
         }
       });
