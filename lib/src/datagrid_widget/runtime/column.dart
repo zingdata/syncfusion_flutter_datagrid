@@ -2220,19 +2220,23 @@ class DataGridFilterHelper {
 
   /// Format the given cell value to the string data type to display.
   String getDisplayValue(Object? value) {
-    if (value != null) {
-      // Should return if the value defines the blank filter.
-      if (value == '(Blanks)') {
-        return '(Blanks)';
+    try {
+      if (value != null) {
+        // Should return if the value defines the blank filter.
+        if (value == '(Blanks)') {
+          return '(Blanks)';
+        }
+        switch (advancedFilterHelper.advancedFilterType) {
+          case AdvancedFilterType.text:
+          case AdvancedFilterType.numeric:
+            return value is! String ? value.toString() : value;
+          case AdvancedFilterType.date:
+            final DateTime date = value as DateTime;
+            return date.toString().split(' ').first;
+        }
       }
-      switch (advancedFilterHelper.advancedFilterType) {
-        case AdvancedFilterType.text:
-        case AdvancedFilterType.numeric:
-          return value is! String ? value.toString() : value;
-        case AdvancedFilterType.date:
-          final DateTime date = value as DateTime;
-          return date.toString().split(' ').first;
-      }
+    } catch (_) {
+      return '';
     }
     return '';
   }
