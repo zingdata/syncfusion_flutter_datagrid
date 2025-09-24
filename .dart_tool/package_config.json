@@ -23,7 +23,7 @@
       "name": "flutter",
       "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_hooks",
@@ -65,7 +65,7 @@
       "name": "sky_engine",
       "rootUri": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.8"
     },
     {
       "name": "source_span",
@@ -105,9 +105,9 @@
     },
     {
       "name": "vector_math",
-      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/vector_math-2.1.4",
+      "rootUri": "file:///Users/razaabbas/.pub-cache/hosted/pub.dev/vector_math-2.2.0",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.1"
     },
     {
       "name": "web",
@@ -123,8 +123,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.8.1",
+  "generatorVersion": "3.9.2",
   "flutterRoot": "file:///Users/razaabbas/Desktop/Development/Flutter/versions/stable",
-  "flutterVersion": "3.32.8",
+  "flutterVersion": "3.35.4",
   "pubCache": "file:///Users/razaabbas/.pub-cache"
 }

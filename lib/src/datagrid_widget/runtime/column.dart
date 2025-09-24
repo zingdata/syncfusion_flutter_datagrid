@@ -25,13 +25,13 @@ import 'generator.dart';
 enum GridColumnType {
   /// Column contains string data.
   string,
-  
+
   /// Column contains numeric data.
   number,
-  
+
   /// Column contains DateTime data with timezone support.
   dateTime,
-  
+
   /// Column contains boolean data.
   boolean,
 }
@@ -221,8 +221,6 @@ class GridColumn {
   ///
   /// Defaults to [GridColumnType.string].
   final GridColumnType columnType;
-
- 
 }
 
 /// A column which displays the checkbox column in its cells.
@@ -3318,6 +3316,11 @@ class DataGridAdvancedFilterHelper {
         value = cellValue.value;
         break;
       }
+    }
+
+    if (column.columnType == GridColumnType.dateTime) {
+      advancedFilterType = AdvancedFilterType.date;
+      return;
     }
 
     if (value != null && value is num) {
