@@ -1393,8 +1393,8 @@ bool isColumnSizerLoadedInitially(ColumnSizer columnSizer) {
   return columnSizer._isColumnSizerLoadedInitially;
 }
 
-/// Determines if the row at the given index is a group header row.
-/// This function accesses the ColumnSizer's private DataGridConfiguration to check grouping.
+/// Determines if the row at the given index is a group header row that would trigger buildGroupCaptionCellWidget.
+/// This function accesses the ColumnSizer's private DataGridConfiguration to check grouping and level validation.
 bool isGroupRowInColumnSizer(ColumnSizer columnSizer, int rowIndex) {
   final DataGridConfiguration dataGridConfiguration = columnSizer._dataGridStateDetails!();
 
@@ -1408,7 +1408,12 @@ bool isGroupRowInColumnSizer(ColumnSizer columnSizer, int rowIndex) {
       dataGridConfiguration.group?.displayElements?.grouped != null &&
       rowIndex < dataGridConfiguration.group!.displayElements!.grouped.length) {
     final dynamic element = dataGridConfiguration.group!.displayElements!.grouped[rowIndex];
-    return element is Group;
+    if (element is Group) {
+      // Only return true if this group would actually call buildGroupCaptionCellWidget
+      final int level = element.level;
+      final int length = dataGridConfiguration.source.groupedColumns.length;
+      return level > 0 && level <= length;
+    }
   }
 
   return false;
