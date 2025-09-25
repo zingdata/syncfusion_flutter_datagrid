@@ -1399,21 +1399,16 @@ bool isGroupRowInColumnSizer(ColumnSizer columnSizer, int rowIndex) {
   final DataGridConfiguration dataGridConfiguration = columnSizer._dataGridStateDetails!();
 
   // Return false if grouping is not enabled
-  if (dataGridConfiguration.source.groupedColumns.isEmpty) {
+  if (dataGridConfiguration.source.groupedColumns.isEmpty || rowIndex < 1) {
     return false;
   }
-
+  final rowIndexWithoutColumn = rowIndex - 1;
   // Check if the row index is valid and get the display element
-  if (rowIndex >= 0 &&
-      dataGridConfiguration.group?.displayElements?.grouped != null &&
-      rowIndex < dataGridConfiguration.group!.displayElements!.grouped.length) {
-    final dynamic element = dataGridConfiguration.group!.displayElements!.grouped[rowIndex];
-    if (element is Group) {
-      // Only return true if this group would actually call buildGroupCaptionCellWidget
-      final int level = element.level;
-      final int length = dataGridConfiguration.source.groupedColumns.length;
-      return level > 0 && level <= length;
-    }
+  if (dataGridConfiguration.group?.displayElements?.grouped != null &&
+      rowIndexWithoutColumn < dataGridConfiguration.group!.displayElements!.grouped.length) {
+    final dynamic element =
+        dataGridConfiguration.group!.displayElements!.grouped[rowIndexWithoutColumn];
+    return element is Group;
   }
 
   return false;
