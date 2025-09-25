@@ -54,6 +54,7 @@ export 'src/datagrid_widget/runtime/column.dart'
         getAutoFitRowHeight,
         setStateDetailsInColumnSizer,
         isColumnSizerLoadedInitially,
+        isGroupRowInColumnSizer,
         FilterElement,
         GridCheckboxColumn,
         DataGridFilterHelper,

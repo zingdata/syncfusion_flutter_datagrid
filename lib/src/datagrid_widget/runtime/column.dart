@@ -11,6 +11,7 @@ import '../../../datagrid.dart' show selectedTimezone;
 import '../../grid_common/enums.dart';
 import '../../grid_common/line_size_host.dart';
 import '../../grid_common/visible_line_info.dart';
+import '../grouping/grouping.dart';
 import '../helper/callbackargs.dart';
 import '../helper/datagrid_configuration.dart';
 import '../helper/datagrid_helper.dart' as grid_helper;
@@ -1390,6 +1391,27 @@ void setStateDetailsInColumnSizer(
 /// Checks whether the column sizer is loaded initially or not.
 bool isColumnSizerLoadedInitially(ColumnSizer columnSizer) {
   return columnSizer._isColumnSizerLoadedInitially;
+}
+
+/// Determines if the row at the given index is a group header row.
+/// This function accesses the ColumnSizer's private DataGridConfiguration to check grouping.
+bool isGroupRowInColumnSizer(ColumnSizer columnSizer, int rowIndex) {
+  final DataGridConfiguration dataGridConfiguration = columnSizer._dataGridStateDetails!();
+
+  // Return false if grouping is not enabled
+  if (dataGridConfiguration.source.groupedColumns.isEmpty) {
+    return false;
+  }
+
+  // Check if the row index is valid and get the display element
+  if (rowIndex >= 0 &&
+      dataGridConfiguration.group?.displayElements?.grouped != null &&
+      rowIndex < dataGridConfiguration.group!.displayElements!.grouped.length) {
+    final dynamic element = dataGridConfiguration.group!.displayElements!.grouped[rowIndex];
+    return element is Group;
+  }
+
+  return false;
 }
 
 /// Process column resizing operation in [SfDataGrid].

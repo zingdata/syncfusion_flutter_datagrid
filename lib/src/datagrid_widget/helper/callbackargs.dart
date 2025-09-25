@@ -82,6 +82,14 @@ class RowHeightDetails {
 
   late ColumnSizer _columnSizer;
 
+  /// Returns `true` if the row at [rowIndex] is a group header row, `false` otherwise.
+  ///
+  /// Group rows are the first item (header) of each group when column grouping is enabled.
+  /// Returns `false` when grouping is disabled or for regular data rows.
+  bool get isGroupRow {
+    return getIsGroupRowInRowHeightDetails(this, rowIndex);
+  }
+
   /// Gets the row height to fit the row based on the [DataGridCell.value]. For
   /// header cells, it considers the [GridColumn.columnName].
   ///
@@ -332,6 +340,15 @@ void setSwipeOffsetInDataGridSwipeStartDetailsArgs(
   DataGridSwipeStartDetails swipeStartDetails,
 ) {
   swipeStartDetails._dataGridConfiguration = dataGridConfiguration;
+}
+
+/// Determines if the row at the given index is a group header row.
+/// This function uses the ColumnSizer helper to access DataGridConfiguration for grouping checks.
+bool getIsGroupRowInRowHeightDetails(
+  RowHeightDetails rowHeightDetails,
+  int rowIndex,
+) {
+  return isGroupRowInColumnSizer(rowHeightDetails._columnSizer, rowIndex);
 }
 
 ///Holds the arguments of the [SfDataGrid.onColumnDragging] callback.
