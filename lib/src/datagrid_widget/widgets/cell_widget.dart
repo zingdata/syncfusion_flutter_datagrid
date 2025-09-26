@@ -345,11 +345,15 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     // Clear editing when tap on the header cell
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellTap != null) {
+      final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+      // Only convert row index for data rows, preserve original index for headers and group headers
+      final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+          ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+          : originalIndex;
+
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-          dataGridConfiguration,
-          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-        ),
+        rowColumnIndex: resolvedIndex,
         column: dataCell.gridColumn!,
         globalPosition: tapUpDetails.globalPosition,
         localPosition: tapUpDetails.localPosition,
@@ -370,11 +374,15 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     // Clear editing when tap on the header cell
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellDoubleTap != null) {
+      final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+      // Only convert row index for data rows, preserve original index for headers and group headers
+      final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+          ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+          : originalIndex;
+
       final DataGridCellDoubleTapDetails details = DataGridCellDoubleTapDetails(
-        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-          dataGridConfiguration,
-          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-        ),
+        rowColumnIndex: resolvedIndex,
         column: dataCell.gridColumn!,
       );
       dataGridConfiguration.onCellDoubleTap!(details);
@@ -392,11 +400,15 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     // Clear editing when tap on the header cell
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellSecondaryTap != null) {
+      final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+      // Only convert row index for data rows, preserve original index for headers and group headers
+      final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+          ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+          : originalIndex;
+
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-          dataGridConfiguration,
-          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-        ),
+        rowColumnIndex: resolvedIndex,
         column: dataCell.gridColumn!,
         globalPosition: tapUpDetails.globalPosition,
         localPosition: tapUpDetails.localPosition,
@@ -3331,11 +3343,15 @@ Future<void> _handleOnTapUp({
       return;
     }
 
+    final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+    // Only convert row index for data rows, preserve original index for headers and group headers
+    final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+        ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+        : originalIndex;
+
     final DataGridCellTapDetails details = DataGridCellTapDetails(
-      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-        dataGridConfiguration,
-        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-      ),
+      rowColumnIndex: resolvedIndex,
       column: column,
       globalPosition:
           tapDownDetails != null ? tapDownDetails.globalPosition : tapUpDetails!.globalPosition,
@@ -3378,11 +3394,15 @@ Future<void> _handleOnDoubleTap({
       return;
     }
 
+    final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+    // Only convert row index for data rows, preserve original index for headers and group headers
+    final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+        ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+        : originalIndex;
+
     final DataGridCellDoubleTapDetails details = DataGridCellDoubleTapDetails(
-      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-        dataGridConfiguration,
-        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-      ),
+      rowColumnIndex: resolvedIndex,
       column: column,
     );
     dataGridConfiguration.onCellDoubleTap!(details);
@@ -3419,11 +3439,15 @@ Future<void> _handleOnSecondaryTapUp({
       return;
     }
 
+    final RowColumnIndex originalIndex = RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex);
+
+    // Only convert row index for data rows, preserve original index for headers and group headers
+    final RowColumnIndex resolvedIndex = dataCell.dataRow?.rowType == RowType.dataRow
+        ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+        : originalIndex;
+
     final DataGridCellTapDetails details = DataGridCellTapDetails(
-      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-        dataGridConfiguration,
-        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
-      ),
+      rowColumnIndex: resolvedIndex,
       column: column,
       globalPosition: tapUpDetails.globalPosition,
       localPosition: tapUpDetails.localPosition,

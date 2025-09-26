@@ -1569,15 +1569,19 @@ class RenderVirtualizingCellsWidget extends RenderBox
         return;
       }
 
+      final RowColumnIndex originalIndex = RowColumnIndex(
+        _dataCellBase!.rowIndex,
+        _dataCellBase!.columnIndex,
+      );
+
+      // Only convert row index for data rows, preserve original index for headers and group headers
+      final RowColumnIndex resolvedIndex = _dataCellBase!.dataRow?.rowType == RowType.dataRow
+          ? grid_helper.resolveToRecordRowColumnIndex(dataGridConfiguration, originalIndex)
+          : originalIndex;
+
       final DataGridCellLongPressDetails longPressDetails =
           DataGridCellLongPressDetails(
-            rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
-              dataGridConfiguration,
-              RowColumnIndex(
-                _dataCellBase!.rowIndex,
-                _dataCellBase!.columnIndex,
-              ),
-            ),
+            rowColumnIndex: resolvedIndex,
             column: column,
             globalPosition: _longPressStartDetails!.globalPosition,
             localPosition: _longPressStartDetails!.localPosition,
