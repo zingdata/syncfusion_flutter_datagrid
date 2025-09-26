@@ -1579,6 +1579,7 @@ class RenderVirtualizingCellsWidget extends RenderBox
             globalPosition: _longPressStartDetails!.globalPosition,
             localPosition: _longPressStartDetails!.localPosition,
           );
+      setDataGridConfigurationInCellLongPressDetails(longPressDetails, dataGridConfiguration);
       dataGridConfiguration.onCellLongPress!(longPressDetails);
     }
   }

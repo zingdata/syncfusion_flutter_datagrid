@@ -352,6 +352,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         localPosition: tapUpDetails.localPosition,
         kind: _kind,
       );
+      setDataGridConfigurationInCellTapDetails(details, dataGridConfiguration);
       dataGridConfiguration.onCellTap!(details);
     }
 
@@ -371,6 +372,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
         column: dataCell.gridColumn!,
       );
+      setDataGridConfigurationInCellDoubleTapDetails(details, dataGridConfiguration);
       dataGridConfiguration.onCellDoubleTap!(details);
     }
 
@@ -393,6 +395,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
         localPosition: tapUpDetails.localPosition,
         kind: _kind,
       );
+      setDataGridConfigurationInCellTapDetails(details, dataGridConfiguration);
       dataGridConfiguration.onCellSecondaryTap!(details);
     }
   }
@@ -3331,6 +3334,7 @@ Future<void> _handleOnTapUp({
           tapDownDetails != null ? tapDownDetails.localPosition : tapUpDetails!.localPosition,
       kind: kind,
     );
+    setDataGridConfigurationInCellTapDetails(details, dataGridConfiguration);
     dataGridConfiguration.onCellTap!(details);
   }
 
@@ -3370,6 +3374,7 @@ Future<void> _handleOnDoubleTap({
       rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
       column: column,
     );
+    setDataGridConfigurationInCellDoubleTapDetails(details, dataGridConfiguration);
     dataGridConfiguration.onCellDoubleTap!(details);
   }
 
@@ -3411,6 +3416,7 @@ Future<void> _handleOnSecondaryTapUp({
       localPosition: tapUpDetails.localPosition,
       kind: kind,
     );
+    setDataGridConfigurationInCellTapDetails(details, dataGridConfiguration);
     dataGridConfiguration.onCellSecondaryTap!(details);
   }
 }

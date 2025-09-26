@@ -481,3 +481,27 @@ class DataGridCheckboxValueChangedDetails {
   /// It notifies whether the checkbox value of the data row is changed, or header row changed.
   final RowType rowType;
 }
+
+/// Sets the `dataGridConfiguration` instance to the [DataGridCellTapDetails] class.
+void setDataGridConfigurationInCellTapDetails(
+  DataGridCellTapDetails cellTapDetails,
+  DataGridConfiguration dataGridConfiguration,
+) {
+  cellTapDetails._dataGridConfiguration = dataGridConfiguration;
+}
+
+/// Sets the `dataGridConfiguration` instance to the [DataGridCellDoubleTapDetails] class.
+void setDataGridConfigurationInCellDoubleTapDetails(
+  DataGridCellDoubleTapDetails cellDoubleTapDetails,
+  DataGridConfiguration dataGridConfiguration,
+) {
+  cellDoubleTapDetails._dataGridConfiguration = dataGridConfiguration;
+}
+
+/// Sets the `dataGridConfiguration` instance to the [DataGridCellLongPressDetails] class.
+void setDataGridConfigurationInCellLongPressDetails(
+  DataGridCellLongPressDetails cellLongPressDetails,
+  DataGridConfiguration dataGridConfiguration,
+) {
+  cellLongPressDetails._dataGridConfiguration = dataGridConfiguration;
+}
