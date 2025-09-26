@@ -1571,9 +1571,12 @@ class RenderVirtualizingCellsWidget extends RenderBox
 
       final DataGridCellLongPressDetails longPressDetails =
           DataGridCellLongPressDetails(
-            rowColumnIndex: RowColumnIndex(
-              _dataCellBase!.rowIndex,
-              _dataCellBase!.columnIndex,
+            rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+              dataGridConfiguration,
+              RowColumnIndex(
+                _dataCellBase!.rowIndex,
+                _dataCellBase!.columnIndex,
+              ),
             ),
             column: column,
             globalPosition: _longPressStartDetails!.globalPosition,

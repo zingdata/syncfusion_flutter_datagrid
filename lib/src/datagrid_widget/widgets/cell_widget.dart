@@ -346,7 +346,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellTap != null) {
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+          dataGridConfiguration,
+          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        ),
         column: dataCell.gridColumn!,
         globalPosition: tapUpDetails.globalPosition,
         localPosition: tapUpDetails.localPosition,
@@ -368,7 +371,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellDoubleTap != null) {
       final DataGridCellDoubleTapDetails details = DataGridCellDoubleTapDetails(
-        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+          dataGridConfiguration,
+          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        ),
         column: dataCell.gridColumn!,
       );
       dataGridConfiguration.onCellDoubleTap!(details);
@@ -387,7 +393,10 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
     _clearEditing(dataGridConfiguration);
     if (dataGridConfiguration.onCellSecondaryTap != null) {
       final DataGridCellTapDetails details = DataGridCellTapDetails(
-        rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+          dataGridConfiguration,
+          RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+        ),
         column: dataCell.gridColumn!,
         globalPosition: tapUpDetails.globalPosition,
         localPosition: tapUpDetails.localPosition,
@@ -3323,7 +3332,10 @@ Future<void> _handleOnTapUp({
     }
 
     final DataGridCellTapDetails details = DataGridCellTapDetails(
-      rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+        dataGridConfiguration,
+        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      ),
       column: column,
       globalPosition:
           tapDownDetails != null ? tapDownDetails.globalPosition : tapUpDetails!.globalPosition,
@@ -3367,7 +3379,10 @@ Future<void> _handleOnDoubleTap({
     }
 
     final DataGridCellDoubleTapDetails details = DataGridCellDoubleTapDetails(
-      rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+        dataGridConfiguration,
+        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      ),
       column: column,
     );
     dataGridConfiguration.onCellDoubleTap!(details);
@@ -3405,7 +3420,10 @@ Future<void> _handleOnSecondaryTapUp({
     }
 
     final DataGridCellTapDetails details = DataGridCellTapDetails(
-      rowColumnIndex: RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      rowColumnIndex: grid_helper.resolveToRecordRowColumnIndex(
+        dataGridConfiguration,
+        RowColumnIndex(dataCell.rowIndex, dataCell.columnIndex),
+      ),
       column: column,
       globalPosition: tapUpDetails.globalPosition,
       localPosition: tapUpDetails.localPosition,
