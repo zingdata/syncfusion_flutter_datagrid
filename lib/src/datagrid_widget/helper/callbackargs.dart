@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../../datagrid.dart';
+import '../grouping/grouping.dart';
 import '../runtime/column.dart';
 import 'datagrid_configuration.dart';
 
@@ -19,11 +20,10 @@ import 'datagrid_configuration.dart';
 /// [DataGridCellDoubleTapCallback].
 /// * [DataGridCellLongPressDetails], which uses
 /// [DataGridCellLongPressCallback].
-@immutable
 class DataGridCellDetails {
   /// Creates a [DataGridCellDetails] with the specified [rowColumnIndex] and
   /// [column].
-  const DataGridCellDetails({
+  DataGridCellDetails({
     required this.rowColumnIndex,
     required this.column,
   });
@@ -40,11 +40,10 @@ class DataGridCellDetails {
 /// See also:
 ///
 /// [DataGridCellTapCallback].
-@immutable
 class DataGridCellTapDetails extends DataGridCellDetails {
   /// Creates a [DataGridCellTapDetails] with the specified [rowColumnIndex],
   /// [column], [globalPosition], [localPosition] and [kind].
-  const DataGridCellTapDetails({
+  DataGridCellTapDetails({
     required RowColumnIndex rowColumnIndex,
     required GridColumn column,
     required this.globalPosition,
@@ -60,6 +59,16 @@ class DataGridCellTapDetails extends DataGridCellDetails {
 
   /// The kind of the device that initiated the event.
   final PointerDeviceKind kind;
+
+  late DataGridConfiguration _dataGridConfiguration;
+
+  /// Returns the group configuration object for accessing group-related functionality.
+  ///
+  /// This provides access to group operations and state when column grouping is enabled.
+  /// Throws if grouping is not enabled or group is null.
+  Group? get group {
+    return _dataGridConfiguration.group!;
+  }
 }
 
 /// Details for callbacks that use [RowHeightDetails]
@@ -124,14 +133,23 @@ class RowHeightDetails {
 /// See also:
 ///
 /// [DataGridCellDoubleTapCallback].
-@immutable
 class DataGridCellDoubleTapDetails extends DataGridCellDetails {
   /// Creates a [DataGridCellDoubleTapDetails] with the specified [rowColumnIndex]
   /// and [column].
-  const DataGridCellDoubleTapDetails({
+  DataGridCellDoubleTapDetails({
     required RowColumnIndex rowColumnIndex,
     required GridColumn column,
   }) : super(rowColumnIndex: rowColumnIndex, column: column);
+
+  late DataGridConfiguration _dataGridConfiguration;
+
+  /// Returns the group configuration object for accessing group-related functionality.
+  ///
+  /// This provides access to group operations and state when column grouping is enabled.
+  /// Throws if grouping is not enabled or group is null.
+  Group? get group {
+    return _dataGridConfiguration.group!;
+  }
 }
 
 /// Details for callbacks that use [DataGridCellLongPressDetails].
@@ -139,11 +157,10 @@ class DataGridCellDoubleTapDetails extends DataGridCellDetails {
 /// See also:
 ///
 /// [DataGridCellLongPressCallback].
-@immutable
 class DataGridCellLongPressDetails extends DataGridCellDetails {
   /// Creates a [DataGridCellLongPressDetails] with the specified
   /// [rowColumnIndex], [column], [globalPosition], [localPosition].
-  const DataGridCellLongPressDetails({
+  DataGridCellLongPressDetails({
     required RowColumnIndex rowColumnIndex,
     required GridColumn column,
     required this.globalPosition,
@@ -155,6 +172,16 @@ class DataGridCellLongPressDetails extends DataGridCellDetails {
 
   /// The local position at which the pointer contacted the screen.
   final Offset localPosition;
+
+  late DataGridConfiguration _dataGridConfiguration;
+
+  /// Returns the group configuration object for accessing group-related functionality.
+  ///
+  /// This provides access to group operations and state when column grouping is enabled.
+  /// Throws if grouping is not enabled or group is null.
+  Group? get group {
+    return _dataGridConfiguration.group!;
+  }
 }
 
 /// Configuration details to sort a column in [SfDataGrid].
