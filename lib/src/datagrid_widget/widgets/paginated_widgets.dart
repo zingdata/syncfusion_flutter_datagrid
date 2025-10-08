@@ -80,8 +80,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   /// Builds a view of items that keeps selected items at the top,
   /// preserving the relative order within selected and unselected groups.
   List<FilterElement> _getDisplayItems() {
-    final List<FilterElement> items =
-        widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
     if (items.isEmpty) {
       return items;
     }
@@ -278,16 +277,14 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     useListenable(widget.helper.checkboxFilterHelper.isLoading);
     final List<FilterElement> itemsRef = widget.helper.checkboxFilterHelper.filterCheckboxItems;
     // Show empty state if no items found and not loading
-    if (itemsRef.isEmpty &&
-        !widget.helper.checkboxFilterHelper.isLoading.value) {
+    if (itemsRef.isEmpty && !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
     // Only sort selected-first once on init/search reset; append new pages at end
     _recomputeInitialOrderIfNeeded();
     _appendNewItemsIfAny();
-    final List<FilterElement> displayItems =
-        _didInitialOrder ? _displayItemsCache : itemsRef;
+    final List<FilterElement> displayItems = _didInitialOrder ? _displayItemsCache : itemsRef;
     final int itemCount =
         displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
@@ -383,8 +380,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   /// Builds a view of items that keeps the selected value at the top,
   /// preserving the relative order for all other items.
   List<FilterElement> _getDisplayItems() {
-    final List<FilterElement> items =
-        widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
     if (items.isEmpty) {
       return items;
     }
@@ -551,8 +547,8 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child:
           widget.helper.checkboxFilterHelper.isLoading.value
-              ? Column(
-                mainAxisSize: MainAxisSize.min,
+              ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     width: 20.0,
@@ -616,7 +612,9 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     _recomputeInitialOrderIfNeeded();
     _appendNewItemsIfAny();
     final List<FilterElement> displayItems =
-        _didInitialOrder ? _displayItemsCache : widget.helper.checkboxFilterHelper.filterCheckboxItems;
+        _didInitialOrder
+            ? _displayItemsCache
+            : widget.helper.checkboxFilterHelper.filterCheckboxItems;
     final int itemCount =
         displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
