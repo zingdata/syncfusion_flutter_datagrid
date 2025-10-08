@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'dart:async';
 
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
 
 /// A filter popup menu tile widget identical to the one used in cell_widget.dart
 class _FilterPopupMenuTile extends StatelessWidget {
-  const _FilterPopupMenuTile(
-      {Key? key,
-      required this.child,
-      this.onTap,
-      this.prefix,
-      this.suffix,
-      this.height,
-      required this.style,
-      this.prefixPadding = EdgeInsets.zero})
-      : super(key: key);
+  const _FilterPopupMenuTile({
+    Key? key,
+    required this.child,
+    this.onTap,
+    this.prefix,
+    this.suffix,
+    this.height,
+    required this.style,
+    this.prefixPadding = EdgeInsets.zero,
+  }) : super(key: key);
 
   final Widget child;
   final Widget? prefix;
@@ -35,16 +36,10 @@ class _FilterPopupMenuTile extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: prefixPadding,
-              child: SizedBox(
-                width: 24.0,
-                height: 24.0,
-                child: prefix,
-              ),
+              child: SizedBox(width: 24.0, height: 24.0, child: prefix),
             ),
-            Expanded(
-              child: DefaultTextStyle(style: style, child: child),
-            ),
-            if (suffix != null) SizedBox(width: 40.0, child: suffix)
+            Expanded(child: DefaultTextStyle(style: style, child: child)),
+            if (suffix != null) SizedBox(width: 40.0, child: suffix),
           ],
         ),
       ),
@@ -77,6 +72,23 @@ class PaginatedFilterListView extends StatefulHookWidget {
 class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+
+  /// Builds a view of items that keeps selected items at the top,
+  /// preserving the relative order within selected and unselected groups.
+  List<FilterElement> _getDisplayItems() {
+    final List<FilterElement> items =
+        widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (items.isEmpty) {
+      return items;
+    }
+
+    final List<FilterElement> selectedItems = <FilterElement>[];
+    final List<FilterElement> unselectedItems = <FilterElement>[];
+    for (final FilterElement item in items) {
+      (item.isSelected ? selectedItems : unselectedItems).add(item);
+    }
+    return <FilterElement>[...selectedItems, ...unselectedItems];
+  }
 
   @override
   void initState() {
@@ -175,29 +187,30 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       height: 45,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: widget.helper.checkboxFilterHelper.isLoading.value
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 20.0,
-                  height: 20.0,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.0,
-                    color: widget.helper.primaryColor,
+      child:
+          widget.helper.checkboxFilterHelper.isLoading.value
+              ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 20.0,
+                    height: 20.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      color: widget.helper.primaryColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Loading more...',
-                  style: widget.helper.textStyle.copyWith(
-                    fontSize: 11.0,
-                    color: widget.helper.textStyle.color?.withOpacity(0.6),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Loading more...',
+                    style: widget.helper.textStyle.copyWith(
+                      fontSize: 11.0,
+                      color: widget.helper.textStyle.color?.withOpacity(0.6),
+                    ),
                   ),
-                ),
-              ],
-            )
-          : const SizedBox.shrink(),
+                ],
+              )
+              : const SizedBox.shrink(),
     );
   }
 
@@ -206,13 +219,11 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     final TextStyle style = widget.helper.textStyle;
 
     return _FilterPopupMenuTile(
+      key: ValueKey<Object?>(item.value),
       style: style,
       height: widget.helper.tileHeight,
       prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-      prefix: Checkbox(
-        value: item.isSelected,
-        onChanged: (_) => widget.onItemTap(item),
-      ),
+      prefix: Checkbox(value: item.isSelected, onChanged: (_) => widget.onItemTap(item)),
       onTap: () => widget.onItemTap(item),
       child: Text(displayText, overflow: TextOverflow.ellipsis),
     );
@@ -221,14 +232,26 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   @override
   Widget build(BuildContext context) {
     useListenable(widget.helper.checkboxFilterHelper.isLoading);
+    final List<FilterElement> itemsRef = widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    // Create a compact signature that changes when the selected set changes
+    int selectionSignature = 0;
+    for (final FilterElement e in itemsRef) {
+      if (e.isSelected) {
+        selectionSignature = 0x1fffffff & (selectionSignature + e.value.hashCode + 1);
+      }
+    }
     // Show empty state if no items found and not loading
-    if (widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty &&
+    if (itemsRef.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
-    final itemCount = widget.helper.checkboxFilterHelper.filterCheckboxItems.length +
-        (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
+    final List<FilterElement> displayItems = useMemoized<List<FilterElement>>(
+      () => _getDisplayItems(),
+      <Object?>[itemsRef, selectionSignature],
+    );
+    final int itemCount =
+        displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
     return Column(
       children: [
@@ -270,17 +293,16 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
               controller: _scrollController,
               itemCount: itemCount,
               physics: const BouncingScrollPhysics(),
+              prototypeItem: SizedBox(height: widget.helper.tileHeight),
               itemBuilder: (context, index) {
-                if (index < widget.helper.checkboxFilterHelper.filterCheckboxItems.length) {
-                  final item = widget.helper.checkboxFilterHelper.filterCheckboxItems[index];
+                if (index < displayItems.length) {
+                  final FilterElement item = displayItems[index];
                   return _buildListItem(item, index);
                 }
-                return const SizedBox.shrink();
+                return _buildPaginationLoadingIndicator();
               },
             ),
           ),
-        if (widget.helper.checkboxFilterHelper.hasMoreData && _isLoadingMore)
-          _buildPaginationLoadingIndicator(),
       ],
     );
   }
@@ -315,6 +337,27 @@ class _PaginatedSingleSelectionListView extends StatefulHookWidget {
 class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelectionListView> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+
+  /// Builds a view of items that keeps the selected value at the top,
+  /// preserving the relative order for all other items.
+  List<FilterElement> _getDisplayItems() {
+    final List<FilterElement> items =
+        widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (items.isEmpty) {
+      return items;
+    }
+
+    final List<FilterElement> selectedFirst = <FilterElement>[];
+    final List<FilterElement> rest = <FilterElement>[];
+    for (final FilterElement item in items) {
+      if (widget.selectedValue == item.value) {
+        selectedFirst.add(item);
+      } else {
+        rest.add(item);
+      }
+    }
+    return <FilterElement>[...selectedFirst, ...rest];
+  }
 
   @override
   void initState() {
@@ -424,29 +467,30 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       height: 50,
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: widget.helper.checkboxFilterHelper.isLoading.value
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 20.0,
-                  height: 20.0,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.0,
-                    color: widget.helper.primaryColor,
+      child:
+          widget.helper.checkboxFilterHelper.isLoading.value
+              ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 20.0,
+                    height: 20.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      color: widget.helper.primaryColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Loading more...',
-                  style: widget.helper.textStyle.copyWith(
-                    fontSize: 11.0,
-                    color: widget.helper.textStyle.color?.withOpacity(0.6),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Loading more...',
+                    style: widget.helper.textStyle.copyWith(
+                      fontSize: 11.0,
+                      color: widget.helper.textStyle.color?.withOpacity(0.6),
+                    ),
                   ),
-                ),
-              ],
-            )
-          : const SizedBox.shrink(),
+                ],
+              )
+              : const SizedBox.shrink(),
     );
   }
 
@@ -456,24 +500,22 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
     final TextStyle style = widget.helper.textStyle;
 
     return _FilterPopupMenuTile(
+      key: ValueKey<Object?>(item.value),
       style: style,
       height: widget.helper.tileHeight,
       prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-      prefix: isSelected
-          ? Container(
-              width: 20.0,
-              height: 20.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.helper.primaryColor,
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 14.0,
-              ),
-            )
-          : const SizedBox(width: 20.0, height: 20.0),
+      prefix:
+          isSelected
+              ? Container(
+                width: 20.0,
+                height: 20.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.helper.primaryColor,
+                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 14.0),
+              )
+              : const SizedBox(width: 20.0, height: 20.0),
       onTap: () => widget.onItemTap(item),
       child: Text(displayText, overflow: TextOverflow.ellipsis),
     );
@@ -488,8 +530,9 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       return _buildEmptyState();
     }
 
-    final itemCount = widget.helper.checkboxFilterHelper.filterCheckboxItems.length +
-        (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
+    final List<FilterElement> displayItems = _getDisplayItems();
+    final int itemCount =
+        displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
     return Column(
       children: [
@@ -511,7 +554,8 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
               ),
             ),
           ),
-        if ((widget.helper.checkboxFilterHelper.filterCheckboxItems.isNotEmpty || widget.isAdvancedFilter) &&
+        if ((widget.helper.checkboxFilterHelper.filterCheckboxItems.isNotEmpty ||
+                widget.isAdvancedFilter) &&
             widget.helper.checkboxFilterHelper.isLoading.value &&
             !_isLoadingMore)
           Container(
@@ -526,22 +570,24 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
 
         // Show the list even when loading
         Expanded(
-          child: widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty
-              ? Container() // Empty container when no items yet
-              : ListView.builder(
-                  controller: _scrollController,
-                  itemCount: itemCount,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (index < widget.helper.checkboxFilterHelper.filterCheckboxItems.length) {
-                      final item = widget.helper.checkboxFilterHelper.filterCheckboxItems[index];
-                      return _buildListItem(item, index);
-                    } else {
-                      // Loading indicator for pagination
-                      return _buildPaginationLoadingIndicator();
-                    }
-                  },
-                ),
+          child:
+              widget.helper.checkboxFilterHelper.filterCheckboxItems.isEmpty
+                  ? const SizedBox.shrink() // Empty container when no items yet
+                  : ListView.builder(
+                    controller: _scrollController,
+                    itemCount: itemCount,
+                    physics: const BouncingScrollPhysics(),
+                    prototypeItem: SizedBox(height: widget.helper.tileHeight),
+                    itemBuilder: (context, index) {
+                      if (index < displayItems.length) {
+                        final FilterElement item = displayItems[index];
+                        return _buildListItem(item, index);
+                      } else {
+                        // Loading indicator for pagination
+                        return _buildPaginationLoadingIndicator();
+                      }
+                    },
+                  ),
         ),
       ],
     );
@@ -570,6 +616,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
   final TextEditingController _searchController = TextEditingController();
   Object? _selectedValue;
   String _currentSearchText = '';
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -579,6 +626,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -592,14 +640,18 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
       _currentSearchText = value;
     });
 
-    widget.helper.checkboxFilterHelper.onSearchTextFieldTextChanged(
-      value,
-      onCompleted: () {
-        if (mounted) {
-          setState(() {});
-        }
-      },
-    );
+    // Debounce search input to reduce rebuilds while typing
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+      widget.helper.checkboxFilterHelper.onSearchTextFieldTextChanged(
+        value,
+        onCompleted: () {
+          if (mounted) {
+            setState(() {});
+          }
+        },
+      );
+    });
   }
 
   void _onItemTap(FilterElement item) {
@@ -626,29 +678,27 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: widget.helper.primaryColor,
-              width: 2.0,
-            ),
+            borderSide: BorderSide(color: widget.helper.primaryColor, width: 2.0),
           ),
-          suffixIcon: _searchController.text.isEmpty
-              ? Icon(
-                  Icons.search,
-                  color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.6),
-                  size: 20.0,
-                )
-              : IconButton(
-                  icon: Icon(
-                    Icons.clear,
-                    color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.8),
+          suffixIcon:
+              _searchController.text.isEmpty
+                  ? Icon(
+                    Icons.search,
+                    color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.6),
                     size: 20.0,
+                  )
+                  : IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: widget.dataGridThemeHelper.filterPopupIconColor?.withOpacity(0.8),
+                      size: 20.0,
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                      _onSearchChanged('');
+                    },
+                    tooltip: 'Clear search',
                   ),
-                  onPressed: () {
-                    _searchController.clear();
-                    _onSearchChanged('');
-                  },
-                  tooltip: 'Clear search',
-                ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           hintText: 'Search filter values...',
           hintStyle: widget.helper.textStyle.copyWith(
@@ -733,11 +783,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.filter_list,
-                    color: widget.helper.primaryColor,
-                    size: 24.0,
-                  ),
+                  Icon(Icons.filter_list, color: widget.helper.primaryColor, size: 24.0),
                   const SizedBox(width: 12.0),
                   Expanded(
                     child: Text(
@@ -806,9 +852,7 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
                     onPressed: () => Navigator.of(context).pop(),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                     ),
                     child: Text(
                       'Cancel',
@@ -820,16 +864,15 @@ class _PaginatedValuePickerDialogState extends State<PaginatedValuePickerDialog>
                   ),
                   const SizedBox(width: 12.0),
                   ElevatedButton(
-                    onPressed: _selectedValue != null
-                        ? () => Navigator.of(context).pop(_selectedValue)
-                        : null,
+                    onPressed:
+                        _selectedValue != null
+                            ? () => Navigator.of(context).pop(_selectedValue)
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: widget.helper.primaryColor,
                       disabledBackgroundColor: widget.helper.primaryColor.withOpacity(0.3),
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                       elevation: 0.0,
                     ),
                     child: Text(
