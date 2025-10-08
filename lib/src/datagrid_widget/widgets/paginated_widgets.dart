@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'dart:async';
 
 import '../runtime/column.dart';
 import '../sfdatagrid.dart';
@@ -73,7 +74,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
   // Initial-ordering cache: only sort selected-first once on init/search reset
-  List<FilterElement> _displayItemsCache = <FilterElement>[];
+  // Cache only the value order so we always bind to latest FilterElement state.
+  List<Object?> _displayOrder = <Object?>[];
   bool _didInitialOrder = false;
   String _lastSearchText = '';
   int _lastSelectedCount = 0;
@@ -98,9 +100,10 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   void initState() {
     super.initState();
     _lastSearchText = widget.searchText;
-    _lastSelectedCount = widget.helper.checkboxFilterHelper.filterCheckboxItems
-        .where((FilterElement e) => e.isSelected)
-        .length;
+    _lastSelectedCount =
+        widget.helper.checkboxFilterHelper.filterCheckboxItems
+            .where((FilterElement e) => e.isSelected)
+            .length;
     _initScrollListener();
   }
 
@@ -128,14 +131,15 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     if (oldWidget.searchText != widget.searchText) {
       // Reset initial ordering on search changes
       _didInitialOrder = false;
-      _displayItemsCache = <FilterElement>[];
+      _displayOrder = <Object?>[];
       _lastSearchText = widget.searchText;
     }
 
     // Detect external bulk selection changes (Select All / Clear All)
-    final int currentSelectedCount = widget.helper.checkboxFilterHelper.filterCheckboxItems
-        .where((FilterElement e) => e.isSelected)
-        .length;
+    final int currentSelectedCount =
+        widget.helper.checkboxFilterHelper.filterCheckboxItems
+            .where((FilterElement e) => e.isSelected)
+            .length;
     if (currentSelectedCount != _lastSelectedCount) {
       _lastSelectedCount = currentSelectedCount;
       if (mounted) {
@@ -152,7 +156,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     if (items.isEmpty) {
       return;
     }
-    _displayItemsCache = _getDisplayItems();
+    final List<FilterElement> initial = _getDisplayItems();
+    _displayOrder = initial.map((FilterElement e) => e.value).toList(growable: true);
     _didInitialOrder = true;
   }
 
@@ -161,13 +166,13 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       return;
     }
     final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
-    if (_displayItemsCache.length >= items.length) {
+    if (_displayOrder.length >= items.length) {
       return;
     }
-    final Set<Object?> existing = _displayItemsCache.map((e) => e.value).toSet();
+    final Set<Object?> existing = _displayOrder.toSet();
     for (final FilterElement e in items) {
       if (!existing.contains(e.value)) {
-        _displayItemsCache.add(e);
+        _displayOrder.add(e.value);
       }
     }
   }
@@ -258,7 +263,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
                       color: widget.helper.primaryColor,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(width: 6),
                   Text(
                     'Loading more...',
                     style: widget.helper.textStyle.copyWith(
@@ -307,7 +312,29 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     // Only sort selected-first once on init/search reset; append new pages at end
     _recomputeInitialOrderIfNeeded();
     _appendNewItemsIfAny();
-    final List<FilterElement> displayItems = _didInitialOrder ? _displayItemsCache : itemsRef;
+    final List<FilterElement> displayItems = (() {
+      if (_didInitialOrder && _displayOrder.isNotEmpty) {
+        final Map<Object?, FilterElement> currentByValue = <Object?, FilterElement>{
+          for (final FilterElement e in itemsRef) e.value: e
+        };
+        final List<FilterElement> ordered = <FilterElement>[];
+        final Set<Object?> seen = <Object?>{};
+        for (final Object? v in _displayOrder) {
+          final FilterElement? e = currentByValue[v];
+          if (e != null) {
+            ordered.add(e);
+            seen.add(v);
+          }
+        }
+        for (final FilterElement e in itemsRef) {
+          if (!seen.contains(e.value)) {
+            ordered.add(e);
+          }
+        }
+        return ordered;
+      }
+      return itemsRef;
+    })();
     final int itemCount =
         displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
@@ -587,7 +614,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
                       color: widget.helper.primaryColor,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(width: 6),
                   Text(
                     'Loading more...',
                     style: widget.helper.textStyle.copyWith(
