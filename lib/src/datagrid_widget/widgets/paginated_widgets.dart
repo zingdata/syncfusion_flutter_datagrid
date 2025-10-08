@@ -72,6 +72,10 @@ class PaginatedFilterListView extends StatefulHookWidget {
 class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+  // Initial-ordering cache: only sort selected-first once on init/search reset
+  List<FilterElement> _displayItemsCache = <FilterElement>[];
+  bool _didInitialOrder = false;
+  String _lastSearchText = '';
 
   /// Builds a view of items that keeps selected items at the top,
   /// preserving the relative order within selected and unselected groups.
@@ -93,6 +97,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   @override
   void initState() {
     super.initState();
+    _lastSearchText = widget.searchText;
     _initScrollListener();
   }
 
@@ -112,6 +117,45 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
         }
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant PaginatedFilterListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchText != widget.searchText) {
+      // Reset initial ordering on search changes
+      _didInitialOrder = false;
+      _displayItemsCache = <FilterElement>[];
+      _lastSearchText = widget.searchText;
+    }
+  }
+
+  void _recomputeInitialOrderIfNeeded() {
+    if (_didInitialOrder) {
+      return;
+    }
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (items.isEmpty) {
+      return;
+    }
+    _displayItemsCache = _getDisplayItems();
+    _didInitialOrder = true;
+  }
+
+  void _appendNewItemsIfAny() {
+    if (!_didInitialOrder) {
+      return;
+    }
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (_displayItemsCache.length >= items.length) {
+      return;
+    }
+    final Set<Object?> existing = _displayItemsCache.map((e) => e.value).toSet();
+    for (final FilterElement e in items) {
+      if (!existing.contains(e.value)) {
+        _displayItemsCache.add(e);
+      }
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -233,23 +277,17 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   Widget build(BuildContext context) {
     useListenable(widget.helper.checkboxFilterHelper.isLoading);
     final List<FilterElement> itemsRef = widget.helper.checkboxFilterHelper.filterCheckboxItems;
-    // Create a compact signature that changes when the selected set changes
-    int selectionSignature = 0;
-    for (final FilterElement e in itemsRef) {
-      if (e.isSelected) {
-        selectionSignature = 0x1fffffff & (selectionSignature + e.value.hashCode + 1);
-      }
-    }
     // Show empty state if no items found and not loading
     if (itemsRef.isEmpty &&
         !widget.helper.checkboxFilterHelper.isLoading.value) {
       return _buildEmptyState();
     }
 
-    final List<FilterElement> displayItems = useMemoized<List<FilterElement>>(
-      () => _getDisplayItems(),
-      <Object?>[itemsRef, selectionSignature],
-    );
+    // Only sort selected-first once on init/search reset; append new pages at end
+    _recomputeInitialOrderIfNeeded();
+    _appendNewItemsIfAny();
+    final List<FilterElement> displayItems =
+        _didInitialOrder ? _displayItemsCache : itemsRef;
     final int itemCount =
         displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
@@ -337,6 +375,10 @@ class _PaginatedSingleSelectionListView extends StatefulHookWidget {
 class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelectionListView> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
+  // Initial-ordering cache: only sort once on init/search reset
+  List<FilterElement> _displayItemsCache = <FilterElement>[];
+  bool _didInitialOrder = false;
+  String _lastSearchText = '';
 
   /// Builds a view of items that keeps the selected value at the top,
   /// preserving the relative order for all other items.
@@ -362,6 +404,7 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
   @override
   void initState() {
     super.initState();
+    _lastSearchText = widget.searchText;
     _initScrollListener();
   }
 
@@ -423,6 +466,45 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
         }
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant _PaginatedSingleSelectionListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchText != widget.searchText) {
+      // Reset initial ordering on search changes
+      _didInitialOrder = false;
+      _displayItemsCache = <FilterElement>[];
+      _lastSearchText = widget.searchText;
+    }
+  }
+
+  void _recomputeInitialOrderIfNeeded() {
+    if (_didInitialOrder) {
+      return;
+    }
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (items.isEmpty) {
+      return;
+    }
+    _displayItemsCache = _getDisplayItems();
+    _didInitialOrder = true;
+  }
+
+  void _appendNewItemsIfAny() {
+    if (!_didInitialOrder) {
+      return;
+    }
+    final List<FilterElement> items = widget.helper.checkboxFilterHelper.filterCheckboxItems;
+    if (_displayItemsCache.length >= items.length) {
+      return;
+    }
+    final Set<Object?> existing = _displayItemsCache.map((e) => e.value).toSet();
+    for (final FilterElement e in items) {
+      if (!existing.contains(e.value)) {
+        _displayItemsCache.add(e);
+      }
+    }
   }
 
   Widget _buildEmptyState() {
@@ -530,7 +612,11 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       return _buildEmptyState();
     }
 
-    final List<FilterElement> displayItems = _getDisplayItems();
+    // Only sort selected-first once on init/search reset; append new pages at end
+    _recomputeInitialOrderIfNeeded();
+    _appendNewItemsIfAny();
+    final List<FilterElement> displayItems =
+        _didInitialOrder ? _displayItemsCache : widget.helper.checkboxFilterHelper.filterCheckboxItems;
     final int itemCount =
         displayItems.length + (widget.helper.checkboxFilterHelper.hasMoreData ? 1 : 0);
 
