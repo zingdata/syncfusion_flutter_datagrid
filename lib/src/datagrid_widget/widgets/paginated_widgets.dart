@@ -76,6 +76,7 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   List<FilterElement> _displayItemsCache = <FilterElement>[];
   bool _didInitialOrder = false;
   String _lastSearchText = '';
+  int _lastSelectedCount = 0;
 
   /// Builds a view of items that keeps selected items at the top,
   /// preserving the relative order within selected and unselected groups.
@@ -97,6 +98,9 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
   void initState() {
     super.initState();
     _lastSearchText = widget.searchText;
+    _lastSelectedCount = widget.helper.checkboxFilterHelper.filterCheckboxItems
+        .where((FilterElement e) => e.isSelected)
+        .length;
     _initScrollListener();
   }
 
@@ -126,6 +130,17 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       _didInitialOrder = false;
       _displayItemsCache = <FilterElement>[];
       _lastSearchText = widget.searchText;
+    }
+
+    // Detect external bulk selection changes (Select All / Clear All)
+    final int currentSelectedCount = widget.helper.checkboxFilterHelper.filterCheckboxItems
+        .where((FilterElement e) => e.isSelected)
+        .length;
+    if (currentSelectedCount != _lastSelectedCount) {
+      _lastSelectedCount = currentSelectedCount;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -232,8 +247,8 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child:
           widget.helper.checkboxFilterHelper.isLoading.value
-              ? Column(
-                mainAxisSize: MainAxisSize.min,
+              ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     width: 20.0,
@@ -261,13 +276,21 @@ class _PaginatedFilterListViewState extends State<PaginatedFilterListView> {
     final displayText = widget.helper.getDisplayValue(item.value);
     final TextStyle style = widget.helper.textStyle;
 
+    void handleTap() {
+      widget.onItemTap(item);
+      if (mounted) {
+        setState(() {});
+      }
+      widget.onStateChanged();
+    }
+
     return _FilterPopupMenuTile(
       key: ValueKey<Object?>(item.value),
       style: style,
       height: widget.helper.tileHeight,
       prefixPadding: const EdgeInsets.only(left: 4.0, right: 10.0),
-      prefix: Checkbox(value: item.isSelected, onChanged: (_) => widget.onItemTap(item)),
-      onTap: () => widget.onItemTap(item),
+      prefix: Checkbox(value: item.isSelected, onChanged: (_) => handleTap()),
+      onTap: handleTap,
       child: Text(displayText, overflow: TextOverflow.ellipsis),
     );
   }
@@ -472,6 +495,12 @@ class _PaginatedSingleSelectionListViewState extends State<_PaginatedSingleSelec
       _didInitialOrder = false;
       _displayItemsCache = <FilterElement>[];
       _lastSearchText = widget.searchText;
+    }
+
+    // If the selected value moved in/out due to external actions, just rebuild
+    // to refresh check mark and avoid reordering during interaction.
+    if (oldWidget.selectedValue != widget.selectedValue && mounted) {
+      setState(() {});
     }
   }
 
