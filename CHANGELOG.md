@@ -1,4 +1,12 @@
-﻿## [30.1.41] - 07/22/2025
+﻿## [31.2.10] - 11/12/2025
+
+No changes.
+
+## [31.1.20] - 09/17/2025
+
+**General**
+
+* The compatible version of our Flutter DataGrid widget has been updated to Flutter SDK 3.35.0.
 
 ## [30.1.38] - 07/02/2025
 

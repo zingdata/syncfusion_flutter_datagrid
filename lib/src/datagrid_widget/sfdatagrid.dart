@@ -5192,7 +5192,10 @@ class DataGridController extends DataGridSourceChangeNotifier {
   /// Determines the row type based on the given row index.
   /// Returns a [RowType] that represents different types of rows such as
   /// header, footer, summary, or dataRows.
-  RowType? _getRowType(dataGridConfiguration, rowIndex) {
+  RowType? _getRowType(
+    DataGridConfiguration dataGridConfiguration,
+    int rowIndex,
+  ) {
     if (rowIndex < dataGridConfiguration.stackedHeaderRows.length) {
       return RowType.stackedHeaderRow;
     }

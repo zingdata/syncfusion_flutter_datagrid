@@ -69,7 +69,7 @@ class _GridCellState extends State<GridCell> {
     TapDownDetails details,
     bool isSecondaryTapDown,
   ) async {
-    _kind = details.kind!;
+    _kind = details.kind ?? PointerDeviceKind.touch;
     final DataCellBase dataCell = widget.dataCell;
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
 
@@ -329,7 +329,7 @@ class _GridHeaderCellState extends State<GridHeaderCell> {
   }
 
   void _handleOnTapDown(TapDownDetails details) {
-    _kind = details.kind!;
+    _kind = details.kind ?? PointerDeviceKind.touch;
     final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
     // Clear editing when tap on the header cell
     _clearEditing(dataGridConfiguration);
@@ -2341,50 +2341,54 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
 
     return Row(
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            SizedBox.fromSize(
-              size: const Size(24.0, 24.0),
-              child: Radio<bool>(
-                key: const ValueKey<String>('datagrid_filtering_and_button'),
-                value: false,
-                activeColor:
-                    dataGridThemeHelper.andRadioActiveColor ??
-                    helper.primaryColor,
-                fillColor: dataGridThemeHelper.andRadioFillColor,
-                onChanged: handleChanged,
-                groupValue: filterHelper.isOrPredicate,
+        RadioGroup<bool>(
+          groupValue: filterHelper.isOrPredicate,
+          onChanged: handleChanged,
+          child: Row(
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: const Size(24.0, 24.0),
+                child: Radio<bool>(
+                  key: const ValueKey<String>('datagrid_filtering_and_button'),
+                  value: false,
+                  activeColor:
+                      dataGridThemeHelper.andRadioActiveColor ??
+                      helper.primaryColor,
+                  fillColor: dataGridThemeHelper.andRadioFillColor,
+                ),
               ),
-            ),
-            const SizedBox(width: 8.0),
-            Text(
-              localizations.andDataGridFilteringLabel,
-              style: helper.textStyle,
-            ),
-          ],
+              const SizedBox(width: 8.0),
+              Text(
+                localizations.andDataGridFilteringLabel,
+                style: helper.textStyle,
+              ),
+            ],
+          ),
         ),
         const SizedBox(width: 16.0),
-        Row(
-          children: <Widget>[
-            SizedBox.fromSize(
-              size: const Size(24.0, 24.0),
-              child: Radio<bool>(
-                key: const ValueKey<String>('datagrid_filtering_or_button'),
-                value: true,
-                activeColor:
-                    dataGridThemeHelper.orRadioActiveColor ??
-                    helper.primaryColor,
-                fillColor: dataGridThemeHelper.orRadioFillColor,
-                onChanged: handleChanged,
-                groupValue: filterHelper.isOrPredicate,
+        RadioGroup<bool>(
+          onChanged: handleChanged,
+          groupValue: filterHelper.isOrPredicate,
+          child: Row(
+            children: <Widget>[
+              SizedBox.fromSize(
+                size: const Size(24.0, 24.0),
+                child: Radio<bool>(
+                  key: const ValueKey<String>('datagrid_filtering_or_button'),
+                  value: true,
+                  activeColor:
+                      dataGridThemeHelper.orRadioActiveColor ??
+                      helper.primaryColor,
+                  fillColor: dataGridThemeHelper.orRadioFillColor,
+                ),
               ),
-            ),
-            const SizedBox(width: 8.0),
-            Text(
-              localizations.orDataGridFilteringLabel,
-              style: helper.textStyle,
-            ),
-          ],
+              const SizedBox(width: 8.0),
+              Text(
+                localizations.orDataGridFilteringLabel,
+                style: helper.textStyle,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -2481,7 +2485,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
                 dataGridThemeHelper.filterPopupIconColor,
           ),
           isExpanded: true,
-          value:
+          initialValue:
               isTopButton
                   ? filterHelper.filterValue1
                   : filterHelper.filterValue2,
@@ -2665,7 +2669,7 @@ class _AdvancedFilterPopupMenu extends StatelessWidget {
               dataGridThemeHelper.filterPopupIconColor,
         ),
         isExpanded: true,
-        value:
+        initialValue:
             isFirstButton ? filterHelper.filterType1 : filterHelper.filterType2,
         style: helper.textStyle,
         items:
